@@ -77,13 +77,10 @@ EN  I build digital products that connect APIs, data, automation and AI.
 
 ## 🕸️ Red de contribuciones · Contribution web
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/jldev1227/jldev1227/output/github-contribution-grid-snake-dark.svg">
-  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/jldev1227/jldev1227/output/github-contribution-grid-snake.svg">
-  <img width="100%" alt="Animated contribution graph" src="https://raw.githubusercontent.com/jldev1227/jldev1227/output/github-contribution-grid-snake.svg">
-</picture>
+<p align="center">
+  <img width="100%" src="https://github-readme-activity-graph.vercel.app/graph?username=jldev1227&bg_color=0D1117&color=E6EDF3&title_color=FF2D45&line=FF2D45&point=FFB000&area_color=F0142F&area=true&hide_border=true&radius=12&custom_title=JLDEV%20ACTIVITY%20WEB" alt="Dynamic GitHub activity graph">
+</p>
 
 <p align="center">
   <img src="./assets/comic-footer.svg" width="100%" alt="End of transmission">
 </p>
-
