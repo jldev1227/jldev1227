@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 150" role="img" aria-labelledby="title">
+  <title id="title">End of transmission comic footer</title>
+  <defs>
+    <pattern id="dots" width="14" height="14" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="2" fill="#ff2d45" opacity=".35"/></pattern>
+  </defs>
+  <rect width="1280" height="150" rx="24" fill="#080b16"/>
+  <path d="M0 150L180 0h150L150 150zM1080 0h200v150H900z" fill="#f0142f"/>
+  <rect width="1280" height="150" rx="24" fill="url(#dots)"/>
+  <path d="M70 75h310M900 75h310" stroke="#ffb000" stroke-width="8"/>
+  <text x="640" y="67" text-anchor="middle" fill="#fff" font-family="Arial Black,Impact,sans-serif" font-size="32" letter-spacing="3">END OF TRANSMISSION</text>
+  <text x="640" y="108" text-anchor="middle" fill="#8ba9e8" font-family="monospace" font-size="18">NOS VEMOS EN LA PRÓXIMA MISIÓN • SEE YOU ON THE NEXT MISSION</text>
+</svg>
