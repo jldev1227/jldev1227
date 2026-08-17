@@ -59,20 +59,12 @@ EN  I build digital products that connect APIs, data, automation and AI.
 ## 📡 Señal de actividad · Activity signal
 
 <p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://github-readme-stats.vercel.app/api?username=jldev1227&show_icons=true&include_all_commits=true&rank_icon=github&hide_border=true&title_color=FF2D45&icon_color=FF2D45&text_color=E6EDF3&bg_color=0D1117">
-    <source media="(prefers-color-scheme: light)" srcset="https://github-readme-stats.vercel.app/api?username=jldev1227&show_icons=true&include_all_commits=true&rank_icon=github&hide_border=true&title_color=CF102D&icon_color=CF102D&text_color=172033&bg_color=FFFFFF">
-    <img height="180" alt="JLDEV GitHub statistics" src="https://github-readme-stats.vercel.app/api?username=jldev1227&show_icons=true&include_all_commits=true&rank_icon=github&hide_border=true&title_color=FF2D45&icon_color=FF2D45&text_color=E6EDF3&bg_color=0D1117">
-  </picture>
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://github-readme-stats.vercel.app/api/top-langs/?username=jldev1227&layout=compact&langs_count=8&hide_border=true&title_color=FF2D45&text_color=E6EDF3&bg_color=0D1117">
-    <source media="(prefers-color-scheme: light)" srcset="https://github-readme-stats.vercel.app/api/top-langs/?username=jldev1227&layout=compact&langs_count=8&hide_border=true&title_color=CF102D&text_color=172033&bg_color=FFFFFF">
-    <img height="180" alt="Most used languages" src="https://github-readme-stats.vercel.app/api/top-langs/?username=jldev1227&layout=compact&langs_count=8&hide_border=true&title_color=FF2D45&text_color=E6EDF3&bg_color=0D1117">
-  </picture>
+  <img width="100%" src="https://github-profile-summary-cards.vercel.app/api/cards/profile-details?username=jldev1227&theme=github_dark&title_color=FF2D45&text_color=E6EDF3&bg_color=0D1117&border_color=0D1117&icon_color=FFB000&chart_color=FF2D45&animation=sequence&duration=2" alt="JLDEV profile details">
 </p>
 
 <p align="center">
-  <img src="https://streak-stats.demolab.com?user=jldev1227&hide_border=true&background=0D1117&ring=FF2D45&fire=FFB000&currStreakLabel=FF2D45&sideLabels=E6EDF3&currStreakNum=FFFFFF&sideNums=FFFFFF&dates=8B949E" alt="GitHub contribution streak">
+  <img width="49%" src="https://github-profile-summary-cards.vercel.app/api/cards/stats?username=jldev1227&theme=github_dark&title_color=FF2D45&text_color=E6EDF3&bg_color=0D1117&border_color=0D1117&icon_color=FFB000&animation=sequence&duration=2" alt="JLDEV GitHub statistics">
+  <img width="49%" src="https://github-profile-summary-cards.vercel.app/api/cards/repos-per-language?username=jldev1227&theme=github_dark&title_color=FF2D45&text_color=E6EDF3&bg_color=0D1117&border_color=0D1117&icon_color=FFB000&chart_color=FF2D45&animation=sequence&duration=2" alt="Most used languages">
 </p>
 
 ## 🕸️ Red de contribuciones · Contribution web
