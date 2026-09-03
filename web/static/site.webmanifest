@@ -1,0 +1,10 @@
+{
+	"name": "Julian Lopez · JLDEV",
+	"short_name": "JLDEV",
+	"description": "Backend, AI and automation developer. Case studies told as a comic page.",
+	"start_url": "/",
+	"display": "standalone",
+	"background_color": "#05070c",
+	"theme_color": "#05070c",
+	"icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}

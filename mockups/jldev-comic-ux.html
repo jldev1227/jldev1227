@@ -1,0 +1,475 @@
+<div id="jldev-comic-ux" aria-label="Propuesta de interfaz JLDEV Comic Tech">
+  <style>
+    #jldev-comic-ux {
+      --jl-ink: light-dark(#10162a, #f5f7ff);
+      --jl-muted: light-dark(#52607a, #a9b5d0);
+      --jl-page: light-dark(#edf3ff, #050711);
+      --jl-panel: light-dark(#ffffff, #0b1020);
+      --jl-panel-2: light-dark(#e2ebff, #111a32);
+      --jl-red: #e81736;
+      --jl-blue: #2367df;
+      --jl-yellow: #ffb800;
+      --jl-stroke: light-dark(#10162a, #edf3ff);
+      --jl-shadow: light-dark(#10162a, #000000);
+      --jl-radius: 6px;
+      color: var(--jl-ink);
+      background: var(--jl-page);
+      font-family: ui-sans-serif, system-ui, sans-serif;
+      overflow: hidden;
+      border: 2px solid var(--jl-stroke);
+      border-radius: var(--jl-radius);
+    }
+    #jldev-comic-ux * { box-sizing: border-box; }
+    #jldev-comic-ux .jl-shell {
+      min-height: 700px;
+      background:
+        radial-gradient(circle at 2px 2px, color-mix(in srgb, var(--jl-blue) 18%, transparent) 1.5px, transparent 1.6px) 0 0 / 18px 18px,
+        var(--jl-page);
+    }
+    #jldev-comic-ux .jl-nav {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      min-height: 66px;
+      padding: 10px 22px;
+      color: #fff;
+      background: #080b16;
+      border-bottom: 4px solid var(--jl-yellow);
+    }
+    #jldev-comic-ux .jl-brand {
+      margin-right: auto;
+      font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 400;
+      letter-spacing: .09em;
+    }
+    #jldev-comic-ux .jl-brand span { color: var(--jl-yellow); }
+    #jldev-comic-ux .jl-nav a {
+      color: #eef3ff;
+      text-decoration: none;
+      font-size: .86rem;
+      font-weight: 500;
+    }
+    #jldev-comic-ux .jl-lang {
+      padding: 7px 10px;
+      border: 1px solid #53627e;
+      border-radius: 999px;
+      font-size: .76rem;
+    }
+    #jldev-comic-ux .jl-hero {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(250px, .8fr);
+      min-height: 440px;
+      overflow: hidden;
+      background: linear-gradient(128deg, var(--jl-panel) 0 62%, var(--jl-red) 62% 78%, var(--jl-blue) 78%);
+      border-bottom: 4px solid var(--jl-stroke);
+    }
+    #jldev-comic-ux .jl-copy {
+      position: relative;
+      z-index: 2;
+      align-self: center;
+      padding: 52px clamp(24px, 6vw, 70px);
+    }
+    #jldev-comic-ux .jl-kicker {
+      display: inline-block;
+      padding: 6px 10px;
+      color: #080b16;
+      background: var(--jl-yellow);
+      border: 2px solid #080b16;
+      box-shadow: 4px 4px 0 #080b16;
+      transform: rotate(-1.5deg);
+      font-size: .76rem;
+      font-weight: 500;
+      letter-spacing: .11em;
+      text-transform: uppercase;
+    }
+    #jldev-comic-ux h1 {
+      max-width: 680px;
+      margin: 24px 0 16px;
+      font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+      font-size: clamp(3rem, 7vw, 5.8rem);
+      font-weight: 400;
+      line-height: .9;
+      letter-spacing: .01em;
+      text-transform: uppercase;
+    }
+    #jldev-comic-ux h1 em {
+      display: block;
+      color: var(--jl-red);
+      font-style: normal;
+      text-shadow: 3px 3px 0 color-mix(in srgb, var(--jl-stroke) 20%, transparent);
+    }
+    #jldev-comic-ux .jl-lead {
+      max-width: 610px;
+      margin: 0 0 26px;
+      color: var(--jl-muted);
+      font-size: 1rem;
+      line-height: 1.65;
+    }
+    #jldev-comic-ux .jl-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+    #jldev-comic-ux .jl-actions a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+      padding: 10px 16px;
+      color: #fff;
+      background: var(--jl-red);
+      border: 2px solid var(--jl-stroke);
+      border-radius: 2px;
+      box-shadow: 5px 5px 0 var(--jl-shadow);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    #jldev-comic-ux .jl-actions a:last-child {
+      color: var(--jl-ink);
+      background: var(--jl-panel);
+    }
+    #jldev-comic-ux .jl-portrait-zone {
+      position: relative;
+      display: grid;
+      place-items: center;
+      min-height: 350px;
+    }
+    #jldev-comic-ux .jl-portrait {
+      display: grid;
+      place-items: center;
+      width: min(76%, 310px);
+      aspect-ratio: 4 / 5;
+      color: #eef3ff;
+      background:
+        radial-gradient(circle at 2px 2px, rgb(255 255 255 / .22) 2px, transparent 2.2px) 0 0 / 14px 14px,
+        #080b16;
+      border: 7px solid #eef3ff;
+      box-shadow: 12px 12px 0 #080b16;
+      transform: rotate(3deg);
+      text-align: center;
+    }
+    #jldev-comic-ux .jl-portrait strong {
+      display: block;
+      font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 400;
+      letter-spacing: .06em;
+    }
+    #jldev-comic-ux .jl-portrait small { display: block; margin-top: 8px; color: #a9b5d0; }
+    #jldev-comic-ux .jl-section {
+      padding: 42px clamp(22px, 5vw, 58px) 52px;
+      background: color-mix(in srgb, var(--jl-page) 94%, transparent);
+    }
+    #jldev-comic-ux .jl-origin {
+      position: relative;
+      display: grid;
+      grid-template-columns: .72fr 1.28fr;
+      min-height: 390px;
+      overflow: hidden;
+      color: #f7f9ff;
+      background:
+        linear-gradient(118deg, transparent 0 66%, rgb(255 184 0 / .96) 66% 70%, transparent 70%),
+        radial-gradient(circle at 3px 3px, rgb(255 255 255 / .16) 2px, transparent 2.2px) 0 0 / 17px 17px,
+        #2367df;
+      border-bottom: 5px solid #080b16;
+    }
+    #jldev-comic-ux .jl-origin-title {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 46px clamp(26px, 5vw, 58px);
+      background: var(--jl-red);
+      clip-path: polygon(0 0, 100% 0, 86% 100%, 0 100%);
+    }
+    #jldev-comic-ux .jl-origin-title span {
+      font-family: ui-monospace, monospace;
+      font-size: .8rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    #jldev-comic-ux .jl-origin-title strong {
+      max-width: 8ch;
+      margin-top: 14px;
+      font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+      font-size: clamp(3rem, 6vw, 5.4rem);
+      font-weight: 400;
+      line-height: .88;
+      text-transform: uppercase;
+      text-shadow: 5px 5px 0 #080b16;
+    }
+    #jldev-comic-ux .jl-origin-story {
+      position: relative;
+      align-self: center;
+      max-width: 720px;
+      margin: 34px 42px 34px 0;
+      padding: 34px 38px;
+      color: #080b16;
+      background: #f7f9ff;
+      border: 4px solid #080b16;
+      box-shadow: 10px 10px 0 #080b16;
+      transform: rotate(-1deg);
+    }
+    #jldev-comic-ux .jl-origin-story::after {
+      content: '';
+      position: absolute;
+      right: 52px;
+      bottom: -30px;
+      width: 38px;
+      height: 34px;
+      background: #f7f9ff;
+      border-right: 4px solid #080b16;
+      border-bottom: 4px solid #080b16;
+      transform: skewY(35deg);
+    }
+    #jldev-comic-ux .jl-origin-story h2 {
+      margin: 0 0 16px;
+      color: var(--jl-red);
+      font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+      font-size: 2.1rem;
+      font-weight: 400;
+      letter-spacing: .03em;
+      text-transform: uppercase;
+    }
+    #jldev-comic-ux .jl-origin-story p { margin: 0; font-size: 1rem; line-height: 1.65; }
+    #jldev-comic-ux .jl-origin-story p + p { margin-top: 10px; }
+    #jldev-comic-ux .jl-origin-story em { color: #174ba7; font-style: normal; font-weight: 500; }
+    #jldev-comic-ux .jl-skill-ribbons {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 22px;
+    }
+    #jldev-comic-ux .jl-ribbon {
+      padding: 7px 11px;
+      color: #f7f9ff;
+      background: #080b16;
+      transform: skewX(-8deg);
+      font-family: ui-monospace, monospace;
+      font-size: .76rem;
+      letter-spacing: .04em;
+    }
+    #jldev-comic-ux .jl-ribbon:nth-child(2) { color: #080b16; background: var(--jl-yellow); }
+    #jldev-comic-ux .jl-ribbon:nth-child(3) { background: var(--jl-red); }
+    #jldev-comic-ux .jl-years {
+      position: absolute;
+      right: 24px;
+      top: 20px;
+      display: grid;
+      place-items: center;
+      width: 98px;
+      aspect-ratio: 1;
+      color: #080b16;
+      background: var(--jl-yellow);
+      clip-path: polygon(50% 0,61% 30%,85% 15%,72% 40%,100% 50%,70% 60%,86% 86%,61% 70%,50% 100%,39% 70%,14% 86%,30% 60%,0 50%,29% 40%,15% 15%,39% 30%);
+      text-align: center;
+      transform: rotate(9deg);
+    }
+    #jldev-comic-ux .jl-years strong { font-size: 1.1rem; font-weight: 500; line-height: 1; }
+    #jldev-comic-ux .jl-years small { display: block; margin-top: 3px; font-size: .62rem; }
+    #jldev-comic-ux .jl-heading {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+    #jldev-comic-ux h2 {
+      margin: 0;
+      font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+      font-size: 2rem;
+      font-weight: 400;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+    #jldev-comic-ux .jl-heading p { margin: 0; color: var(--jl-muted); font-size: .84rem; }
+    #jldev-comic-ux .jl-projects {
+      display: grid;
+      grid-template-columns: 1.25fr .75fr .75fr;
+      gap: 9px;
+      padding: 9px;
+      background: var(--jl-stroke);
+    }
+    #jldev-comic-ux .jl-issue {
+      position: relative;
+      min-height: 210px;
+      padding: 22px;
+      overflow: hidden;
+      color: var(--jl-ink);
+      background: var(--jl-panel);
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+      clip-path: polygon(0 0, 96% 0, 100% 92%, 4% 100%);
+    }
+    #jldev-comic-ux .jl-issue:first-child { min-height: 278px; grid-row: span 2; }
+    #jldev-comic-ux .jl-issue:nth-child(2) { color: #f7f9ff; background: #174ba7; }
+    #jldev-comic-ux .jl-issue:nth-child(2) p { color: #d7e4ff; }
+    #jldev-comic-ux .jl-issue:nth-child(3) { color: #080b16; background: var(--jl-yellow); }
+    #jldev-comic-ux .jl-issue:nth-child(3) p { color: #30384a; }
+    #jldev-comic-ux .jl-issue:nth-child(4) { color: #f7f9ff; background: var(--jl-red); }
+    #jldev-comic-ux .jl-issue:nth-child(4) p { color: #ffe4e8; }
+    #jldev-comic-ux .jl-issue::after {
+      content: '';
+      position: absolute;
+      right: -35px;
+      bottom: -35px;
+      width: 120px;
+      height: 120px;
+      background: var(--issue-color, var(--jl-red));
+      transform: rotate(24deg);
+      opacity: .9;
+    }
+    #jldev-comic-ux .jl-num { color: var(--issue-color, var(--jl-red)); font-size: .78rem; font-weight: 500; letter-spacing: .08em; }
+    #jldev-comic-ux .jl-issue h3 { margin: 16px 0 10px; font-size: 1.25rem; font-weight: 500; }
+    #jldev-comic-ux .jl-issue p { max-width: 30ch; margin: 0; color: var(--jl-muted); font-size: .85rem; line-height: 1.5; }
+    #jldev-comic-ux .jl-stack { position: absolute; left: 22px; bottom: 20px; z-index: 1; font-family: ui-monospace, monospace; font-size: .72rem; }
+    #jldev-comic-ux .jl-activity {
+      display: grid;
+      grid-template-columns: .9fr 2.1fr;
+      gap: 22px;
+      align-items: center;
+      margin-top: 32px;
+      padding: 22px;
+      color: #eef3ff;
+      background: #080b16;
+      border-left: 9px solid var(--jl-red);
+    }
+    #jldev-comic-ux .jl-activity strong { display: block; color: var(--jl-yellow); font-size: 1rem; font-weight: 500; }
+    #jldev-comic-ux .jl-cells { display: grid; grid-template-columns: repeat(26, 1fr); gap: 3px; }
+    #jldev-comic-ux .jl-cell { aspect-ratio: 1; background: #1d2840; }
+    #jldev-comic-ux .jl-cell:nth-child(3n) { background: #263e73; }
+    #jldev-comic-ux .jl-cell:nth-child(7n) { background: var(--jl-red); }
+    #jldev-comic-ux[data-intensity="editorial"] .jl-shell { background: var(--jl-page); }
+    #jldev-comic-ux[data-intensity="editorial"] .jl-hero { background: linear-gradient(128deg, var(--jl-panel) 0 72%, var(--jl-blue) 72%); }
+    #jldev-comic-ux[data-intensity="editorial"] .jl-issue { box-shadow: 3px 3px 0 var(--jl-shadow); }
+    #jldev-comic-ux[data-intensity="kinetic"] .jl-portrait { transform: rotate(6deg) scale(1.04); }
+    #jldev-comic-ux[data-intensity="kinetic"] .jl-kicker { transform: rotate(-3deg); }
+    #jldev-comic-ux[data-layout="uniform"] .jl-projects { grid-template-columns: repeat(3, 1fr); }
+    #jldev-comic-ux[data-layout="uniform"] .jl-issue:first-child { min-height: 210px; grid-row: auto; }
+    @media (max-width: 760px) {
+      #jldev-comic-ux .jl-nav a:not(.jl-lang) { display: none; }
+      #jldev-comic-ux .jl-hero { grid-template-columns: 1fr; background: var(--jl-panel); }
+      #jldev-comic-ux .jl-copy { padding: 40px 24px 26px; }
+      #jldev-comic-ux .jl-portrait-zone { min-height: 290px; background: linear-gradient(135deg, var(--jl-red), var(--jl-blue)); }
+      #jldev-comic-ux .jl-portrait { width: min(58%, 230px); }
+      #jldev-comic-ux .jl-origin { grid-template-columns: 1fr; }
+      #jldev-comic-ux .jl-origin-title { min-height: 250px; clip-path: polygon(0 0, 100% 0, 100% 86%, 0 100%); }
+      #jldev-comic-ux .jl-origin-story { margin: 28px 22px 42px; padding: 28px 24px; }
+      #jldev-comic-ux .jl-years { right: 15px; top: 14px; width: 82px; }
+      #jldev-comic-ux .jl-projects,
+      #jldev-comic-ux[data-layout="uniform"] .jl-projects { grid-template-columns: 1fr; }
+      #jldev-comic-ux .jl-issue:first-child { min-height: 230px; grid-row: auto; }
+      #jldev-comic-ux .jl-heading { align-items: start; flex-direction: column; }
+      #jldev-comic-ux .jl-activity { grid-template-columns: 1fr; }
+      #jldev-comic-ux .jl-cells { grid-template-columns: repeat(13, 1fr); }
+    }
+  </style>
+  <main class="jl-shell">
+    <nav class="jl-nav" aria-label="Primary navigation">
+      <div class="jl-brand">JLDEV <span>1227</span></div>
+      <a href="#work">Work</a>
+      <a href="#about">About</a>
+      <a href="#resume">Résumé</a>
+      <a href="#contact">Contact</a>
+      <a href="#language" class="jl-lang" aria-label="Language selector">EN · ES</a>
+    </nav>
+    <section class="jl-hero">
+      <div class="jl-copy">
+        <span class="jl-kicker">Transmission #1227 · Colombia → Worldwide</span>
+        <h1>Julian builds <em>systems that move.</em></h1>
+        <p class="jl-lead">Backend engineering, AI and automation for products that turn complex operations into reliable software.</p>
+        <div class="jl-actions">
+          <a href="#work">Explore missions</a>
+          <a href="#contact">Start a conversation</a>
+        </div>
+      </div>
+      <div class="jl-portrait-zone" aria-label="Reserved area for Julian's comic portrait">
+        <div class="jl-portrait">
+          <div><strong>Your comic portrait</strong><small>Art slot · 4:5</small></div>
+        </div>
+      </div>
+    </section>
+    <section class="jl-origin" id="about">
+      <div class="jl-origin-title">
+        <span>Origin story</span>
+        <strong>I learn. I propose. I solve.</strong>
+      </div>
+      <div class="jl-origin-story">
+        <div class="jl-years"><strong>X+</strong><small>YEARS<br>BUILDING</small></div>
+        <h2>Software is how I take on a challenge.</h2>
+        <p>I’m Julian, a software developer focused on building custom solutions for companies in my region — turning real operational problems into software people can rely on.</p>
+        <p>What defines me is the ability to <em>learn quickly, propose clearly and solve pragmatically</em>. Every project is a new world: a business to understand, constraints to navigate and a better system waiting to be built.</p>
+        <div class="jl-skill-ribbons" aria-label="Core strengths">
+          <span class="jl-ribbon">FAST LEARNER</span>
+          <span class="jl-ribbon">PROBLEM SOLVER</span>
+          <span class="jl-ribbon">PRODUCT THINKING</span>
+          <span class="jl-ribbon">CUSTOM SOFTWARE</span>
+        </div>
+      </div>
+    </section>
+    <section class="jl-section" id="work">
+      <div class="jl-heading">
+        <h2>Selected missions</h2>
+        <p>Private work, public thinking.</p>
+      </div>
+      <div class="jl-projects">
+        <article class="jl-issue" style="--issue-color: var(--jl-red)">
+          <span class="jl-num">CASE FILE 01 · PLATFORM</span>
+          <h3>SEGISPRO</h3>
+          <p>A complete business system told through the problem, architecture, decisions and measurable outcomes.</p>
+          <span class="jl-stack">SVELTE · TYPESCRIPT · CLOUD</span>
+        </article>
+        <article class="jl-issue" style="--issue-color: var(--jl-blue)">
+          <span class="jl-num">CASE FILE 02 · PRODUCT</span>
+          <h3>FORMARPRO</h3>
+          <p>A focused story about product design and execution.</p>
+          <span class="jl-stack">FULL STACK</span>
+        </article>
+        <article class="jl-issue" style="--issue-color: var(--jl-yellow)">
+          <span class="jl-num">CASE FILE 03 · OPS</span>
+          <h3>TRANSMERALDA × COTRANSMEQ</h3>
+          <p>One architecture, two operating contexts.</p>
+          <span class="jl-stack">BACKEND · AUTOMATION</span>
+        </article>
+        <article class="jl-issue" style="--issue-color: var(--jl-blue)">
+          <span class="jl-num">CASE FILE 04 · OPEN SOURCE</span>
+          <h3>DEVELOPER OS</h3>
+          <p>The active lab: roadmap, changelog and public repository.</p>
+          <span class="jl-stack">BUILDING IN PUBLIC</span>
+        </article>
+        <article class="jl-issue" style="--issue-color: var(--jl-red)">
+          <span class="jl-num">CASE FILE 05 · EXPERIENCE</span>
+          <h3>GYM VANCOUVER</h3>
+          <p>A product-world with its own visual signal.</p>
+          <span class="jl-stack">WEB · PRODUCT</span>
+        </article>
+      </div>
+      <div class="jl-activity">
+        <div><strong>Consistency signal</strong><span>12 months of shipping, learning and maintaining.</span></div>
+        <div class="jl-cells" aria-label="Illustrative GitHub contribution activity">
+          <span class="jl-cell"></span><span class="jl-cell"></span><span class="jl-cell"></span><span class="jl-cell"></span><span class="jl-cell"></span><span class="jl-cell"></span><span class="jl-cell"></span><span class="jl-cell"></span><span class="jl-cell"></span><span class="jl-cell"></span><span class="jl-cell"></span><span class="jl-cell"></span><span class="jl-cell"></span><span class="jl-cell"></span><span class="jl-cell"></span><span class="jl-cell"></span><span class="jl-cell"></span><span class="jl-cell"></span><span class="jl-cell"></span><span class="jl-cell"></span><span class="jl-cell"></span><span class="jl-cell"></span><span class="jl-cell"></span><span class="jl-cell"></span><span class="jl-cell"></span><span class="jl-cell"></span>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script>
+    (() => {
+      const root = document.getElementById('jldev-comic-ux');
+      const state = { intensity: 'kinetic', layout: 'featured', radius: 2, accent: '#e81736' };
+      function render() {
+        root.dataset.intensity = state.intensity;
+        root.dataset.layout = state.layout;
+        root.style.setProperty('--jl-radius', `${state.radius}px`);
+        root.style.setProperty('--jl-red', state.accent);
+      }
+      render();
+      if (globalThis.Tweak) {
+        const tweak = new Tweak({ container: root, onChange: render });
+        tweak.addSelect(state, 'intensity', { label: 'Comic intensity', options: [{ label: 'Editorial', value: 'editorial' }, { label: 'Balanced', value: 'balanced' }, { label: 'Kinetic', value: 'kinetic' }], reference: 'visual.intensity' });
+        tweak.addSelect(state, 'layout', { label: 'Project rhythm', options: [{ label: 'Featured lead', value: 'featured' }, { label: 'Uniform grid', value: 'uniform' }], reference: 'projects.layout' });
+        tweak.addSlider(state, 'radius', { label: 'Corner style', min: 0, max: 18, unit: 'px', reference: '--jl-radius' });
+        tweak.addColorPicker(state, 'accent', { label: 'Hero accent', reference: '--jl-red' });
+      }
+    })();
+  </script>
+</div>

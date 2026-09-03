@@ -1,0 +1,314 @@
+/**
+ * JLDEV comic design system.
+ *
+ * Layer order matters: tokens first, then the primitives every panel is built
+ * from (page, grid, panel, caption, bubble, art slot), then utilities.
+ * Component-specific rules stay in their `.svelte` file.
+ */
+
+@import '@fontsource-variable/inter';
+@import '@fontsource/anton/latin-400.css';
+
+:root {
+	color-scheme: light dark;
+
+	/* Ink & paper */
+	--jl-ink: #05070c;
+	--jl-white: #fffdf6;
+	--jl-paper: light-dark(#f4f0e7, #15161a);
+
+	/* Signal palette */
+	--jl-red: #d91d3b;
+	--jl-blue: #1478d4;
+	--jl-yellow: #ffd23f;
+	--jl-navy: #152841;
+	--jl-navy-deep: #12233a;
+
+	/* Text on dark panels */
+	--jl-on-dark: #dce7f7;
+	--jl-on-dark-dim: #a9b8ce;
+
+	/* Page rhythm */
+	--jl-gutter: 12px;
+	--jl-border: 4px;
+	--jl-page-max: 1100px;
+
+	/* Halftone */
+	--jl-dot-opacity: 0.22;
+	--jl-dot-size: 13px;
+
+	/* Type */
+	--jl-font-display: 'Anton', Impact, 'Haettenschweiler', 'Arial Narrow Bold', sans-serif;
+	--jl-font-body: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+	--jl-font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+html {
+	scroll-behavior: smooth;
+}
+
+body {
+	margin: 0;
+	color: var(--jl-ink);
+	background: var(--jl-paper);
+	font-family: var(--jl-font-body);
+	-webkit-font-smoothing: antialiased;
+	text-rendering: optimizeLegibility;
+}
+
+:where(a) {
+	color: inherit;
+}
+
+:where(img, svg) {
+	display: block;
+	max-width: 100%;
+}
+
+/* ---------------------------------------------------------------- page ---- */
+
+.jl-page {
+	max-width: var(--jl-page-max);
+	margin: 0 auto;
+	padding: var(--jl-gutter);
+	background: var(--jl-white);
+}
+
+.jl-grid {
+	display: grid;
+	gap: var(--jl-gutter);
+	margin-top: var(--jl-gutter);
+}
+
+/* --------------------------------------------------------------- panel ---- */
+
+.jl-panel {
+	position: relative;
+	min-width: 0;
+	overflow: hidden;
+	background: var(--jl-navy);
+	border: var(--jl-border) solid var(--jl-ink);
+	isolation: isolate;
+}
+
+/* Halftone dot field, painted behind panel content. */
+.jl-panel::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	background-image: radial-gradient(
+		circle at 2px 2px,
+		rgb(255 255 255 / var(--jl-dot-opacity)) 1.5px,
+		transparent 1.7px
+	);
+	background-size: var(--jl-dot-size) var(--jl-dot-size);
+	pointer-events: none;
+}
+
+/* The page is drawn by hand: panels sit a fraction off-square. */
+.jl-panel {
+	transform: rotate(-0.18deg);
+}
+
+.jl-panel:nth-child(even) {
+	transform: rotate(0.18deg);
+}
+
+/* ------------------------------------------------------------- caption ---- */
+
+/* The rectangular narration box in a comic's corner. */
+.jl-caption {
+	position: absolute;
+	top: 16px;
+	left: 16px;
+	z-index: 3;
+	max-width: min(390px, 78%);
+	padding: 9px 12px;
+	color: #09204a;
+	background: var(--jl-white);
+	border: 2px solid var(--jl-blue);
+	box-shadow: 4px 4px 0 var(--jl-ink);
+	font-family: var(--jl-font-mono);
+	font-size: 0.75rem;
+	font-weight: 500;
+	line-height: 1.35;
+	text-transform: uppercase;
+}
+
+/* -------------------------------------------------------------- bubble ---- */
+
+.jl-bubble {
+	position: absolute;
+	z-index: 4;
+	max-width: 210px;
+	padding: 15px 18px;
+	color: var(--jl-ink);
+	background: var(--jl-white);
+	border: 3px solid var(--jl-ink);
+	border-radius: 50%;
+	text-align: center;
+	font-size: 0.78rem;
+	font-weight: 500;
+	line-height: 1.25;
+	text-transform: uppercase;
+}
+
+/* The tail. Skewed rather than drawn so it stays crisp at any size. */
+.jl-bubble::after {
+	content: '';
+	position: absolute;
+	left: 22%;
+	bottom: -18px;
+	width: 24px;
+	height: 25px;
+	background: var(--jl-white);
+	border-right: 3px solid var(--jl-ink);
+	transform: skewX(-27deg);
+}
+
+/* ------------------------------------------------------------ art slot ---- */
+
+/* Placeholder frame for commissioned illustration. */
+.jl-art-slot {
+	position: absolute;
+	inset: 28px 32px 22px;
+	display: grid;
+	place-items: center;
+	overflow: hidden;
+	color: var(--jl-white);
+	background: #07101e;
+	border: 5px solid var(--jl-white);
+	box-shadow: 9px 9px 0 var(--jl-ink);
+	transform: rotate(2deg);
+	text-align: center;
+}
+
+.jl-art-slot img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.jl-art-slot strong {
+	display: block;
+	font-family: var(--jl-font-display);
+	font-size: 1.45rem;
+	font-weight: 400;
+	letter-spacing: 0.06em;
+}
+
+.jl-art-slot small {
+	display: block;
+	margin-top: 7px;
+	color: var(--jl-on-dark-dim);
+}
+
+/* ------------------------------------------------------------ typography -- */
+
+.jl-display {
+	margin: 0;
+	font-family: var(--jl-font-display);
+	font-weight: 400;
+	line-height: 0.88;
+	letter-spacing: 0.01em;
+	text-transform: uppercase;
+	/* Anton puts accents 1.1em above the baseline while the line box is 0.88em,
+	   so Ó/Ú reach into the line above — white on white, they vanish. Comic
+	   lettering is outlined anyway, and the ink stroke makes them read again.
+	   The padding keeps the first line's accent inside the panel's clip.
+	   The stroke is relative so it thickens the 7rem hero without closing the
+	   counters on a 1.5rem sub-panel heading. */
+	padding-top: 0.2em;
+	paint-order: stroke fill;
+	-webkit-text-stroke: 0.045em var(--jl-display-stroke, var(--jl-ink));
+}
+
+/* Ink display type on a light panel: outline it in paper, not in more ink. */
+:where(.jl-panel.years, .jl-panel[data-accent='yellow']) {
+	--jl-display-stroke: var(--jl-white);
+}
+
+.jl-kicker {
+	font-family: var(--jl-font-mono);
+	font-size: 0.72rem;
+	font-weight: 500;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+}
+
+/* ----------------------------------------------------------- utilities ---- */
+
+.jl-visually-hidden {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+}
+
+/* Keyboard-only escape hatch into the page content. */
+.jl-skip {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 20;
+	padding: 10px 16px;
+	color: var(--jl-ink);
+	background: var(--jl-yellow);
+	font-weight: 600;
+	text-decoration: none;
+	transform: translateY(-120%);
+}
+
+.jl-skip:focus-visible {
+	transform: translateY(0);
+}
+
+:where(a, button):focus-visible {
+	outline: 3px solid var(--jl-yellow);
+	outline-offset: 3px;
+}
+
+/* --------------------------------------------------------- responsive ----- */
+
+@media (max-width: 760px) {
+	.jl-caption {
+		max-width: 88%;
+		font-size: 0.7rem;
+	}
+}
+
+@media (max-width: 430px) {
+	:root {
+		--jl-gutter: 7px;
+		--jl-border: 3px;
+	}
+
+	.jl-page {
+		padding: 6px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	html {
+		scroll-behavior: auto;
+	}
+
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+	}
+}

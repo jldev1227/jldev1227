@@ -1,0 +1,61 @@
+name: Web CI
+
+on:
+  push:
+    branches: [main]
+    paths: ['web/**', '.github/workflows/web-ci.yml']
+  pull_request:
+    paths: ['web/**', '.github/workflows/web-ci.yml']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: web-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: web
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - run: npm ci
+
+      - name: Type-check
+        run: npm run check
+
+      - name: Lint and format
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      - name: Assert every localized page prerendered
+        run: |
+          missing=0
+          for lang in en es; do
+            for page in "$lang.html" "$lang/missions.html"; do
+              [ -f ".svelte-kit/output/prerendered/pages/$page" ] || { echo "missing: $page"; missing=1; }
+            done
+            for slug in segispro formarpro transmeralda developer-os gym-vancouver; do
+              path="$lang/missions/$slug.html"
+              [ -f ".svelte-kit/output/prerendered/pages/$path" ] || { echo "missing: $path"; missing=1; }
+            done
+          done
+          for file in sitemap.xml robots.txt; do
+            [ -f ".svelte-kit/output/prerendered/pages/$file" ] || { echo "missing: $file"; missing=1; }
+          done
+          exit $missing

@@ -1,0 +1,239 @@
+<div id="jldev-comic-page-ux" aria-label="JLDEV comic page portfolio concept">
+  <style>
+    #jldev-comic-page-ux {
+      --jcp-paper: light-dark(#f4f0e7, #cfc9bd);
+      --jcp-ink: #05070c;
+      --jcp-white: #fffdf6;
+      --jcp-red: #d91d3b;
+      --jcp-blue: #1478d4;
+      --jcp-yellow: #ffd23f;
+      --jcp-muted-blue: #152841;
+      --jcp-gutter: 12px;
+      --jcp-dot-opacity: .22;
+      color: var(--jcp-ink);
+      background: var(--jcp-paper);
+      border: 2px solid var(--jcp-ink);
+      font-family: ui-sans-serif, system-ui, sans-serif;
+      overflow: hidden;
+    }
+    #jldev-comic-page-ux * { box-sizing: border-box; }
+    #jldev-comic-page-ux .jcp-page { max-width: 1100px; margin: 0 auto; padding: var(--jcp-gutter); background: var(--jcp-white); }
+    #jldev-comic-page-ux .jcp-masthead {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      min-height: 64px;
+      padding: 9px 18px;
+      color: var(--jcp-white);
+      background: var(--jcp-ink);
+      border: 4px solid var(--jcp-ink);
+      border-bottom: 0;
+    }
+    #jldev-comic-page-ux .jcp-logo {
+      margin-right: auto;
+      font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+      font-size: 1.65rem;
+      font-weight: 400;
+      letter-spacing: .08em;
+      transform: skewX(-7deg);
+    }
+    #jldev-comic-page-ux .jcp-logo span { color: var(--jcp-yellow); }
+    #jldev-comic-page-ux .jcp-masthead a { color: var(--jcp-white); text-decoration: none; font-size: .78rem; font-weight: 500; text-transform: uppercase; }
+    #jldev-comic-page-ux .jcp-lang { padding: 6px 9px; color: var(--jcp-ink) !important; background: var(--jcp-yellow); }
+    #jldev-comic-page-ux .jcp-grid { display: grid; gap: var(--jcp-gutter); margin-top: var(--jcp-gutter); }
+    #jldev-comic-page-ux .jcp-panel {
+      position: relative;
+      min-width: 0;
+      overflow: hidden;
+      border: 4px solid var(--jcp-ink);
+      background: var(--jcp-muted-blue);
+      isolation: isolate;
+    }
+    #jldev-comic-page-ux .jcp-panel::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background-image: radial-gradient(circle at 2px 2px, rgb(255 255 255 / var(--jcp-dot-opacity)) 1.5px, transparent 1.7px);
+      background-size: 13px 13px;
+      pointer-events: none;
+    }
+    #jldev-comic-page-ux .jcp-hero { min-height: 475px; background: linear-gradient(128deg, #0d182b 0 52%, #782036 52% 72%, #1478d4 72%); }
+    #jldev-comic-page-ux .jcp-hero::after {
+      content: '';
+      position: absolute;
+      right: -8%;
+      bottom: -44%;
+      z-index: -1;
+      width: 65%;
+      aspect-ratio: 1;
+      border: 34px solid rgb(255 255 255 / .12);
+      border-radius: 50%;
+    }
+    #jldev-comic-page-ux .jcp-caption {
+      position: absolute;
+      z-index: 3;
+      max-width: min(390px, 78%);
+      padding: 9px 12px;
+      color: #09204a;
+      background: var(--jcp-white);
+      border: 2px solid var(--jcp-blue);
+      box-shadow: 4px 4px 0 var(--jcp-ink);
+      font-family: ui-monospace, monospace;
+      font-size: .75rem;
+      font-weight: 500;
+      line-height: 1.35;
+      text-transform: uppercase;
+    }
+    #jldev-comic-page-ux .jcp-hero-caption { top: 20px; left: 20px; }
+    #jldev-comic-page-ux .jcp-hero-copy { position: absolute; left: clamp(24px, 6vw, 68px); bottom: 42px; z-index: 2; max-width: 700px; color: var(--jcp-white); }
+    #jldev-comic-page-ux .jcp-hero-copy h1 {
+      margin: 0;
+      font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+      font-size: clamp(3.7rem, 8vw, 7.4rem);
+      font-weight: 400;
+      line-height: .82;
+      letter-spacing: .01em;
+      text-transform: uppercase;
+      text-shadow: 6px 6px 0 var(--jcp-ink);
+    }
+    #jldev-comic-page-ux .jcp-hero-copy h1 span { display: block; color: var(--jcp-yellow); }
+    #jldev-comic-page-ux .jcp-hero-copy p { max-width: 590px; margin: 20px 0 0; font-size: 1rem; line-height: 1.55; }
+    #jldev-comic-page-ux .jcp-bubble {
+      position: absolute;
+      z-index: 4;
+      max-width: 210px;
+      padding: 15px 18px;
+      color: var(--jcp-ink);
+      background: var(--jcp-white);
+      border: 3px solid var(--jcp-ink);
+      border-radius: 50%;
+      text-align: center;
+      font-size: .78rem;
+      font-weight: 500;
+      line-height: 1.25;
+      text-transform: uppercase;
+    }
+    #jldev-comic-page-ux .jcp-bubble::after { content: ''; position: absolute; left: 22%; bottom: -18px; width: 24px; height: 25px; background: var(--jcp-white); border-right: 3px solid var(--jcp-ink); transform: skewX(-27deg); }
+    #jldev-comic-page-ux .jcp-hero-bubble { top: 82px; right: 11%; transform: rotate(-4deg); }
+    #jldev-comic-page-ux .jcp-origin-grid { grid-template-columns: 1.05fr .95fr; }
+    #jldev-comic-page-ux .jcp-origin { min-height: 380px; padding: 42px; color: var(--jcp-white); background: linear-gradient(145deg, #111b2c, #263d64); }
+    #jldev-comic-page-ux .jcp-origin .jcp-caption { top: 16px; left: 16px; }
+    #jldev-comic-page-ux .jcp-origin h2 { max-width: 9ch; margin: 82px 0 18px; font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; font-size: clamp(2.7rem, 5vw, 4.7rem); font-weight: 400; line-height: .9; text-transform: uppercase; }
+    #jldev-comic-page-ux .jcp-origin h2 em { color: var(--jcp-red); font-style: normal; text-shadow: 3px 3px 0 var(--jcp-white); }
+    #jldev-comic-page-ux .jcp-origin p { max-width: 54ch; margin: 0; color: #dce7f7; font-size: .92rem; line-height: 1.6; }
+    #jldev-comic-page-ux .jcp-portrait { min-height: 380px; background: linear-gradient(160deg, #d91d3b 0 60%, #ffd23f 60%); }
+    #jldev-comic-page-ux .jcp-art-slot { position: absolute; inset: 28px 32px 22px; display: grid; place-items: center; color: var(--jcp-white); background: #07101e; border: 5px solid var(--jcp-white); box-shadow: 9px 9px 0 var(--jcp-ink); transform: rotate(2deg); text-align: center; }
+    #jldev-comic-page-ux .jcp-art-slot strong { display: block; font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; font-size: 1.45rem; font-weight: 400; letter-spacing: .06em; }
+    #jldev-comic-page-ux .jcp-art-slot small { display: block; margin-top: 7px; color: #a9b8ce; }
+    #jldev-comic-page-ux .jcp-portrait .jcp-bubble { top: 28px; right: 15px; }
+    #jldev-comic-page-ux .jcp-strength-grid { grid-template-columns: .72fr 1.28fr; }
+    #jldev-comic-page-ux .jcp-years { min-height: 300px; display: grid; align-content: center; justify-items: center; color: var(--jcp-ink); background: var(--jcp-yellow); text-align: center; }
+    #jldev-comic-page-ux .jcp-years strong { font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; font-size: clamp(5rem, 10vw, 9rem); font-weight: 400; line-height: .8; text-shadow: 5px 5px 0 var(--jcp-white); }
+    #jldev-comic-page-ux .jcp-years span { margin-top: 22px; font-family: ui-monospace, monospace; font-size: .8rem; font-weight: 500; letter-spacing: .09em; text-transform: uppercase; }
+    #jldev-comic-page-ux .jcp-strengths { min-height: 300px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; padding: 4px; background: var(--jcp-ink); }
+    #jldev-comic-page-ux .jcp-power { display: flex; flex-direction: column; justify-content: end; min-height: 142px; padding: 18px; color: var(--jcp-white); background: var(--jcp-blue); }
+    #jldev-comic-page-ux .jcp-power:nth-child(2) { color: var(--jcp-ink); background: var(--jcp-yellow); }
+    #jldev-comic-page-ux .jcp-power:nth-child(3) { background: var(--jcp-red); }
+    #jldev-comic-page-ux .jcp-power:nth-child(4) { background: #1b2a43; }
+    #jldev-comic-page-ux .jcp-power strong { font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; font-size: 1.55rem; font-weight: 400; letter-spacing: .03em; text-transform: uppercase; }
+    #jldev-comic-page-ux .jcp-power small { margin-top: 5px; font-size: .75rem; line-height: 1.35; }
+    #jldev-comic-page-ux .jcp-mission-intro { min-height: 180px; display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 28px 36px; color: var(--jcp-white); background: linear-gradient(115deg, var(--jcp-red) 0 62%, var(--jcp-ink) 62%); }
+    #jldev-comic-page-ux .jcp-mission-intro h2 { max-width: 10ch; margin: 0; font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; font-size: clamp(2.8rem, 6vw, 5rem); font-weight: 400; line-height: .86; text-transform: uppercase; text-shadow: 4px 4px 0 var(--jcp-ink); }
+    #jldev-comic-page-ux .jcp-mission-intro p { max-width: 390px; margin: 0; color: #d9e4f4; font-size: .9rem; line-height: 1.55; }
+    #jldev-comic-page-ux .jcp-missions { grid-template-columns: 1.2fr .8fr; }
+    #jldev-comic-page-ux .jcp-case { min-height: 275px; padding: 26px; color: var(--jcp-white); background: #12233a; }
+    #jldev-comic-page-ux .jcp-case:nth-child(2) { color: var(--jcp-ink); background: var(--jcp-yellow); }
+    #jldev-comic-page-ux .jcp-case-number { font-family: ui-monospace, monospace; font-size: .72rem; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; }
+    #jldev-comic-page-ux .jcp-case h3 { max-width: 10ch; margin: 84px 0 8px; font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif; font-size: 2.7rem; font-weight: 400; line-height: .9; text-transform: uppercase; }
+    #jldev-comic-page-ux .jcp-case p { max-width: 38ch; margin: 0; font-size: .8rem; line-height: 1.5; }
+    #jldev-comic-page-ux[data-energy="raw"] .jcp-panel { transform: rotate(-.18deg); }
+    #jldev-comic-page-ux[data-energy="raw"] .jcp-panel:nth-child(even) { transform: rotate(.18deg); }
+    #jldev-comic-page-ux[data-energy="clean"] { --jcp-dot-opacity: .08; }
+    #jldev-comic-page-ux[data-energy="clean"] .jcp-bubble { border-radius: 8px; }
+    @media (max-width: 760px) {
+      #jldev-comic-page-ux .jcp-masthead a:not(.jcp-lang) { display: none; }
+      #jldev-comic-page-ux .jcp-hero { min-height: 560px; }
+      #jldev-comic-page-ux .jcp-hero-copy { left: 22px; right: 22px; bottom: 30px; }
+      #jldev-comic-page-ux .jcp-hero-bubble { top: 110px; right: 20px; }
+      #jldev-comic-page-ux .jcp-origin-grid,
+      #jldev-comic-page-ux .jcp-strength-grid,
+      #jldev-comic-page-ux .jcp-missions { grid-template-columns: 1fr; }
+      #jldev-comic-page-ux .jcp-origin { padding: 30px 24px; }
+      #jldev-comic-page-ux .jcp-origin h2 { margin-top: 90px; }
+      #jldev-comic-page-ux .jcp-mission-intro { align-items: start; flex-direction: column; background: var(--jcp-red); }
+    }
+    @media (max-width: 430px) {
+      #jldev-comic-page-ux .jcp-page { padding: 6px; }
+      #jldev-comic-page-ux { --jcp-gutter: 7px; }
+      #jldev-comic-page-ux .jcp-strengths { grid-template-columns: 1fr; }
+      #jldev-comic-page-ux .jcp-power { min-height: 108px; }
+    }
+  </style>
+  <main class="jcp-page">
+    <nav class="jcp-masthead" aria-label="Primary navigation">
+      <div class="jcp-logo">JLDEV <span>1227</span></div>
+      <a href="#origin">Origin</a><a href="#missions">Missions</a><a href="#resume">Résumé</a><a href="#contact">Contact</a><a class="jcp-lang" href="#language">EN · ES</a>
+    </nav>
+    <div class="jcp-grid">
+      <section class="jcp-panel jcp-hero">
+        <div class="jcp-caption jcp-hero-caption">Transmission #1227 — Colombia to the world. A new challenge arrives.</div>
+        <div class="jcp-bubble jcp-hero-bubble">Okay… what are we building next?</div>
+        <div class="jcp-hero-copy">
+          <h1>Julian builds <span>what others need.</span></h1>
+          <p>Custom software, backend systems, AI and automation for real companies with real operational problems.</p>
+        </div>
+      </section>
+    </div>
+    <div class="jcp-grid jcp-origin-grid" id="origin">
+      <section class="jcp-panel jcp-origin">
+        <div class="jcp-caption">Previously… curiosity became code. Code became a profession.</div>
+        <h2>I learn. <em>I propose.</em> I solve.</h2>
+        <p>Software development is both my work and my passion. I take on each project as a new world to understand — its people, constraints, processes and opportunities.</p>
+      </section>
+      <section class="jcp-panel jcp-portrait">
+        <div class="jcp-art-slot"><div><strong>Julian’s comic portrait</strong><small>Your artwork will live here</small></div></div>
+        <div class="jcp-bubble">Fast learning is my real superpower.</div>
+      </section>
+    </div>
+    <div class="jcp-grid jcp-strength-grid">
+      <section class="jcp-panel jcp-years">
+        <strong>X+</strong><span>Years facing real-world challenges</span>
+      </section>
+      <section class="jcp-panel jcp-strengths" aria-label="Julian's strengths">
+        <div class="jcp-power"><strong>Learn fast</strong><small>Understand unfamiliar domains and turn discovery into action.</small></div>
+        <div class="jcp-power"><strong>Propose</strong><small>Bring options, tradeoffs and a clear technical direction.</small></div>
+        <div class="jcp-power"><strong>Solve</strong><small>Transform operational friction into reliable software.</small></div>
+        <div class="jcp-power"><strong>Take ownership</strong><small>Accept the challenge and stay with the problem.</small></div>
+      </section>
+    </div>
+    <div class="jcp-grid" id="missions">
+      <section class="jcp-panel jcp-mission-intro">
+        <h2>Selected missions</h2>
+        <p>Private work, public thinking: each case reveals the challenge, decisions, architecture and outcome without exposing confidential code.</p>
+      </section>
+    </div>
+    <div class="jcp-grid jcp-missions">
+      <article class="jcp-panel jcp-case"><span class="jcp-case-number">Case file 01 · Main story</span><h3>SEGISPRO</h3><p>The flagship case study.</p></article>
+      <article class="jcp-panel jcp-case"><span class="jcp-case-number">Case file 02 · Open source</span><h3>Developer OS</h3><p>A living build log for developers.</p></article>
+    </div>
+  </main>
+  <script>
+    (() => {
+      const root = document.getElementById('jldev-comic-page-ux');
+      const state = { energy: 'raw', gutter: 12, red: '#d91d3b' };
+      function render() {
+        root.dataset.energy = state.energy;
+        root.style.setProperty('--jcp-gutter', `${state.gutter}px`);
+        root.style.setProperty('--jcp-red', state.red);
+      }
+      render();
+      if (globalThis.Tweak) {
+        const tweak = new Tweak({ container: root, onChange: render });
+        tweak.addSelect(state, 'energy', { label: 'Comic treatment', options: [{ label: 'Raw page', value: 'raw' }, { label: 'Clean editorial', value: 'clean' }], reference: 'comic.energy' });
+        tweak.addSlider(state, 'gutter', { label: 'Panel gutter', min: 6, max: 22, unit: 'px', reference: '--jcp-gutter' });
+        tweak.addColorPicker(state, 'red', { label: 'Signal red', reference: '--jcp-red' });
+      }
+    })();
+  </script>
+</div>

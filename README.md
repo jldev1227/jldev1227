@@ -13,7 +13,12 @@
 <p align="center">
   <img src="https://img.shields.io/badge/STATUS-BUILDING%20THE%20NEXT%20MISSION-F0142F?style=for-the-badge&labelColor=080B16" alt="Building the next mission">
   <img src="https://img.shields.io/badge/BASE-COLOMBIA-1167B1?style=for-the-badge&labelColor=080B16" alt="Based in Colombia">
+  <a href="https://1227jl.dev"><img src="https://img.shields.io/badge/PORTFOLIO-1227JL.DEV-FFB000?style=for-the-badge&labelColor=080B16" alt="Portfolio at 1227jl.dev"></a>
 </p>
+
+> **📖 Lee la historia completa · Read the full story → [1227jl.dev](https://1227jl.dev)**
+> Mi portafolio contado como una página de cómic, en español e inglés.
+> My portfolio told as a comic page, in Spanish and English.
 
 ## 🕷️ Mi historia de origen · Origin story
 
