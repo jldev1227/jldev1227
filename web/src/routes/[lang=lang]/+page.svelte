@@ -36,6 +36,7 @@
 	<Panel class="hero">
 		<Caption>{hero.caption[locale]}</Caption>
 		<Bubble class="hero-bubble">{hero.bubble[locale]}</Bubble>
+		<img class="hero-art" src="/art/hero-digital-workbench.webp" alt="" aria-hidden="true" />
 		<div class="hero-copy">
 			<h1 class="jl-display">
 				{hero.titleTop[locale]}
@@ -166,6 +167,18 @@
 		top: 82px;
 		right: 11%;
 		transform: rotate(-4deg);
+	}
+
+	.hero-art {
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: right bottom;
+		pointer-events: none;
+		user-select: none;
 	}
 
 	/* Flowed rather than absolutely placed: Spanish runs a line longer than
@@ -493,6 +506,10 @@
 	}
 
 	@media (max-width: 760px) {
+		.hero-art {
+			display: none;
+		}
+
 		.hero-copy {
 			min-height: 500px;
 			padding: 150px 22px 30px;
