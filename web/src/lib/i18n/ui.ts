@@ -29,6 +29,21 @@ const UI = {
 	'missions.approach': { en: 'The approach', es: 'El enfoque' },
 	'missions.outcome': { en: 'The outcome', es: 'El resultado' },
 	'missions.stack': { en: 'Stack', es: 'Stack' },
+	'missions.snapshot': { en: 'Engineering snapshot', es: 'Foto técnica' },
+	'missions.snapshotNote': {
+		en: 'Local Git history · 5 Sep 2026',
+		es: 'Historial Git local · 5 sep 2026'
+	},
+	'missions.technologies': { en: 'Technologies', es: 'Tecnologías' },
+	'missions.decisions': { en: 'Key decisions', es: 'Decisiones clave' },
+	'missions.architecture': { en: 'Technical architecture', es: 'Arquitectura técnica' },
+	'missions.architectureNote': {
+		en: 'Full-stack architecture designed and built end to end by me.',
+		es: 'Arquitectura full stack diseñada y construida de punta a punta por mí.'
+	},
+	'missions.beforeAfter': { en: 'Before → after', es: 'Antes → después' },
+	'missions.before': { en: 'Before', es: 'Antes' },
+	'missions.after': { en: 'After', es: 'Después' },
 	'missions.confidential': {
 		en: 'Private codebase — this file shares the thinking, not the source.',
 		es: 'Código privado — este archivo comparte el razonamiento, no el fuente.'

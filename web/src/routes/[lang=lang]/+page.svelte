@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ArtSlot, Bubble, Caption, Panel, Seo } from '$lib/components';
+	import { ArtSlot, Bubble, Caption, Panel, ProjectShot, Seo } from '$lib/components';
 	import { projects } from '$content/projects';
 	import { contact, hero, identity, missionIntro, origin, powers, seo, years } from '$content/site';
 	import { missionPath, path, translator } from '$i18n';
@@ -59,7 +59,12 @@
 	</Panel>
 
 	<Panel class="portrait">
-		<ArtSlot label={origin.portraitAlt[locale]} hint={t('art.placeholder')} />
+		<ArtSlot
+			label={origin.portraitAlt[locale]}
+			hint={t('art.placeholder')}
+			src="/art/julian-comic-portrait.webp"
+			alt={origin.portraitAlt[locale]}
+		/>
 		<Bubble class="portrait-bubble">{origin.portraitBubble[locale]}</Bubble>
 	</Panel>
 </div>
@@ -93,10 +98,13 @@
 	{#each [lead, second] as project (project.slug)}
 		<Panel as="article" class="case" data-accent={project.accent}>
 			<a class="case-link" href={missionPath(locale, project.slug)}>
-				<span class="jl-kicker">{project.kicker[locale]}</span>
-				<h3 class="jl-display">{project.title}</h3>
-				<p>{project.tagline[locale]}</p>
-				<span class="jl-kicker stack">{project.stack.join(' · ')}</span>
+				<ProjectShot src={project.image.src} alt={project.image.alt[locale]} compact />
+				<div class="case-copy">
+					<span class="jl-kicker">{project.kicker[locale]}</span>
+					<h3 class="jl-display">{project.title}</h3>
+					<p>{project.tagline[locale]}</p>
+					<span class="jl-kicker stack">{project.stack.slice(0, 4).join(' · ')}</span>
+				</div>
 			</a>
 		</Panel>
 	{/each}
@@ -106,10 +114,13 @@
 	{#each rest as project (project.slug)}
 		<Panel as="article" class="case case-small" data-accent={project.accent}>
 			<a class="case-link" href={missionPath(locale, project.slug)}>
-				<span class="jl-kicker">{project.kicker[locale]}</span>
-				<h3 class="jl-display">{project.title}</h3>
-				<p>{project.tagline[locale]}</p>
-				<span class="jl-kicker stack">{project.stack.join(' · ')}</span>
+				<ProjectShot src={project.image.src} alt={project.image.alt[locale]} compact />
+				<div class="case-copy">
+					<span class="jl-kicker">{project.kicker[locale]}</span>
+					<h3 class="jl-display">{project.title}</h3>
+					<p>{project.tagline[locale]}</p>
+					<span class="jl-kicker stack">{project.stack.slice(0, 4).join(' · ')}</span>
+				</div>
 			</a>
 		</Panel>
 	{/each}
@@ -350,13 +361,13 @@
 	}
 
 	:global(.jl-panel.case) {
-		min-height: 275px;
+		min-height: 360px;
 		color: var(--jl-white);
 		background: var(--jl-navy-deep);
 	}
 
 	:global(.jl-panel.case-small) {
-		min-height: 230px;
+		min-height: 330px;
 	}
 
 	:global(.jl-panel.case[data-accent='red']) {
@@ -376,10 +387,16 @@
 	.case-link {
 		display: flex;
 		flex-direction: column;
-		justify-content: end;
 		height: 100%;
-		padding: 26px;
 		text-decoration: none;
+	}
+
+	.case-copy {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		justify-content: end;
+		padding: 22px 26px 26px;
 	}
 
 	.case-link h3 {

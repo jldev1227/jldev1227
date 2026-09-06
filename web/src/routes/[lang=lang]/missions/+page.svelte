@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Panel, Seo } from '$lib/components';
+	import { Panel, ProjectShot, Seo } from '$lib/components';
 	import { projects } from '$content/projects';
 	import { identity, missionIntro } from '$content/site';
 	import { missionPath, path, translator } from '$i18n';
@@ -42,12 +42,15 @@
 	{#each projects as project (project.slug)}
 		<Panel as="article" class="row" data-accent={project.accent}>
 			<a href={missionPath(locale, project.slug)}>
-				<span class="jl-kicker">{project.number}</span>
-				<div>
-					<h2 class="jl-display">{project.title}</h2>
-					<p>{project.tagline[locale]}</p>
+				<ProjectShot src={project.image.src} alt={project.image.alt[locale]} compact />
+				<div class="row-copy">
+					<span class="jl-kicker number">{project.number}</span>
+					<div class="row-main">
+						<h2 class="jl-display">{project.title}</h2>
+						<p>{project.tagline[locale]}</p>
+					</div>
+					<span class="jl-kicker stack">{project.stack.join(' · ')}</span>
 				</div>
-				<span class="jl-kicker stack">{project.stack.join(' · ')}</span>
 			</a>
 		</Panel>
 	{/each}
@@ -85,16 +88,24 @@
 
 	.list a {
 		display: grid;
-		grid-template-columns: auto 1fr auto;
+		grid-template-columns: minmax(240px, 0.75fr) minmax(0, 1.5fr);
 		align-items: center;
 		gap: 24px;
 		padding: 24px 26px;
 		text-decoration: none;
 	}
 
-	.list a > span:first-child {
+	.row-copy {
+		display: grid;
+		grid-template-columns: auto minmax(0, 1fr);
+		align-items: start;
+		gap: 8px 20px;
+	}
+
+	.number {
 		font-family: var(--jl-font-display);
 		font-size: 2.4rem;
+		line-height: 1;
 		opacity: 0.5;
 	}
 
@@ -111,7 +122,10 @@
 	}
 
 	.list .stack {
+		grid-column: 2;
+		margin-top: 4px;
 		font-size: 0.65rem;
+		line-height: 1.5;
 		opacity: 0.7;
 	}
 
@@ -126,7 +140,12 @@
 	@media (max-width: 760px) {
 		.list a {
 			grid-template-columns: 1fr;
-			gap: 10px;
+			gap: 16px;
+			padding: 0 0 22px;
+		}
+
+		.row-copy {
+			margin-inline: 22px;
 		}
 	}
 </style>

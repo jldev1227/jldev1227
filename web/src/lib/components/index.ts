@@ -4,4 +4,5 @@ export { default as Caption } from './Caption.svelte';
 export { default as Masthead } from './Masthead.svelte';
 export { default as PageFooter } from './PageFooter.svelte';
 export { default as Panel } from './Panel.svelte';
+export { default as ProjectShot } from './ProjectShot.svelte';
 export { default as Seo } from './Seo.svelte';
