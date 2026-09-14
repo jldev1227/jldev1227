@@ -9,6 +9,6 @@ export {
 	other
 } from './locales';
 export type { Locale, Localized } from './locales';
-export { translator } from './ui';
+export { translator, format } from './ui';
 export type { UIKey } from './ui';
 export { path, homePath, missionsPath, missionPath, swapLocale, alternates } from './paths';

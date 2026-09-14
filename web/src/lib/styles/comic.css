@@ -37,6 +37,13 @@
 	--jl-dot-opacity: 0.22;
 	--jl-dot-size: 13px;
 
+	/* Reader motion. Shared with the reader's timers, which read these back off
+	   the element instead of keeping a second copy of the numbers in TypeScript. */
+	--jl-motion-cover: 800ms;
+	--jl-motion-page: 580ms;
+	--jl-motion-panel: 220ms;
+	--jl-paper-ease: cubic-bezier(0.45, 0, 0.2, 1);
+
 	/* Type */
 	--jl-font-display: 'Anton', Impact, 'Haettenschweiler', 'Arial Narrow Bold', sans-serif;
 	--jl-font-body: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
@@ -175,13 +182,19 @@ body {
 
 /* ------------------------------------------------------------ art slot ---- */
 
-/* Placeholder frame for commissioned illustration. */
+/* Frame for the portrait, and the placeholder until it is commissioned.
+   It sits in flow rather than pinned to the panel's corners, because a pinned
+   box takes its shape from whatever the panel happens to measure: the same
+   square portrait was losing 39% of its height on a desktop spread and nothing
+   at all on a phone. The artwork decides the frame's proportions now, so no
+   crop, at any width, whatever the commissioned piece turns out to be. */
 .jl-art-slot {
-	position: absolute;
-	inset: 28px 32px 22px;
+	position: relative;
 	display: grid;
 	place-items: center;
 	overflow: hidden;
+	margin: 28px 32px 22px;
+	min-height: 180px;
 	color: var(--jl-white);
 	background: #07101e;
 	border: 5px solid var(--jl-white);
@@ -192,8 +205,7 @@ body {
 
 .jl-art-slot img {
 	width: 100%;
-	height: 100%;
-	object-fit: cover;
+	height: auto;
 }
 
 .jl-art-slot strong {

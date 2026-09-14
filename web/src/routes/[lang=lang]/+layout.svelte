@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { Masthead, PageFooter } from '$lib/components';
 	import { translator } from '$i18n';
 	import type { Snippet } from 'svelte';
 	import type { LayoutProps } from './$types';
@@ -12,13 +11,7 @@
 <a class="jl-skip" href="#content">{t('nav.skip')}</a>
 
 <div class="page-stage">
-	<div class="jl-page">
-		<Masthead locale={data.locale} />
-		<main id="content">
-			{@render children()}
-		</main>
-		<PageFooter locale={data.locale} />
-	</div>
+	{@render children()}
 </div>
 
 <style>

@@ -34,7 +34,22 @@ export const hero = {
 	}
 } satisfies Record<string, Localized | string>;
 
+/**
+ * The issue's cover furniture. The cover story itself reuses `hero`: it is the
+ * same headline, now printed where a comic prints it.
+ */
+export const cover = {
+	issue: '#1227',
+	volume: { en: 'Vol. 1', es: 'Vol. 1' },
+	imprint: { en: 'JLDEV Comics · Colombia', es: 'JLDEV Comics · Colombia' },
+	date: { en: 'Sep 2026', es: 'Sep 2026' },
+	price: { en: 'Free to read', es: 'Lectura libre' },
+	stamp: { en: 'Colombia to the world', es: 'De Colombia al mundo' },
+	storyKicker: { en: 'Cover story', es: 'Historia de portada' }
+} satisfies Record<string, Localized | string>;
+
 export const origin = {
+	pageLabel: { en: 'Origin', es: 'Origen' },
 	caption: {
 		en: 'Previously… curiosity became code. Code became a profession.',
 		es: 'Anteriormente… la curiosidad se volvió código. El código se volvió profesión.'
@@ -63,6 +78,15 @@ export const years = {
 		es: 'Años enfrentando retos del mundo real'
 	}
 };
+
+/** Page two of the first spread: the toolkit behind the origin story. */
+export const powersPage = {
+	pageLabel: { en: 'Powers', es: 'Poderes' },
+	caption: {
+		en: 'Meanwhile… the toolkit that came out of it.',
+		es: 'Mientras tanto… las herramientas que salieron de ahí.'
+	}
+} satisfies Record<string, Localized>;
 
 export const powers = [
 	{
@@ -96,6 +120,9 @@ export const powers = [
 ] satisfies { title: Localized; body: Localized }[];
 
 export const missionIntro = {
+	pageLabel: { en: 'Selected missions', es: 'Misiones destacadas' },
+	pageLabelMore: { en: 'Case files, continued', es: 'Expedientes, continuación' },
+	pageLabelLast: { en: 'Case files, closing', es: 'Expedientes, cierre' },
 	title: { en: 'Selected missions', es: 'Misiones destacadas' },
 	body: {
 		en: 'Private work, public thinking: each case reveals the challenge, decisions, architecture and outcome without exposing confidential code.',
@@ -104,6 +131,7 @@ export const missionIntro = {
 } satisfies Record<string, Localized>;
 
 export const contact = {
+	pageLabel: { en: 'Contact', es: 'Contacto' },
 	caption: {
 		en: 'To be continued — the next mission starts with a message.',
 		es: 'Continuará — la próxima misión empieza con un mensaje.'

@@ -1,8 +1,19 @@
 <script lang="ts">
-	import { ArtSlot, Bubble, Caption, Panel, ProjectShot, Seo } from '$lib/components';
-	import { projects } from '$content/projects';
-	import { contact, hero, identity, missionIntro, origin, powers, seo, years } from '$content/site';
-	import { missionPath, path, translator } from '$i18n';
+	import { Caption, Panel, ProjectShot, Seo } from '$lib/components';
+	import { ComicCover, ComicReader, type ReaderPage } from '$lib/components/comic-reader';
+	import { projects, type Project } from '$content/projects';
+	import {
+		contact,
+		identity,
+		missionIntro,
+		origin,
+		powers,
+		powersPage,
+		seo,
+		years
+	} from '$content/site';
+	import { page as appPage } from '$app/state';
+	import { LOCALE_LABEL, missionPath, other, path, swapLocale, translator } from '$i18n';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -10,9 +21,28 @@
 	const locale = $derived(data.locale);
 	const t = $derived(translator(locale));
 
-	const lead = $derived(projects[0]);
-	const second = $derived(projects[1]);
-	const rest = $derived(projects.slice(2));
+	// Three groups of case files, one per mission page. Derived from the reading
+	// order in `projects.ts` rather than restated here.
+	const caseGroups = $derived([projects.slice(0, 1), projects.slice(1, 3), projects.slice(3)]);
+
+	// The comic has no masthead, so the closing page carries the indicia: the
+	// colophon, and the second place the other language can be reached.
+	const otherLocale = $derived(other(locale));
+	const switchHref = $derived(swapLocale(appPage.url.pathname, otherLocale));
+	const year = new Date().getFullYear();
+
+	// The reader owns presentation only; the pages it turns are these snippets,
+	// and their copy comes from `$content` like every other string on the site.
+	// A page id is also the URL hash that reopens the book at it, which is what
+	// makes the masthead's #origin, #missions and #contact links work.
+	const readerPages = $derived<ReaderPage[]>([
+		{ id: 'origin', label: origin.pageLabel[locale], content: pageOrigin },
+		{ id: 'powers', label: powersPage.pageLabel[locale], content: pagePowers },
+		{ id: 'missions', label: missionIntro.pageLabel[locale], content: pageMissions },
+		{ id: 'missions-2', label: missionIntro.pageLabelMore[locale], content: pageMissionsTwo },
+		{ id: 'missions-3', label: missionIntro.pageLabelLast[locale], content: pageMissionsThree },
+		{ id: 'contact', label: contact.pageLabel[locale], content: pageContact }
+	]);
 </script>
 
 <Seo
@@ -31,72 +61,51 @@
 	]}
 />
 
-<!-- ------------------------------------------------------------- hero ---- -->
-<div class="jl-grid">
-	<Panel class="hero">
-		<Caption>{hero.caption[locale]}</Caption>
-		<Bubble class="hero-bubble">{hero.bubble[locale]}</Bubble>
-		<img class="hero-art" src="/art/hero-digital-workbench.webp" alt="" aria-hidden="true" />
-		<div class="hero-copy">
-			<h1 class="jl-display">
-				{hero.titleTop[locale]}
-				<span>{hero.titleAccent[locale]}</span>
-			</h1>
-			<p>{hero.lead[locale]}</p>
-		</div>
-	</Panel>
-</div>
-
-<!-- ----------------------------------------------------------- origin ---- -->
-<div class="jl-grid origin-grid" id="origin">
-	<Panel class="origin">
-		<Caption>{origin.caption[locale]}</Caption>
-		<h2 class="jl-display">
-			<span>{origin.headingLead[locale]}</span>
-			<em>{origin.headingAccent[locale]}</em>
-			<span>{origin.headingTail[locale]}</span>
-		</h2>
-		<p>{origin.body[locale]}</p>
-	</Panel>
-
-	<Panel class="portrait">
-		<ArtSlot
-			label={origin.portraitAlt[locale]}
-			hint={t('art.placeholder')}
-			src="/art/julian-comic-portrait.webp"
-			alt={origin.portraitAlt[locale]}
-		/>
-		<Bubble class="portrait-bubble">{origin.portraitBubble[locale]}</Bubble>
-	</Panel>
-</div>
-
-<!-- --------------------------------------------------------- strengths ---- -->
-<div class="jl-grid strength-grid">
-	<Panel class="years">
-		<strong class="jl-display">{years.value}</strong>
-		<span class="jl-kicker">{years.label[locale]}</span>
-	</Panel>
-
-	<Panel class="powers" aria-label={t('nav.origin')}>
-		{#each powers as power (power.title.en)}
-			<div class="power">
-				<strong class="jl-display">{power.title[locale]}</strong>
-				<small>{power.body[locale]}</small>
+<!-- ------------------------------------------------------------- page 1 ---- -->
+{#snippet pageOrigin()}
+	<div class="jl-grid fill">
+		<Panel class="origin">
+			<Caption>{origin.caption[locale]}</Caption>
+			<div class="origin-copy">
+				<h2 class="jl-display">
+					<span>{origin.headingLead[locale]}</span>
+					<em>{origin.headingAccent[locale]}</em>
+					<span>{origin.headingTail[locale]}</span>
+				</h2>
+				<p>{origin.body[locale]}</p>
 			</div>
-		{/each}
-	</Panel>
-</div>
+		</Panel>
+	</div>
+{/snippet}
 
-<!-- --------------------------------------------------------- missions ---- -->
-<div class="jl-grid" id="missions">
-	<Panel class="mission-intro">
-		<h2 class="jl-display">{missionIntro.title[locale]}</h2>
-		<p>{missionIntro.body[locale]}</p>
-	</Panel>
-</div>
+<!-- ------------------------------------------------------------- page 2 ---- -->
+{#snippet pagePowers()}
+	<div class="jl-grid stack-intro">
+		<Panel class="years">
+			<Caption>{powersPage.caption[locale]}</Caption>
+			<div class="years-copy">
+				<strong class="jl-display">{years.value}</strong>
+				<span class="jl-kicker">{years.label[locale]}</span>
+			</div>
+		</Panel>
 
-<div class="jl-grid mission-lead">
-	{#each [lead, second] as project (project.slug)}
+		<Panel class="powers" aria-label={powersPage.pageLabel[locale]}>
+			{#each powers as power (power.title.en)}
+				<div class="power">
+					<strong class="jl-display">{power.title[locale]}</strong>
+					<small>{power.body[locale]}</small>
+				</div>
+			{/each}
+		</Panel>
+	</div>
+{/snippet}
+
+<!-- ----------------------------------------------------- pages 3, 4 and 5 -- -->
+
+<!-- A case file keeps its ordinary anchor: the reader turns pages, it does not
+     replace navigation into the mission routes. -->
+{#snippet caseFiles(group: Project[])}
+	{#each group as project (project.slug)}
 		<Panel as="article" class="case" data-accent={project.accent}>
 			<a class="case-link" href={missionPath(locale, project.slug)}>
 				<ProjectShot src={project.image.src} alt={project.image.alt[locale]} compact />
@@ -109,185 +118,178 @@
 			</a>
 		</Panel>
 	{/each}
-</div>
+{/snippet}
 
-<div class="jl-grid mission-rest">
-	{#each rest as project (project.slug)}
-		<Panel as="article" class="case case-small" data-accent={project.accent}>
-			<a class="case-link" href={missionPath(locale, project.slug)}>
-				<ProjectShot src={project.image.src} alt={project.image.alt[locale]} compact />
-				<div class="case-copy">
-					<span class="jl-kicker">{project.kicker[locale]}</span>
-					<h3 class="jl-display">{project.title}</h3>
-					<p>{project.tagline[locale]}</p>
-					<span class="jl-kicker stack">{project.stack.slice(0, 4).join(' · ')}</span>
-				</div>
-			</a>
+{#snippet pageMissions()}
+	<div class="jl-grid stack-intro">
+		<Panel class="mission-intro">
+			<h2 class="jl-display">{missionIntro.title[locale]}</h2>
+			<p>{missionIntro.body[locale]}</p>
 		</Panel>
-	{/each}
-</div>
+		{@render caseFiles(caseGroups[0])}
+	</div>
+{/snippet}
 
-<!-- ---------------------------------------------------------- contact ---- -->
-<div class="jl-grid" id="contact">
-	<Panel class="contact">
-		<Caption>{contact.caption[locale]}</Caption>
-		<div class="contact-copy">
-			<h2 class="jl-display">{contact.title[locale]}</h2>
-			<p>{contact.body[locale]}</p>
-			<ul>
-				<li><a href="mailto:{identity.email}">{t('contact.email')}</a></li>
-				<li><a href={identity.github} rel="me noopener">{t('contact.github')}</a></li>
-				<li><a href={identity.linkedin} rel="me noopener">{t('contact.linkedin')}</a></li>
-			</ul>
-		</div>
-	</Panel>
-</div>
+{#snippet pageMissionsTwo()}
+	<div class="jl-grid stack">
+		{@render caseFiles(caseGroups[1])}
+	</div>
+{/snippet}
+
+{#snippet pageMissionsThree()}
+	<div class="jl-grid stack">
+		{@render caseFiles(caseGroups[2])}
+	</div>
+{/snippet}
+
+<!-- ------------------------------------------------------------- page 6 ---- -->
+{#snippet pageContact()}
+	<div class="jl-grid fill">
+		<Panel class="contact">
+			<Caption>{contact.caption[locale]}</Caption>
+			<div class="contact-copy">
+				<h2 class="jl-display">{contact.title[locale]}</h2>
+				<p>{contact.body[locale]}</p>
+				<ul>
+					<li><a href="mailto:{identity.email}">{t('contact.email')}</a></li>
+					<li><a href={identity.github} rel="me noopener">{t('contact.github')}</a></li>
+					<li><a href={identity.linkedin} rel="me noopener">{t('contact.linkedin')}</a></li>
+				</ul>
+
+				<p class="colophon jl-kicker">
+					<span>{t('footer.rights')}</span>
+					<span>© {year} {identity.name} · {identity.domain}</span>
+					<a
+						href={switchHref}
+						hreflang={otherLocale}
+						lang={otherLocale}
+						rel="alternate"
+						aria-label={t('lang.switchAria')}
+						data-sveltekit-reload
+					>
+						{LOCALE_LABEL[otherLocale]}
+					</a>
+				</p>
+			</div>
+		</Panel>
+	</div>
+{/snippet}
+
+<!-- No masthead and no footer: the book is the whole document, and it rests on
+     the stage rather than on a sheet of page furniture. -->
+<main id="content" class="comic">
+	<ComicReader {locale} pages={readerPages}>
+		{#snippet cover({ enhanced, open })}
+			<ComicCover {locale} {enhanced} onopen={open} />
+		{/snippet}
+	</ComicReader>
+</main>
 
 <style>
-	/* ------------------------------------------------------------ hero ---- */
-
-	:global(.jl-panel.hero) {
-		background: linear-gradient(128deg, #0d182b 0 52%, #782036 52% 72%, var(--jl-blue) 72%);
-	}
-
-	/* The oversized speed-line ring behind the hero copy. */
-	:global(.jl-panel.hero)::after {
-		content: '';
-		position: absolute;
-		right: -8%;
-		bottom: -44%;
-		z-index: -1;
-		width: 65%;
-		aspect-ratio: 1;
-		border: 34px solid rgb(255 255 255 / 0.12);
-		border-radius: 50%;
-	}
-
-	:global(.jl-bubble.hero-bubble) {
-		top: 82px;
-		right: 11%;
-		transform: rotate(-4deg);
-	}
-
-	.hero-art {
-		position: absolute;
-		inset: 0;
-		z-index: 1;
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		object-position: right bottom;
-		pointer-events: none;
-		user-select: none;
-	}
-
-	/* Flowed rather than absolutely placed: Spanish runs a line longer than
-	   English, and the panel has to grow instead of sliding under the caption. */
-	.hero-copy {
-		position: relative;
-		z-index: 2;
-		display: flex;
-		flex-direction: column;
-		justify-content: end;
-		min-height: 475px;
-		max-width: 700px;
-		padding: 108px clamp(24px, 6vw, 68px) 42px;
-		color: var(--jl-white);
-	}
-
-	.hero-copy h1 {
-		font-size: clamp(3.2rem, 8vw, 7.4rem);
-		line-height: 0.82;
-		text-shadow: 6px 6px 0 var(--jl-ink);
-	}
-
-	.hero-copy h1 span {
+	.comic {
 		display: block;
-		color: var(--jl-yellow);
+		max-width: var(--jl-page-max);
+		margin: 0 auto;
+		/* Room either side for the stack of page edges the reader draws. */
+		padding: 0 clamp(18px, 3vw, 36px);
 	}
 
-	.hero-copy p {
-		max-width: 590px;
-		margin: 20px 0 0;
-		font-size: 1rem;
-		line-height: 1.55;
+	/* Every panel below lives inside a reader page, which is half a spread on
+	   desktop and a whole page on mobile. They size against that page container
+	   (`cqi`), never the viewport — the viewport is not what they sit in. */
+
+	/* Pages whose panels fill the sheet rather than sitting at the top, leaving a
+	   tail of blank paper. Every page in a spread is the same height, so a page
+	   with less in it has to grow its panels, not pad itself out. */
+	.fill {
+		flex: 1;
+		grid-template-rows: 1fr;
 	}
 
-	/* ---------------------------------------------------------- origin ---- */
-
-	.origin-grid {
-		grid-template-columns: 1.05fr 0.95fr;
+	/* Case files only. */
+	.stack {
+		flex: 1;
+		grid-auto-rows: 1fr;
 	}
+
+	/* A panel that sets its own height, then one that takes the rest of the sheet. */
+	.stack-intro {
+		flex: 1;
+		grid-template-rows: auto 1fr;
+	}
+
+	/* ---------------------------------------------------------- page one ---- */
 
 	:global(.jl-panel.origin) {
-		min-height: 380px;
-		padding: 42px;
+		display: grid;
+		min-height: 320px;
 		color: var(--jl-white);
 		background: linear-gradient(145deg, #111b2c, #263d64);
 	}
 
+	/* Copy flows and the top padding reserves the caption's corner: the panel
+	   clips, and Spanish runs a line longer than English. */
+	.origin-copy {
+		display: flex;
+		flex-direction: column;
+		justify-content: end;
+		min-height: 320px;
+		padding: 104px clamp(20px, 5cqi, 40px) clamp(20px, 5cqi, 40px);
+	}
+
 	/* Three statements, three lines — wrapping on width breaks them in the
 	   wrong places, and differently in each language. */
-	.origin-grid h2 {
-		margin: 82px 0 18px;
-		font-size: clamp(2.4rem, 5vw, 4.7rem);
+	.origin-copy h2 {
+		margin: 0 0 16px;
+		font-size: clamp(2rem, 9cqi, 3.6rem);
 		line-height: 0.9;
 	}
 
-	.origin-grid h2 :is(span, em) {
+	.origin-copy h2 :is(span, em) {
 		display: block;
 	}
 
-	.origin-grid h2 em {
+	.origin-copy h2 em {
 		color: var(--jl-red);
 		font-style: normal;
 		text-shadow: 3px 3px 0 var(--jl-white);
 	}
 
-	.origin-grid p {
+	.origin-copy p {
 		max-width: 54ch;
 		margin: 0;
 		color: var(--jl-on-dark);
-		font-size: 0.92rem;
+		font-size: clamp(0.82rem, 2.4cqi, 0.92rem);
 		line-height: 1.6;
 	}
 
-	:global(.jl-panel.portrait) {
-		min-height: 380px;
-		background: linear-gradient(160deg, var(--jl-red) 0 60%, var(--jl-yellow) 60%);
-	}
-
-	:global(.jl-bubble.portrait-bubble) {
-		top: 28px;
-		right: 15px;
-	}
-
-	/* ------------------------------------------------------- strengths ---- */
-
-	.strength-grid {
-		grid-template-columns: 0.72fr 1.28fr;
-	}
+	/* ---------------------------------------------------------- page two ---- */
 
 	:global(.jl-panel.years) {
-		display: grid;
-		align-content: center;
-		justify-items: center;
-		min-height: 300px;
-		padding: 24px;
+		min-height: 230px;
 		color: var(--jl-ink);
 		background: var(--jl-yellow);
+	}
+
+	.years-copy {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: end;
+		min-height: 230px;
+		padding: 100px 24px 26px;
 		text-align: center;
 	}
 
-	:global(.jl-panel.years) strong {
-		font-size: clamp(4.5rem, 10vw, 9rem);
+	.years-copy strong {
+		font-size: clamp(3.4rem, 18cqi, 7rem);
 		line-height: 0.8;
 		text-shadow: 5px 5px 0 var(--jl-white);
 	}
 
-	:global(.jl-panel.years) span {
-		margin-top: 22px;
-		font-size: 0.8rem;
+	.years-copy span {
+		margin-top: 16px;
+		font-size: clamp(0.66rem, 2cqi, 0.8rem);
 		letter-spacing: 0.09em;
 	}
 
@@ -295,6 +297,7 @@
 	:global(.jl-panel.powers) {
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
+		grid-auto-rows: 1fr;
 		gap: 4px;
 		min-height: 300px;
 		padding: 4px;
@@ -305,8 +308,8 @@
 		display: flex;
 		flex-direction: column;
 		justify-content: end;
-		min-height: 142px;
-		padding: 18px;
+		min-height: 138px;
+		padding: 16px;
 		color: var(--jl-white);
 		background: var(--jl-blue);
 	}
@@ -327,60 +330,57 @@
 	}
 
 	.power strong {
-		font-size: 1.55rem;
+		font-size: clamp(1.15rem, 5cqi, 1.5rem);
 		letter-spacing: 0.03em;
 	}
 
 	.power small {
 		margin-top: 5px;
-		font-size: 0.75rem;
+		font-size: clamp(0.68rem, 2.1cqi, 0.75rem);
 		line-height: 1.35;
 	}
 
-	/* -------------------------------------------------------- missions ---- */
+	@container jl-page (max-width: 330px) {
+		:global(.jl-panel.powers) {
+			grid-template-columns: 1fr;
+		}
+
+		.power {
+			min-height: 104px;
+		}
+	}
+
+	/* -------------------------------------------------- pages three to five -- */
 
 	:global(.jl-panel.mission-intro) {
 		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 24px;
-		min-height: 180px;
-		padding: 28px 36px;
+		flex-direction: column;
+		justify-content: center;
+		gap: 14px;
+		min-height: 190px;
+		padding: clamp(20px, 5cqi, 34px);
 		color: var(--jl-white);
 		background: linear-gradient(115deg, var(--jl-red) 0 62%, var(--jl-ink) 62%);
 	}
 
 	:global(.jl-panel.mission-intro) h2 {
-		max-width: 10ch;
-		font-size: clamp(2.4rem, 6vw, 5rem);
+		max-width: 12ch;
+		font-size: clamp(2rem, 11cqi, 3.6rem);
 		line-height: 0.86;
 		text-shadow: 4px 4px 0 var(--jl-ink);
 	}
 
 	:global(.jl-panel.mission-intro) p {
-		max-width: 390px;
+		max-width: 48ch;
 		margin: 0;
 		color: var(--jl-on-dark);
-		font-size: 0.9rem;
+		font-size: clamp(0.78rem, 2.3cqi, 0.9rem);
 		line-height: 1.55;
 	}
 
-	.mission-lead {
-		grid-template-columns: 1.2fr 0.8fr;
-	}
-
-	.mission-rest {
-		grid-template-columns: repeat(3, 1fr);
-	}
-
 	:global(.jl-panel.case) {
-		min-height: 360px;
 		color: var(--jl-white);
 		background: var(--jl-navy-deep);
-	}
-
-	:global(.jl-panel.case-small) {
-		min-height: 330px;
 	}
 
 	:global(.jl-panel.case[data-accent='red']) {
@@ -396,6 +396,12 @@
 		background: linear-gradient(150deg, #14263f 0 55%, var(--jl-blue) 55%);
 	}
 
+	/* Two case files share a page, so the shot is a band across the top of the
+	   panel rather than the 16:9 hero it is on the case-file route. */
+	:global(.jl-panel.case .frame) {
+		aspect-ratio: 16 / 7;
+	}
+
 	/* The whole panel is the hit area, so the link fills it. */
 	.case-link {
 		display: flex;
@@ -404,30 +410,31 @@
 		text-decoration: none;
 	}
 
+	/* The copy sits at the foot of the panel and the shot at its head, with the
+	   panel's diagonal filling the space between. `margin-top: auto` inside the
+	   column flex link does that directly; a `flex: 1` box relying on
+	   `justify-content` let the last line absorb the free space instead. */
 	.case-copy {
-		display: flex;
-		flex: 1;
-		flex-direction: column;
-		justify-content: end;
-		padding: 22px 26px 26px;
+		margin-top: auto;
+		padding: clamp(14px, 4cqi, 24px);
 	}
 
 	.case-link h3 {
-		max-width: 12ch;
-		margin: 0 0 8px;
-		font-size: clamp(1.8rem, 3vw, 2.7rem);
+		max-width: 13ch;
+		margin: 6px 0 8px;
+		font-size: clamp(1.5rem, 7cqi, 2.5rem);
 		line-height: 0.9;
 	}
 
 	.case-link p {
-		max-width: 38ch;
-		margin: 0 0 14px;
-		font-size: 0.8rem;
+		max-width: 40ch;
+		margin: 0 0 12px;
+		font-size: clamp(0.74rem, 2.2cqi, 0.82rem);
 		line-height: 1.5;
 	}
 
 	.case-link .stack {
-		font-size: 0.65rem;
+		font-size: clamp(0.58rem, 1.8cqi, 0.66rem);
 		opacity: 0.75;
 	}
 
@@ -439,26 +446,32 @@
 		color: var(--jl-red);
 	}
 
-	/* --------------------------------------------------------- contact ---- */
+	/* ---------------------------------------------------------- page six ---- */
 
 	:global(.jl-panel.contact) {
 		min-height: 300px;
 		background: linear-gradient(135deg, var(--jl-ink) 0 58%, var(--jl-blue) 58%);
 	}
 
-	/* Top padding reserves the caption's corner, the same way the hero does. */
+	/* Top padding reserves the caption's corner, the same way page one does. */
+	/* The closing page fills a whole sheet, so the copy sits in the middle of it
+	   rather than at the foot of a short panel. */
 	.contact-copy {
 		display: flex;
 		flex-direction: column;
-		justify-content: end;
+		justify-content: center;
 		min-height: 300px;
-		padding: 100px 36px 36px;
+		height: 100%;
+		padding: 104px clamp(20px, 5cqi, 36px) clamp(20px, 5cqi, 36px);
 		color: var(--jl-white);
 	}
 
+	/* Three long lines in Spanish, and `¿` plus `Ó` meet across them at the 0.88
+	   line-height the display face normally uses. */
 	.contact-copy h2 {
 		max-width: 12ch;
-		font-size: clamp(2.4rem, 6vw, 4.6rem);
+		font-size: clamp(2rem, 10cqi, 3.6rem);
+		line-height: 0.98;
 		text-shadow: 4px 4px 0 var(--jl-red);
 	}
 
@@ -466,7 +479,7 @@
 		max-width: 46ch;
 		margin: 18px 0 24px;
 		color: var(--jl-on-dark);
-		font-size: 0.92rem;
+		font-size: clamp(0.82rem, 2.4cqi, 0.92rem);
 		line-height: 1.6;
 	}
 
@@ -479,81 +492,45 @@
 		list-style: none;
 	}
 
-	.contact-copy a {
+	/* Scoped to the contact list: the colophon below it is printed matter, not
+	   another button. */
+	.contact-copy ul a {
 		display: inline-block;
 		padding: 10px 16px;
 		color: var(--jl-ink);
 		background: var(--jl-yellow);
 		border: 3px solid var(--jl-ink);
 		box-shadow: 4px 4px 0 var(--jl-ink);
-		font-size: 0.78rem;
+		font-size: clamp(0.7rem, 2.1cqi, 0.78rem);
 		font-weight: 600;
 		text-decoration: none;
 		text-transform: uppercase;
 	}
 
-	.contact-copy a:hover {
+	.contact-copy ul a:hover {
 		color: var(--jl-white);
 		background: var(--jl-red);
 	}
 
-	/* ------------------------------------------------------ responsive ---- */
-
-	@media (max-width: 980px) {
-		.mission-rest {
-			grid-template-columns: repeat(2, 1fr);
-		}
+	/* The indicia a printed issue carries on its last page, now that the site
+	   has no footer of its own. */
+	.colophon {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 6px 14px;
+		margin: 26px 0 0;
+		color: var(--jl-on-dark-dim);
+		font-size: clamp(0.54rem, 1.7cqi, 0.64rem);
 	}
 
-	@media (max-width: 760px) {
-		.hero-art {
-			display: none;
-		}
-
-		.hero-copy {
-			min-height: 500px;
-			padding: 150px 22px 30px;
-		}
-
-		:global(.jl-bubble.hero-bubble) {
-			top: 118px;
-			right: 20px;
-			max-width: 170px;
-		}
-
-		.origin-grid,
-		.strength-grid,
-		.mission-lead,
-		.mission-rest {
-			grid-template-columns: 1fr;
-		}
-
-		:global(.jl-panel.origin) {
-			padding: 30px 24px;
-		}
-
-		.origin-grid h2 {
-			margin-top: 90px;
-		}
-
-		:global(.jl-panel.mission-intro) {
-			flex-direction: column;
-			align-items: start;
-			background: var(--jl-red);
-		}
-
-		:global(.jl-panel.contact) {
-			background: var(--jl-ink);
-		}
+	.colophon a {
+		color: var(--jl-yellow);
+		text-decoration-thickness: 1px;
+		text-underline-offset: 3px;
 	}
 
-	@media (max-width: 430px) {
-		:global(.jl-panel.powers) {
-			grid-template-columns: 1fr;
-		}
-
-		.power {
-			min-height: 108px;
-		}
+	.colophon a:hover {
+		color: var(--jl-white);
 	}
 </style>

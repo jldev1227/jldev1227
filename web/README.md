@@ -6,6 +6,13 @@ files. English and Spanish are equals.
 
 Deployed at **<https://1227jl.dev>**.
 
+## Experimental direction
+
+The `codex/experimental-comic-reader` branch explores turning the long comic
+page into a progressively enhanced physical comic: closed cover, opening
+gesture, readable spreads, and page navigation. The product and technical plan
+lives in [`docs/comic-reader/README.md`](docs/comic-reader/README.md).
+
 ## Stack
 
 SvelteKit 2 · Svelte 5 (runes) · TypeScript · `@sveltejs/adapter-vercel`

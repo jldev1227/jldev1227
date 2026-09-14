@@ -49,6 +49,22 @@ const UI = {
 		es: 'Código privado — este archivo comparte el razonamiento, no el fuente.'
 	},
 
+	'reader.label': { en: 'Comic reader', es: 'Lector del cómic' },
+	'reader.roledescription': { en: 'comic book', es: 'cómic' },
+	'reader.open': { en: 'Open the issue', es: 'Abre el número' },
+	'reader.next': { en: 'Next page', es: 'Página siguiente' },
+	'reader.previous': { en: 'Previous page', es: 'Página anterior' },
+	'reader.cover': { en: 'Cover', es: 'Portada' },
+	'reader.statusPage': { en: 'Page {page} of {total}', es: 'Página {page} de {total}' },
+	'reader.statusSpread': {
+		en: 'Pages {from}–{to} of {total}',
+		es: 'Páginas {from}–{to} de {total}'
+	},
+	'reader.hint': {
+		en: 'Drag a page corner, or use the arrow keys.',
+		es: 'Arrastra una esquina, o usa las flechas.'
+	},
+
 	'contact.title': { en: 'Team-up?', es: '¿Hacemos equipo?' },
 	'contact.email': { en: 'Send an email', es: 'Escríbeme un correo' },
 	'contact.github': { en: 'GitHub', es: 'GitHub' },
@@ -64,4 +80,14 @@ export type UIKey = keyof typeof UI;
 /** Build a translator bound to one locale: `const t = translator(locale)`. */
 export function translator(locale: Locale) {
 	return (key: UIKey): string => UI[key][locale];
+}
+
+/**
+ * Fill `{name}` placeholders in a UI string, so a countable label stays one
+ * translatable sentence instead of concatenated fragments.
+ */
+export function format(template: string, values: Record<string, string | number>): string {
+	return template.replace(/\{(\w+)\}/g, (match, key: string) =>
+		key in values ? String(values[key]) : match
+	);
 }
