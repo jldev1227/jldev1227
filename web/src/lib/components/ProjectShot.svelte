@@ -51,13 +51,23 @@
 		text-transform: uppercase;
 	}
 
+	/*
+	 * Compact used to crop the screenshot to fill its box, which cut the product
+	 * off at arbitrary edges. It is a picture in a panel now: the whole shot,
+	 * inside a frame, on the world's own colour.
+	 */
 	.compact .frame {
-		border-width: 0 0 4px;
-		box-shadow: none;
+		aspect-ratio: auto;
+		height: 100%;
+		background: var(--jl-shot-mat, var(--jl-ink));
+		border-width: var(--jl-border);
+		box-shadow: 6px 6px 0 var(--jl-ink);
 		transform: none;
 	}
 
 	.compact img {
-		object-fit: cover;
+		width: 100%;
+		height: 100%;
+		object-fit: contain;
 	}
 </style>

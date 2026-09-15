@@ -3,17 +3,28 @@
 The progressive comic-reader presentation. The reader stays independent from
 page copy and project data.
 
+This component is also the required fallback for the planned comic archive, Rive,
+Three.js, and StPageFlip experiment. Read
+[`../../../docs/comic-reader/LIBRARY-INTERACTION.md`](../../../docs/comic-reader/LIBRARY-INTERACTION.md)
+before changing its public contract. Do not remove this implementation until
+the adapter passes the compatibility and accessibility gates documented there.
+
 ## Module shape
 
 ```text
 comic-reader/
   ComicReader.svelte       state owner and progressive enhancement boundary
-  ComicCover.svelte        semantic cover and open control
+  ComicCover.svelte        one issue's cover, printed from a `CoverIssue`
   ComicPager.svelte        explicit controls and page status
   reader-state.ts          pure state transitions
   index.ts
   README.md
 ```
+
+The reader is used by more than one issue: `/[lang]` is the introductory one and
+every `/[lang]/missions/[slug]` is its own, so nothing here may reach into
+`$content` for a particular issue's words. `ComicCover` takes a `CoverIssue` of
+already-localized strings; the route decides which issue it is printing.
 
 Smaller than originally proposed, on purpose. `ComicBook`, `ComicSpread`,
 `ComicPage` and `PageTurn` were not written: one cover and one spread never
@@ -95,6 +106,32 @@ always present, they are simply not painted.
 - A turn always ends. The frame loop is backed by a timeout, because a tab that
   stops painting stops `requestAnimationFrame` with it and the book must not be
   left half-way through a page.
+
+## Sheets, not pages
+
+A leaf is one physical sheet printed on both sides: the cover is the front of
+the first one and page 1 is its back, page 2 the front of the second and page 3
+its back. That is what makes a turn read as paper — the arriving page is carried
+over by the sheet in motion instead of lying there, visible, waiting for it to
+fall. The DOM is `leaf > face > page`, which is also reading order, and both
+wrappers are `display: contents` until the reader starts.
+
+One page at a time has no facing page to carry, so there the sheet is the single
+face: it lifts off the stack with its own content and uncovers the next.
+
+Inside a `preserve-3d` context paint order comes from position in space, not
+`z-index`, so the stacking is expressed in millimetres of depth: the unread pile
+counts down from the top sheet, the read one counts up, and whatever is in
+flight sits above both.
+
+## Getting out of the gesture's way
+
+The page is something you take hold of, so nothing inside it may start a
+selection or the browser's own drag-and-drop — both fight the gesture, and
+dragging from a case file used to hand the pointer straight to a native link
+drag. The book sets `user-select: none`, links and images get
+`-webkit-user-drag: none`, and `dragstart` is cancelled. Panels are drag
+surface; only an explicit control navigates.
 
 ## Motion implementation
 

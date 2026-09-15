@@ -65,6 +65,39 @@ const UI = {
 		es: 'Arrastra una esquina, o usa las flechas.'
 	},
 
+	// The comic archive: project issues filed inside the box on the reading table.
+	// See `docs/comic-reader/LIBRARY-INTERACTION.md`.
+	'library.label': { en: 'Immersive comic archive', es: 'Archivo inmersivo de cómics' },
+	'library.boxLabel': { en: 'Project comic box', es: 'Caja de cómics de proyectos' },
+	'library.archiveEyebrow': {
+		en: 'JLDEV private archive · file 1227',
+		es: 'Archivo privado JLDEV · expediente 1227'
+	},
+	'library.archiveTitle': { en: 'Choose your next world', es: 'Elige tu próximo mundo' },
+	'library.archiveHint': {
+		en: 'Take a comic from the box. Each issue opens a real project.',
+		es: 'Toma un cómic de la caja. Cada número abre un proyecto real.'
+	},
+	'library.shelf': { en: 'The collection', es: 'La colección' },
+	'library.pickUp': { en: 'Pick up {title}', es: 'Toma {title}' },
+	'library.inspecting': { en: 'In your hands: {title}', es: 'En tus manos: {title}' },
+	'library.front': { en: 'Front cover', es: 'Portada' },
+	'library.back': { en: 'Back cover', es: 'Contraportada' },
+	'library.turnOver': { en: 'Turn it over', es: 'Dale la vuelta' },
+	'library.read': { en: 'Read this issue', es: 'Lee este número' },
+	'library.close': { en: 'Close the issue', es: 'Cierra el número' },
+	'library.toShelf': { en: 'Back to the collection', es: 'Vuelve a la colección' },
+	'library.toBox': { en: 'Return it to the box', es: 'Devuélvelo a la caja' },
+	'library.indicia': {
+		en: 'JLDEV Comics · Colombia to the world · 1227jl.dev',
+		es: 'JLDEV Comics · De Colombia al mundo · 1227jl.dev'
+	},
+
+	'missions.source': { en: 'See it on GitHub', es: 'Verlo en GitHub' },
+	'missions.readFile': { en: 'Read the case file', es: 'Leer el expediente' },
+	'missions.backHome': { en: 'Back to issue #1227', es: 'Volver al número #1227' },
+	'missions.collection': { en: 'JLDEV case files', es: 'Expedientes JLDEV' },
+
 	'contact.title': { en: 'Team-up?', es: '¿Hacemos equipo?' },
 	'contact.email': { en: 'Send an email', es: 'Escríbeme un correo' },
 	'contact.github': { en: 'GitHub', es: 'GitHub' },

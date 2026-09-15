@@ -1,14 +1,20 @@
-import { resolve } from '$app/paths';
 import { DEFAULT_LOCALE, LOCALES, isLocale, type Locale } from './locales';
 
 /**
- * Two families of path builders, and they are not interchangeable:
+ * Every builder here returns a root-absolute path, for `href` attributes and
+ * for metadata alike.
  *
- * - `homePath` / `missionsPath` / `missionPath` go through `resolve()`, which
- *   type-checks the route id — use them for `href` attributes. During SSR they
- *   return a path relative to the page being rendered.
- * - `path()` returns a root-absolute path — use it for metadata (canonical,
- *   hreflang, JSON-LD, sitemap), where a relative path would be wrong.
+ * `homePath` / `missionsPath` / `missionPath` used to go through SvelteKit's
+ * `resolve()`, which type-checks the route id but returns a path *relative to
+ * the page being rendered*: from `/es/missions/segispro`, "back to the issue"
+ * was served as `../../es`. That is only correct while the URL is spelled
+ * without a trailing slash — at `/es/missions/segispro/` the same href resolves
+ * to `/es/es`, and the link goes somewhere it never claimed to. The dev server
+ * redirects trailing slashes away, which hid it locally.
+ *
+ * The site is served from the root, which is the assumption `path()` already
+ * makes, so anchoring every builder there costs nothing and removes a class of
+ * bug that only shows up before hydration.
  */
 
 /** Root-absolute path: `path('es', 'missions', 'segispro')` → `/es/missions/segispro`. */
@@ -18,15 +24,15 @@ export function path(locale: Locale, ...segments: string[]): string {
 }
 
 export function homePath(locale: Locale): string {
-	return resolve('/[lang=lang]', { lang: locale });
+	return path(locale);
 }
 
 export function missionsPath(locale: Locale): string {
-	return resolve('/[lang=lang]/missions', { lang: locale });
+	return path(locale, 'missions');
 }
 
 export function missionPath(locale: Locale, slug: string): string {
-	return resolve('/[lang=lang]/missions/[slug]', { lang: locale, slug });
+	return path(locale, 'missions', slug);
 }
 
 /**

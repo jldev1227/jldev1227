@@ -1,7 +1,15 @@
 <script lang="ts">
+	import { page as appPage } from '$app/state';
 	import { Caption, Panel, ProjectShot, Seo } from '$lib/components';
-	import { identity } from '$content/site';
-	import { missionsPath, path, translator } from '$i18n';
+	import {
+		ComicCover,
+		ComicReader,
+		type CoverIssue,
+		type ReaderPage
+	} from '$lib/components/comic-reader';
+	import { cover as coverCopy, identity } from '$content/site';
+	import { techMark, techMonogram } from '$content/tech-marks';
+	import { homePath, LOCALE_LABEL, missionsPath, other, path, swapLocale, translator } from '$i18n';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -13,10 +21,35 @@
 	const canonicalPath = $derived(path(locale, 'missions', project.slug));
 	const title = $derived(`${project.title} · ${identity.alias}`);
 
-	const blocks = $derived([
-		{ heading: t('missions.challenge'), body: project.challenge[locale] },
-		{ heading: t('missions.approach'), body: project.approach[locale] },
-		{ heading: t('missions.outcome'), body: project.outcome[locale] }
+	/**
+	 * Every case file is its own issue of the same collection: same masthead and
+	 * imprint, its own number and cover story.
+	 */
+	const issue = $derived<CoverIssue>({
+		volume: t('missions.collection'),
+		issue: `#${project.number}`,
+		price: coverCopy.price[locale],
+		imprint: coverCopy.imprint[locale],
+		date: coverCopy.date[locale],
+		stamp: coverCopy.stamp[locale],
+		storyKicker: project.kicker[locale],
+		titleTop: project.title,
+		lead: project.tagline[locale],
+		blurb: project.image.caption[locale],
+		palette: project.palette
+	});
+
+	const otherLocale = $derived(other(locale));
+	const switchHref = $derived(swapLocale(appPage.url.pathname, otherLocale));
+	const year = new Date().getFullYear();
+
+	const readerPages = $derived<ReaderPage[]>([
+		{ id: 'challenge', label: t('missions.challenge'), content: pageChallenge },
+		{ id: 'snapshot', label: t('missions.snapshot'), content: pageSnapshot },
+		{ id: 'approach', label: t('missions.approach'), content: pageApproach },
+		{ id: 'architecture', label: t('missions.architecture'), content: pageArchitecture },
+		{ id: 'before-after', label: t('missions.beforeAfter'), content: pageTransformation },
+		{ id: 'outcome', label: t('missions.outcome'), content: pageOutcome }
 	]);
 </script>
 
@@ -38,394 +71,471 @@
 	]}
 />
 
-<div class="jl-grid">
-	<Panel class="case-hero" data-accent={project.accent}>
-		<Caption>{project.kicker[locale]}</Caption>
-		<div class="case-hero-copy">
-			<h1 class="jl-display">{project.title}</h1>
-			<p>{project.tagline[locale]}</p>
-			<ul class="stack">
-				{#each project.stack as tag (tag)}
-					<li class="jl-kicker">{tag}</li>
-				{/each}
-			</ul>
-		</div>
-	</Panel>
-</div>
-
-<div class="jl-grid evidence">
-	<Panel class="case-visual">
-		<ProjectShot
-			src={project.image.src}
-			alt={project.image.alt[locale]}
-			caption={project.image.caption[locale]}
-		/>
-	</Panel>
-
-	<Panel class="snapshot" data-accent={project.accent}>
-		<h2 class="jl-display">{t('missions.snapshot')}</h2>
-		<div class="stats">
-			{#each project.stats as stat (stat.label.en)}
-				<div class="stat">
-					<strong class="jl-display">{stat.value}</strong>
-					<span class="jl-kicker">{stat.label[locale]}</span>
-				</div>
-			{/each}
-		</div>
-		<small class="jl-kicker snapshot-note">{t('missions.snapshotNote')}</small>
-	</Panel>
-</div>
-
-<div class="jl-grid blocks">
-	{#each blocks as block (block.heading)}
-		<Panel class="block">
-			<h2 class="jl-display">{block.heading}</h2>
-			<p>{block.body}</p>
+<!-- ------------------------------------------------------------- page 1 ---- -->
+{#snippet pageChallenge()}
+	<div class="jl-grid stack-intro">
+		<Panel class="case-visual jl-bleed jl-bleed-top">
+			<ProjectShot src={project.image.src} alt={project.image.alt[locale]} compact />
 		</Panel>
-	{/each}
-</div>
 
-<div class="jl-grid">
-	<Panel class="architecture">
-		<div class="section-heading">
-			<div>
-				<h2 class="jl-display">{t('missions.architecture')}</h2>
-				<p>{t('missions.architectureNote')}</p>
+		<Panel class="block" data-accent={project.accent} data-shade="corner">
+			<Caption>{project.kicker[locale]}</Caption>
+			<div class="block-copy">
+				<h2 class="jl-display">{t('missions.challenge')}</h2>
+				<p>{project.challenge[locale]}</p>
 			</div>
-			<span class="jl-kicker">FULL STACK · 01—04</span>
-		</div>
+		</Panel>
+	</div>
+{/snippet}
 
-		<ol class="architecture-flow">
-			{#each project.architecture as node, index (node.technology)}
-				<li>
-					<span class="jl-kicker node-number">{String(index + 1).padStart(2, '0')}</span>
-					<span class="jl-kicker node-layer">{node.layer[locale]}</span>
-					<strong>{node.technology}</strong>
-					<p>{node.detail[locale]}</p>
-				</li>
-			{/each}
-		</ol>
-	</Panel>
-</div>
-
-<div class="jl-grid">
-	<Panel class="transformation" data-accent={project.accent}>
-		<h2 class="jl-display">{t('missions.beforeAfter')}</h2>
-		<ul class="transformation-list">
-			{#each project.transformation as item (item.before.en)}
-				<li>
-					<div class="before">
-						<span class="jl-kicker">{t('missions.before')}</span>
-						<p>{item.before[locale]}</p>
+<!-- ------------------------------------------------------------- page 2 ---- -->
+{#snippet pageSnapshot()}
+	<div class="jl-grid stack-outro">
+		<Panel class="snapshot" data-accent={project.accent}>
+			<h2 class="jl-display">{t('missions.snapshot')}</h2>
+			<div class="stats">
+				{#each project.stats as stat (stat.label.en)}
+					<div class="stat">
+						<strong class="jl-display">{stat.value}</strong>
+						<span class="jl-kicker">{stat.label[locale]}</span>
 					</div>
-					<span class="change-arrow" aria-hidden="true">→</span>
-					<div class="after">
-						<span class="jl-kicker">{t('missions.after')}</span>
-						<p>{item.after[locale]}</p>
-					</div>
-				</li>
-			{/each}
-		</ul>
-	</Panel>
-</div>
+				{/each}
+			</div>
+			<small class="jl-kicker snapshot-note">{t('missions.snapshotNote')}</small>
+		</Panel>
 
-<div class="jl-grid details">
-	<Panel class="technologies">
-		<h2 class="jl-display">{t('missions.technologies')}</h2>
-		<ul class="technology-list">
-			{#each project.stack as technology (technology)}
-				<li class="jl-kicker">{technology}</li>
-			{/each}
-		</ul>
-	</Panel>
+		<Panel class="technologies" data-shade="head">
+			<div class="block-copy">
+				<h2 class="jl-display">{t('missions.technologies')}</h2>
+				<ul class="technology-list">
+					{#each project.stack as technology (technology)}
+						{@const mark = techMark(technology)}
+						<li class="jl-kicker">
+							{#if mark}
+								<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+									<path d={mark.path} />
+								</svg>
+							{/if}
+							{technology}
+						</li>
+					{/each}
+				</ul>
+			</div>
+		</Panel>
+	</div>
+{/snippet}
 
-	<Panel class="decisions">
-		<h2 class="jl-display">{t('missions.decisions')}</h2>
-		<ol>
-			{#each project.decisions as decision (decision.en)}
-				<li>{decision[locale]}</li>
-			{/each}
-		</ol>
-	</Panel>
-</div>
+<!-- ------------------------------------------------------------- page 3 ---- -->
+{#snippet pageApproach()}
+	<div class="jl-grid fill">
+		<Panel class="block jl-bleed jl-bleed-top" data-accent={project.accent} data-shade="head">
+			<div class="block-copy">
+				<h2 class="jl-display">{t('missions.approach')}</h2>
+				<p>{project.approach[locale]}</p>
+			</div>
+		</Panel>
+	</div>
+{/snippet}
 
-<div class="jl-grid">
-	<Panel class="outro">
-		<p class="jl-kicker note">{t('missions.confidential')}</p>
-		<div class="actions">
-			<a href={missionsPath(locale)}>{t('missions.all')}</a>
-			{#if project.link}
-				<a href={project.link} rel="noopener">{project.title} ↗</a>
-			{/if}
-		</div>
-	</Panel>
-</div>
+<!-- ------------------------------------------------------------- page 4 ---- -->
+{#snippet pageArchitecture()}
+	<div class="jl-grid fill">
+		<Panel class="architecture">
+			<div class="block-copy">
+				<h2 class="jl-display">{t('missions.architecture')}</h2>
+				<p class="architecture-note">{t('missions.architectureNote')}</p>
+
+				<ol class="architecture-flow">
+					{#each project.architecture as node, index (node.technology)}
+						<li>
+							<span class="marks" aria-hidden="true">
+								{#each node.technology.split('·').map((t) => t.trim()) as tech (tech)}
+									{@const mark = techMark(tech)}
+									{#if mark}
+										<svg viewBox="0 0 24 24" focusable="false"><path d={mark.path} /></svg>
+									{:else}
+										<span class="monogram">{techMonogram(tech)}</span>
+									{/if}
+								{/each}
+							</span>
+
+							<span class="node-copy">
+								<span class="jl-kicker node-number">{String(index + 1).padStart(2, '0')}</span>
+								<span class="jl-kicker node-layer">{node.layer[locale]}</span>
+								<strong>{node.technology}</strong>
+								<p>{node.detail[locale]}</p>
+							</span>
+						</li>
+					{/each}
+				</ol>
+			</div>
+		</Panel>
+	</div>
+{/snippet}
+
+<!-- ------------------------------------------------------------- page 5 ---- -->
+{#snippet pageTransformation()}
+	<div class="jl-grid stack-intro">
+		<Panel class="transformation" data-accent={project.accent}>
+			<div class="block-copy">
+				<h2 class="jl-display">{t('missions.beforeAfter')}</h2>
+				<ul class="transformation-list">
+					{#each project.transformation as item (item.before.en)}
+						<li>
+							<div class="before">
+								<span class="jl-kicker">{t('missions.before')}</span>
+								<p>{item.before[locale]}</p>
+							</div>
+							<span class="change-arrow" aria-hidden="true">→</span>
+							<div class="after">
+								<span class="jl-kicker">{t('missions.after')}</span>
+								<p>{item.after[locale]}</p>
+							</div>
+						</li>
+					{/each}
+				</ul>
+			</div>
+		</Panel>
+
+		<Panel class="decisions">
+			<div class="block-copy">
+				<h2 class="jl-display">{t('missions.decisions')}</h2>
+				<ol>
+					{#each project.decisions as decision (decision.en)}
+						<li>{decision[locale]}</li>
+					{/each}
+				</ol>
+			</div>
+		</Panel>
+	</div>
+{/snippet}
+
+<!-- ------------------------------------------------------------- page 6 ---- -->
+{#snippet pageOutcome()}
+	<div class="jl-grid fill">
+		<Panel class="outro jl-bleed jl-bleed-top" data-accent={project.accent} data-shade="corner">
+			<Caption>{t('missions.confidential')}</Caption>
+			<div class="outro-copy">
+				<h2 class="jl-display">{t('missions.outcome')}</h2>
+				<p>{project.outcome[locale]}</p>
+
+				<ul class="actions">
+					<li><a href={homePath(locale)}>{t('missions.backHome')}</a></li>
+					<li><a href={missionsPath(locale)}>{t('missions.all')}</a></li>
+					{#if project.link}
+						<!--
+							Named after where it actually goes. It used to be labelled with the
+							project's own title, which promised the project and delivered a
+							GitHub profile.
+						-->
+						<li><a href={project.link} rel="noopener">{t('missions.source')} ↗</a></li>
+					{/if}
+				</ul>
+
+				<p class="colophon jl-kicker">
+					<span>© {year} {identity.name} · {identity.domain}</span>
+					<a
+						href={switchHref}
+						hreflang={otherLocale}
+						lang={otherLocale}
+						rel="alternate"
+						aria-label={t('lang.switchAria')}
+						data-sveltekit-reload
+					>
+						{LOCALE_LABEL[otherLocale]}
+					</a>
+				</p>
+			</div>
+		</Panel>
+	</div>
+{/snippet}
+
+<!-- Its own issue of the collection, read exactly like the introductory one. -->
+<main
+	id="content"
+	class="comic"
+	style="--jl-world-base:{project.palette.base}; --jl-world-accent:{project.palette
+		.accent}; --jl-world-on:{project.palette.on === 'ink'
+		? 'var(--jl-ink)'
+		: 'var(--jl-white)'}; --jl-world-on-accent:{project.palette.onAccent === 'ink'
+		? 'var(--jl-ink)'
+		: 'var(--jl-white)'}"
+>
+	<ComicReader {locale} pages={readerPages}>
+		{#snippet cover({ enhanced, open })}
+			<ComicCover {locale} {issue} {enhanced} onopen={open} />
+		{/snippet}
+	</ComicReader>
+</main>
 
 <style>
-	:global(.jl-panel.case-hero) {
-		min-height: 340px;
-		color: var(--jl-white);
-		background: linear-gradient(135deg, var(--jl-navy-deep) 0 58%, var(--jl-red) 58%);
+	/* Every panel here lives inside a reader page — half a spread on a wide
+	   screen, a whole page on a narrow one — so it sizes against that page
+	   container, never the viewport. */
+
+	.comic {
+		display: block;
+		max-width: var(--jl-page-max);
+		margin: 0 auto;
+		/* Room either side for the stack of page edges the reader draws. */
+		padding: 0 clamp(18px, 3vw, 36px);
 	}
 
-	:global(.jl-panel.case-hero[data-accent='blue']) {
-		background: linear-gradient(135deg, #14263f 0 58%, var(--jl-blue) 58%);
+	/* A panel that sets its own height, then one that takes the rest of the sheet. */
+	.stack-intro {
+		flex: 1;
+		grid-template-rows: auto 1fr;
 	}
 
-	:global(.jl-panel.case-hero[data-accent='yellow']) {
-		color: var(--jl-ink);
-		background: linear-gradient(135deg, var(--jl-yellow) 0 58%, var(--jl-white) 58%);
+	/* The other way round: the first panel leads and the second closes at its
+	   own height, so a short list does not sit in a tall empty box. */
+	.stack-outro {
+		flex: 1;
+		grid-template-rows: 1fr auto;
 	}
 
-	:global(.jl-panel.case-hero[data-accent='ink']) {
-		background: linear-gradient(135deg, var(--jl-ink) 0 58%, var(--jl-navy) 58%);
+	.fill {
+		flex: 1;
+		grid-template-rows: 1fr;
 	}
 
-	.case-hero-copy {
-		display: flex;
-		flex-direction: column;
-		justify-content: end;
-		min-height: 340px;
-		padding: 100px 36px 36px;
-	}
-
-	.case-hero-copy h1 {
-		font-size: clamp(2.4rem, 7vw, 5.4rem);
-		text-shadow: 5px 5px 0 var(--jl-ink);
-	}
-
-	:global(.jl-panel.case-hero[data-accent='yellow']) h1 {
-		text-shadow: 5px 5px 0 var(--jl-white);
-	}
-
-	.case-hero-copy p {
-		max-width: 52ch;
-		margin: 20px 0 0;
-		font-size: 1rem;
-		line-height: 1.55;
-	}
-
-	.stack {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 8px;
-		margin: 22px 0 0;
-		padding: 0;
-		list-style: none;
-	}
-
-	.stack li {
-		padding: 6px 10px;
-		color: var(--jl-ink);
-		background: var(--jl-yellow);
-		border: 2px solid var(--jl-ink);
-	}
-
-	.evidence {
-		grid-template-columns: minmax(0, 1.65fr) minmax(260px, 0.75fr);
-	}
+	/* ------------------------------------------------------------- panels ---- */
 
 	:global(.jl-panel.case-visual) {
-		padding: 26px;
-		background: var(--jl-navy-deep);
+		--jl-shot-mat: var(--jl-world-base);
+
+		display: grid;
+		padding: clamp(12px, 3.5cqi, 26px);
+		background: var(--jl-world-base);
+	}
+
+	:global(.jl-panel.case-visual figure) {
+		height: 100%;
+	}
+
+	/* Every panel of a case file is printed in that world's own colours. */
+	:global(.jl-panel.block),
+	:global(.jl-panel.architecture),
+	:global(.jl-panel.transformation),
+	:global(.jl-panel.decisions),
+	:global(.jl-panel.outro),
+	:global(.jl-panel.technologies) {
+		/* Display type is outlined in its own ground, so a cream world keeps its
+		   accents as legible as a near-black one. */
+		--jl-display-stroke: var(--jl-world-base);
+
+		color: var(--jl-world-on);
+		background: var(--jl-world-base);
+	}
+
+	/*
+	 * The panels that carry the accent take it on the comic's diagonal, as a
+	 * tint of the world's ground. These panels are the ones that hold running
+	 * text, so the far side of the diagonal has to stay a reading ground: at
+	 * 58% the case-file copy crossed onto it at 4.4:1, and the before/after
+	 * rows, which lay their own accent wash on top, at 3.0:1.
+	 */
+	:global(.jl-panel[data-accent]) {
+		background: linear-gradient(
+			150deg,
+			var(--jl-world-base) 0 58%,
+			color-mix(in oklab, var(--jl-world-accent) 32%, var(--jl-world-base)) 58%
+		);
 	}
 
 	:global(.jl-panel.snapshot) {
+		--jl-display-stroke: var(--jl-world-accent);
+
+		color: var(--jl-world-on-accent);
+		background: var(--jl-world-accent);
+	}
+
+	/* Copy flows, and the top padding reserves the caption's corner: the panel
+	   clips, and Spanish runs a line longer than English. */
+	.block-copy,
+	.outro-copy {
 		display: flex;
 		flex-direction: column;
-		justify-content: space-between;
-		padding: 28px;
-		color: var(--jl-white);
-		background: var(--jl-blue);
+		height: 100%;
+		padding: clamp(20px, 5cqi, 36px);
 	}
 
-	:global(.jl-panel.snapshot[data-accent='red']) {
-		background: var(--jl-red);
+	.block-copy h2,
+	.outro-copy h2 {
+		margin: 0 0 14px;
+		font-size: clamp(1.6rem, 8cqi, 2.8rem);
+		line-height: 0.9;
 	}
 
-	:global(.jl-panel.snapshot[data-accent='yellow']) {
-		--jl-display-stroke: var(--jl-white);
-
-		color: var(--jl-ink);
-		background: var(--jl-yellow);
+	.block-copy p,
+	.outro-copy p {
+		max-width: 56ch;
+		margin: 0;
+		color: color-mix(in oklab, var(--jl-world-on) 92%, transparent);
+		font-size: clamp(0.8rem, 2.4cqi, 0.92rem);
+		line-height: 1.6;
 	}
 
-	:global(.jl-panel.snapshot[data-accent='ink']) {
-		background: var(--jl-ink);
+	/* A panel that carries a caption needs the corner kept clear. */
+	:global(.jl-panel.block) .block-copy,
+	.outro-copy {
+		padding-top: 104px;
 	}
 
-	:global(.jl-panel.snapshot) h2,
-	:global(.jl-panel.architecture) h2,
-	:global(.jl-panel.transformation) h2,
-	:global(.jl-panel.technologies) h2,
-	:global(.jl-panel.decisions) h2 {
-		font-size: clamp(1.9rem, 4vw, 3rem);
+	/* ----------------------------------------------------------- snapshot ---- */
+
+	:global(.jl-panel.snapshot) {
+		display: grid;
+		align-content: center;
+		gap: 14px;
+		min-height: 200px;
+		padding: clamp(20px, 5cqi, 34px);
+	}
+
+	:global(.jl-panel.snapshot) h2 {
+		font-size: clamp(1.3rem, 6cqi, 2rem);
 	}
 
 	.stats {
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: 8px;
-		margin: 28px 0;
-	}
-
-	.stat {
-		min-width: 0;
-		padding-top: 14px;
-		border-top: 3px solid currentColor;
+		display: flex;
+		flex-wrap: wrap;
+		gap: clamp(16px, 5cqi, 34px) clamp(18px, 6cqi, 44px);
 	}
 
 	.stat strong {
 		display: block;
-		font-size: clamp(2.1rem, 5vw, 3.6rem);
+		font-size: clamp(2.4rem, 15cqi, 5rem);
+		line-height: 0.82;
+		/* The panel is the accent, so the drop is the world's other tone. */
+		text-shadow: 5px 5px 0 var(--jl-world-base);
 	}
 
 	.stat span {
 		display: block;
-		margin-top: 8px;
-		font-size: 0.62rem;
-		line-height: 1.35;
+		margin-top: 6px;
+		font-size: clamp(0.56rem, 1.8cqi, 0.68rem);
 	}
 
 	.snapshot-note {
-		font-size: 0.6rem;
-		opacity: 0.72;
+		font-size: clamp(0.54rem, 1.7cqi, 0.64rem);
+		opacity: 0.7;
 	}
 
-	.blocks {
-		grid-template-columns: repeat(3, 1fr);
+	/* ------------------------------------------------------- technologies ---- */
+
+	.technology-list svg {
+		width: 15px;
+		height: 15px;
+		fill: var(--jl-world-accent);
 	}
 
-	:global(.jl-panel.block) {
-		min-height: 240px;
-		padding: 26px;
-		color: var(--jl-white);
-		background: var(--jl-navy);
-	}
-
-	.blocks h2 {
-		max-width: 12ch;
-		margin: 0 0 14px;
-		font-size: 1.9rem;
-		color: var(--jl-yellow);
-	}
-
-	.blocks p {
-		margin: 0;
-		color: var(--jl-on-dark);
-		font-size: 0.88rem;
-		line-height: 1.6;
-	}
-
-	:global(.jl-panel.architecture) {
-		padding: 30px;
-		color: var(--jl-white);
-		background: var(--jl-ink);
-	}
-
-	.section-heading {
+	.technology-list {
 		display: flex;
-		align-items: start;
-		justify-content: space-between;
-		gap: 24px;
-	}
-
-	.section-heading h2 {
-		color: var(--jl-yellow);
-	}
-
-	.section-heading p {
-		max-width: 52ch;
-		margin: 10px 0 0;
-		color: var(--jl-on-dark-dim);
-		font-size: 0.8rem;
-		line-height: 1.5;
-	}
-
-	.section-heading > .jl-kicker {
-		flex: 0 0 auto;
-		padding: 7px 10px;
-		color: var(--jl-ink);
-		background: var(--jl-yellow);
-		border: 2px solid var(--jl-white);
-	}
-
-	.architecture-flow {
-		display: grid;
-		grid-template-columns: repeat(4, minmax(0, 1fr));
-		gap: 24px;
-		margin: 28px 0 0;
+		flex-wrap: wrap;
+		gap: 8px;
+		margin: 16px 0 0;
 		padding: 0;
 		list-style: none;
 	}
 
-	.architecture-flow li {
-		position: relative;
-		min-width: 0;
-		padding: 18px;
-		background: var(--jl-navy-deep);
-		border: 3px solid var(--jl-white);
-		box-shadow: 5px 5px 0 var(--jl-red);
+	.technology-list li {
+		display: flex;
+		align-items: center;
+		gap: 7px;
+		padding: 7px 11px;
+		color: var(--jl-world-on);
+		border: 2px solid color-mix(in oklab, var(--jl-world-accent) 55%, transparent);
+		font-size: clamp(0.56rem, 1.8cqi, 0.66rem);
 	}
 
-	.architecture-flow li:not(:last-child)::after {
-		position: absolute;
-		top: 50%;
-		right: -24px;
-		z-index: 2;
-		width: 24px;
-		color: var(--jl-yellow);
-		font-family: var(--jl-font-display);
-		font-size: 1.8rem;
-		line-height: 1;
-		text-align: center;
-		content: '›';
-		transform: translateY(-50%);
+	/* ------------------------------------------------------- architecture ---- */
+
+	.architecture-note {
+		margin-bottom: 18px !important;
+		color: color-mix(in oklab, var(--jl-world-on) 68%, transparent);
+		font-size: clamp(0.72rem, 2.1cqi, 0.82rem) !important;
+	}
+
+	.architecture-flow {
+		display: grid;
+		gap: 10px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	/* The tools first, then what they are doing there. */
+	.architecture-flow li {
+		display: grid;
+		grid-template-columns: auto 1fr;
+		align-items: start;
+		gap: clamp(10px, 3cqi, 18px);
+		padding: 12px 14px;
+		background: color-mix(in oklab, var(--jl-world-accent) 12%, transparent);
+		border-left: 4px solid var(--jl-world-accent);
+	}
+
+	.marks {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 7px;
+		max-width: clamp(64px, 20cqi, 104px);
+	}
+
+	.marks svg {
+		width: clamp(20px, 5.5cqi, 30px);
+		height: auto;
+		fill: var(--jl-world-accent);
+	}
+
+	.monogram {
+		display: grid;
+		place-items: center;
+		width: clamp(20px, 5.5cqi, 30px);
+		aspect-ratio: 1;
+		color: var(--jl-world-on);
+		border: 2px solid color-mix(in oklab, var(--jl-world-accent) 55%, transparent);
+		font-family: var(--jl-font-mono);
+		font-size: clamp(0.5rem, 1.6cqi, 0.62rem);
+		font-weight: 600;
+	}
+
+	.node-copy {
+		display: block;
+		min-width: 0;
 	}
 
 	.node-number {
-		display: block;
-		color: var(--jl-yellow);
-		font-size: 1.55rem;
+		color: var(--jl-world-on);
+		font-size: 0.6rem;
+		font-weight: 600;
 	}
 
 	.node-layer {
 		display: block;
-		margin-top: 18px;
-		color: var(--jl-on-dark-dim);
+		margin-top: 2px;
+		color: color-mix(in oklab, var(--jl-world-on) 78%, transparent);
 		font-size: 0.58rem;
-		line-height: 1.35;
 	}
 
 	.architecture-flow strong {
 		display: block;
-		margin-top: 7px;
-		font-size: 0.9rem;
-		line-height: 1.35;
+		margin-top: 4px;
+		font-size: clamp(0.82rem, 2.4cqi, 0.95rem);
 	}
 
 	.architecture-flow p {
-		margin: 10px 0 0;
-		color: var(--jl-on-dark-dim);
-		font-size: 0.74rem;
-		line-height: 1.5;
+		margin: 4px 0 0 !important;
+		color: color-mix(in oklab, var(--jl-world-on) 86%, transparent);
+		font-size: clamp(0.68rem, 2cqi, 0.78rem) !important;
+		line-height: 1.45;
 	}
 
-	:global(.jl-panel.transformation) {
-		--jl-display-stroke: var(--jl-white);
-
-		padding: 30px;
-		color: var(--jl-ink);
-		background: var(--jl-yellow);
-	}
-
-	:global(.jl-panel.transformation) h2 {
-		margin-bottom: 24px;
-	}
+	/* ----------------------------------------------------- transformation ---- */
 
 	.transformation-list {
 		display: grid;
-		gap: 10px;
+		gap: 12px;
 		margin: 0;
 		padding: 0;
 		list-style: none;
@@ -433,123 +543,75 @@
 
 	.transformation-list li {
 		display: grid;
-		grid-template-columns: minmax(0, 1fr) 44px minmax(0, 1fr);
-		align-items: stretch;
-		background: var(--jl-white);
-		border: 3px solid var(--jl-ink);
+		grid-template-columns: 1fr auto 1fr;
+		align-items: center;
+		gap: 10px;
+		padding: 12px 14px;
+		background: color-mix(in oklab, var(--jl-world-accent) 12%, transparent);
 	}
 
-	.transformation-list li > div {
-		padding: 15px 18px;
+	.transformation-list span {
+		display: block;
+		margin-bottom: 4px;
+		font-size: 0.58rem;
 	}
 
-	.transformation-list .before {
-		background: color-mix(in srgb, var(--jl-red) 10%, var(--jl-white));
+	.before span {
+		color: color-mix(in oklab, var(--jl-world-on) 82%, transparent);
 	}
 
-	.transformation-list .after {
-		background: color-mix(in srgb, var(--jl-blue) 10%, var(--jl-white));
+	/* The row is already tinted with the accent, so the accent cannot mark it. */
+	.after span {
+		color: var(--jl-world-on);
+		font-weight: 600;
 	}
 
 	.transformation-list p {
-		margin: 6px 0 0;
-		font-size: 0.83rem;
-		font-weight: 600;
-		line-height: 1.45;
+		margin: 0 !important;
+		font-size: clamp(0.68rem, 2cqi, 0.78rem) !important;
+		line-height: 1.4;
 	}
 
 	.change-arrow {
-		display: grid;
-		place-items: center;
-		color: var(--jl-white);
-		background: var(--jl-ink);
-		font-family: var(--jl-font-display);
-		font-size: 1.6rem;
+		color: var(--jl-world-on);
+		font-size: 1.1rem;
 	}
 
-	.details {
-		grid-template-columns: 0.8fr 1.2fr;
-	}
-
-	:global(.jl-panel.technologies),
-	:global(.jl-panel.decisions) {
-		padding: 28px;
-		color: var(--jl-white);
-		background: var(--jl-navy-deep);
-	}
-
-	:global(.jl-panel.technologies) h2,
-	:global(.jl-panel.decisions) h2 {
-		color: var(--jl-yellow);
-	}
-
-	.technology-list {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 9px;
-		margin: 24px 0 0;
-		padding: 0;
-		list-style: none;
-	}
-
-	.technology-list li {
-		padding: 8px 10px;
-		color: var(--jl-ink);
-		background: var(--jl-yellow);
-		border: 2px solid var(--jl-white);
-		box-shadow: 3px 3px 0 var(--jl-red);
-	}
+	/* ---------------------------------------------------------- decisions ---- */
 
 	:global(.jl-panel.decisions) ol {
 		display: grid;
-		gap: 16px;
-		margin: 22px 0 0;
-		padding-left: 1.5rem;
+		gap: 9px;
+		margin: 16px 0 0;
+		padding-left: 18px;
+		color: color-mix(in oklab, var(--jl-world-on) 84%, transparent);
+		font-size: clamp(0.72rem, 2.1cqi, 0.82rem);
+		line-height: 1.5;
 	}
 
-	:global(.jl-panel.decisions) li {
-		padding-left: 8px;
-		color: var(--jl-on-dark);
-		font-size: 0.88rem;
-		line-height: 1.55;
-	}
+	/* -------------------------------------------------------------- outro ---- */
 
-	:global(.jl-panel.decisions) li::marker {
-		color: var(--jl-yellow);
-		font-family: var(--jl-font-display);
-		font-size: 1.3em;
-	}
-
-	:global(.jl-panel.outro) {
-		display: flex;
-		flex-wrap: wrap;
-		align-items: center;
-		justify-content: space-between;
-		gap: 18px;
-		padding: 26px;
-		color: var(--jl-white);
-		background: var(--jl-ink);
-	}
-
-	.note {
-		margin: 0;
-		max-width: 46ch;
-		color: var(--jl-on-dark-dim);
+	.outro-copy {
+		justify-content: center;
 	}
 
 	.actions {
 		display: flex;
 		flex-wrap: wrap;
 		gap: 10px;
+		margin: 26px 0 0;
+		padding: 0;
+		list-style: none;
 	}
 
 	.actions a {
-		padding: 10px 16px;
-		color: var(--jl-ink);
-		background: var(--jl-yellow);
-		border: 3px solid var(--jl-white);
-		box-shadow: 4px 4px 0 var(--jl-red);
-		font-size: 0.75rem;
+		display: inline-block;
+		padding: 10px 15px;
+		color: var(--jl-world-on-accent);
+		background: var(--jl-world-accent);
+		border: 3px solid var(--jl-ink);
+		box-shadow: 4px 4px 0 var(--jl-ink);
+		font-size: clamp(0.62rem, 2cqi, 0.74rem);
 		font-weight: 600;
 		text-decoration: none;
 		text-transform: uppercase;
@@ -560,50 +622,23 @@
 		background: var(--jl-red);
 	}
 
-	@media (max-width: 760px) {
-		.evidence,
-		.details,
-		.blocks {
-			grid-template-columns: 1fr;
-		}
+	/* The indicia this issue carries on its last page. */
+	.colophon {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 6px 14px;
+		margin: 26px 0 0 !important;
+		color: color-mix(in oklab, var(--jl-world-on) 86%, transparent);
+		font-size: clamp(0.54rem, 1.7cqi, 0.64rem) !important;
+	}
 
-		:global(.jl-panel.block) {
-			min-height: 0;
-		}
+	.colophon a {
+		color: var(--jl-world-on);
+		text-underline-offset: 3px;
+	}
 
-		.stats {
-			grid-template-columns: repeat(3, minmax(0, 1fr));
-		}
-
-		.section-heading {
-			flex-direction: column;
-		}
-
-		.architecture-flow {
-			grid-template-columns: 1fr;
-			gap: 18px;
-		}
-
-		.architecture-flow li:not(:last-child)::after {
-			top: auto;
-			right: 50%;
-			bottom: -20px;
-			width: auto;
-			transform: translateX(50%) rotate(90deg);
-		}
-
-		.transformation-list li {
-			grid-template-columns: 1fr;
-		}
-
-		.change-arrow {
-			min-height: 32px;
-			font-size: 0;
-		}
-
-		.change-arrow::after {
-			font-size: 1.6rem;
-			content: '↓';
-		}
+	.colophon a:hover {
+		color: var(--jl-white);
 	}
 </style>

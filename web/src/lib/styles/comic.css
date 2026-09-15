@@ -20,6 +20,11 @@
 	/* Signal palette */
 	--jl-red: #d91d3b;
 	--jl-blue: #1478d4;
+	/* The signal blue is a graphic colour, not a reading ground: paper-white body
+	   copy on it measures 4.4:1 and the dimmed colophon grey 3.6:1. Panels that
+	   carry running text take this one instead, which keeps the hue and clears
+	   AA for both. */
+	--jl-blue-deep: #0a3c6e;
 	--jl-yellow: #ffd23f;
 	--jl-navy: #152841;
 	--jl-navy-deep: #12233a;
@@ -33,9 +38,9 @@
 	--jl-border: 4px;
 	--jl-page-max: 1100px;
 
-	/* Halftone */
-	--jl-dot-opacity: 0.22;
-	--jl-dot-size: 13px;
+	/* Halftone, where a panel asks for it */
+	--jl-dot-opacity: 0.3;
+	--jl-dot-size: 12px;
 
 	/* Reader motion. Shared with the reader's timers, which read these back off
 	   the element instead of keeping a second copy of the numbers in TypeScript. */
@@ -104,8 +109,15 @@ body {
 	isolation: isolate;
 }
 
-/* Halftone dot field, painted behind panel content. */
-.jl-panel::before {
+/*
+ * Halftone is shade, not wallpaper. A printed comic lays a screen over the part
+ * of a panel that sits in shadow — behind the lettering, under a figure — and
+ * leaves the rest as flat ink. Blanketing every panel with the same field was
+ * what flattened them all into one texture, so this is opt-in and directional:
+ * `data-shade="corner"` for a wedge in the bottom corner, `"head"` for a band
+ * behind the heading at the top.
+ */
+.jl-panel[data-shade]::before {
 	content: '';
 	position: absolute;
 	inset: 0;
@@ -119,6 +131,14 @@ body {
 	pointer-events: none;
 }
 
+.jl-panel[data-shade='head']::before {
+	mask-image: linear-gradient(180deg, #000 0, transparent 46%);
+}
+
+.jl-panel[data-shade='corner']::before {
+	mask-image: linear-gradient(302deg, #000 0, transparent 44%);
+}
+
 /* The page is drawn by hand: panels sit a fraction off-square. */
 .jl-panel {
 	transform: rotate(-0.18deg);
@@ -126,6 +146,28 @@ body {
 
 .jl-panel:nth-child(even) {
 	transform: rotate(0.18deg);
+}
+
+/* --------------------------------------------------- page composition ------ */
+
+/*
+ * A panel that runs off the paper instead of sitting politely inside the
+ * margin. A page where everything is inset by the same gutter reads as a form;
+ * one where a panel breaks the margin reads as a comic.
+ */
+.jl-bleed {
+	margin-inline: calc(-1 * var(--jl-gutter));
+	border-inline: 0;
+}
+
+.jl-bleed-top {
+	margin-top: calc(-1 * var(--jl-gutter));
+	border-top: 0;
+}
+
+.jl-bleed-bottom {
+	margin-bottom: calc(-1 * var(--jl-gutter));
+	border-bottom: 0;
 }
 
 /* ------------------------------------------------------------- caption ---- */

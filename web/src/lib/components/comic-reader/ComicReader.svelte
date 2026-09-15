@@ -6,7 +6,12 @@
 		id: string;
 		/** Localized accessible name for the page. */
 		label: string;
-		content: Snippet;
+		/**
+		 * Rendered with the page's own id, so one snippet can stand in for a run
+		 * of pages that differ only by which record they are printing. Snippets
+		 * that do not need it simply take no argument.
+		 */
+		content: Snippet<[string]>;
 	}
 
 	/**
@@ -74,18 +79,19 @@
 	interface Props {
 		locale: Locale;
 		pages: ReaderPage[];
+		/** Disable when a parent experience owns the URL hash. */
+		manageHash?: boolean;
 		/** The cover is handed the controls it needs rather than reaching for them. */
 		cover: Snippet<[{ enhanced: boolean; open: () => void }]>;
 	}
 
-	let { locale, pages, cover }: Props = $props();
+	let { locale, pages, manageHash = true, cover }: Props = $props();
 
 	const t = $derived(translator(locale));
 
 	let root = $state<HTMLElement | null>(null);
 	let stage = $state<HTMLElement | null>(null);
 	let book = $state<HTMLElement | null>(null);
-	let sheet = $state<HTMLElement | null>(null);
 	let pageEls: HTMLElement[] = $state([]);
 
 	/**
@@ -100,54 +106,120 @@
 	const geometry = $derived<ReaderGeometry>({ pageCount: pages.length, pagesPerView });
 	const turn = $derived(reader.mode === 'turning' ? reader : null);
 	const position = $derived(target(reader));
-	const opened = $derived(position > COVER);
 
 	// ---------------------------------------------------------------- geometry
+
+	type Face = { kind: 'cover' } | { kind: 'page'; page: number } | { kind: 'blank' };
+
+	interface Leaf {
+		index: number;
+		front: Face;
+		back: Face;
+	}
+
+	function faceFor(page: number): Face {
+		return page <= pages.length ? { kind: 'page', page } : { kind: 'blank' };
+	}
+
+	/**
+	 * A leaf is one physical sheet, printed on both sides: the cover is the front
+	 * of the first one and page 1 is its back, page 2 is the front of the second
+	 * and page 3 its back, and so on. That is what makes a turn read as paper —
+	 * the page arriving is *carried over* by the sheet in motion rather than
+	 * lying there, already visible, waiting for it to fall.
+	 */
+	const leaves = $derived.by(() => {
+		const sheets: Leaf[] = [{ index: 0, front: { kind: 'cover' }, back: faceFor(1) }];
+		for (let k = 1; 2 * k - 1 <= pages.length; k += 1) {
+			sheets.push({ index: k, front: faceFor(2 * k), back: faceFor(2 * k + 1) });
+		}
+		return sheets;
+	});
 
 	/** The pages the reader is turning to — the only ones that stay interactive. */
 	const arriving = $derived(pagesInView(position, geometry));
 
-	/** Everything on screen: the destination, plus whatever is still leaving. */
-	const onscreen = $derived(turn ? [...arriving, ...pagesInView(turn.from, geometry)] : arriving);
+	/** How many sheets are lying turned to the left at a given position. */
+	function turnedAt(at: number): number {
+		return at <= COVER ? 0 : Math.ceil(at / 2);
+	}
 
-	/** The leaf in motion: the cover, or the page being turned over. */
-	const leaf = $derived.by(() => {
-		if (!turn) return null;
-		if (turn.from === COVER || turn.to === COVER) return { cover: true, page: 0 };
-		const from = pagesInView(turn.from, geometry);
-		return {
-			cover: false,
-			page: turn.direction === 'forward' ? from[from.length - 1] : from[0]
-		};
-	});
+	/** On a spread the sheet in motion is a whole leaf; both its faces ride it. */
+	const movingLeaf = $derived(
+		turn && pagesPerView === 2 ? Math.min(turnedAt(turn.from), turnedAt(turn.to)) : -1
+	);
 
 	/**
-	 * The page landing in the column the leaf is *not* on. The leaf uncovers its
-	 * own column as it lifts, but it only covers the far one past 90°, so that
-	 * page cross-fades instead of popping. On mobile there is no far column.
+	 * One page at a time has no facing page to carry, so there the sheet is the
+	 * single face: it lifts off the stack taking its own content with it. Face
+	 * `n` is position `n` — face 0 is the cover, face 1 is page 1.
 	 */
-	const fading = $derived.by(() => {
-		if (!turn || !leaf || leaf.cover || pagesPerView === 1) return null;
-		const destination = pagesInView(turn.to, geometry);
-		return turn.direction === 'forward' ? destination[0] : destination[destination.length - 1];
-	});
+	const movingFace = $derived(
+		turn && pagesPerView === 1 ? (turn.direction === 'forward' ? turn.from : turn.to) : -1
+	);
+
+	function leafAngle(index: number): number {
+		if (pagesPerView === 1) return 0;
+
+		const from = turnedAt(turn ? turn.from : position);
+		const to = turnedAt(turn ? turn.to : position);
+
+		if (turn && index === movingLeaf) {
+			return to > from ? -180 * turn.progress : -180 * (1 - turn.progress);
+		}
+		return index < Math.min(from, to) ? -180 : 0;
+	}
+
+	/**
+	 * Inside a `preserve-3d` context paint order comes from position in space,
+	 * not from `z-index`: the unread stack counts down from the top sheet, the
+	 * read one counts up, and whatever is in flight sits above both.
+	 */
+	function leafDepth(index: number): number {
+		if (index === movingLeaf) return leaves.length + 2;
+		return leafAngle(index) <= -90 ? index + 1 : leaves.length - index;
+	}
+
+	/**
+	 * Only the top of each stack is ever seen: the sheet lying on the left, the
+	 * one waiting on the right, and whatever is in flight between them. The rest
+	 * are hidden rather than merely covered, because Chromium's hit testing does
+	 * not sort a `preserve-3d` subtree by depth the way its painting does — a
+	 * buried sheet still paints behind, but it would swallow the clicks.
+	 */
+	function leafShown(index: number): boolean {
+		if (pagesPerView === 1) return true;
+
+		const from = turnedAt(turn ? turn.from : position);
+		const to = turnedAt(turn ? turn.to : position);
+		return index >= Math.min(from, to) - 1 && index <= Math.max(from, to);
+	}
+
+	function faceAngle(at: number): number {
+		if (pagesPerView === 2 || !turn || at !== movingFace) return 0;
+		return turn.direction === 'forward' ? -180 * turn.progress : -180 * (1 - turn.progress);
+	}
+
+	/**
+	 * Only the pages actually being read take the pointer. A face turned away is
+	 * hidden by `backface-visibility`, but Chromium still hit tests it, so the
+	 * back of a sheet would otherwise swallow the clicks meant for its front.
+	 */
+	function faceLive(face: Face): boolean {
+		if (face.kind === 'blank') return false;
+		if (face.kind === 'cover') return position === COVER;
+		return arriving.includes(face.page);
+	}
+
+	function faceShown(at: number): boolean {
+		if (pagesPerView === 2) return true;
+		return at === position || at === movingFace;
+	}
 
 	// ----------------------------------------------------------------- motion
 
-	/** 0 closed, 1 fully open. Drives the cover angle and the book's offset. */
-	const coverProgress = $derived.by(() => {
-		if (turn && (turn.from === COVER || turn.to === COVER)) {
-			return turn.to === COVER ? 1 - turn.progress : turn.progress;
-		}
-		return opened ? 1 : 0;
-	});
-
-	const coverAngle = $derived(-180 * coverProgress);
-	const coverStowed = $derived(opened && !(turn && (turn.from === COVER || turn.to === COVER)));
-
-	const leafAngle = $derived(
-		!turn || !leaf || leaf.cover ? 0 : (turn.direction === 'forward' ? -180 : 180) * turn.progress
-	);
+	/** 0 closed, 1 fully open — the first leaf's angle, read as a fraction. */
+	const coverProgress = $derived(Math.min(1, -leafAngle(0) / 180));
 
 	/**
 	 * How much paper is behind and ahead, in pages. The book shows it the way a
@@ -182,16 +254,17 @@
 	const readerStyle = $derived(
 		[
 			`--jl-turn:${turn ? turn.progress : 1}`,
-			`--jl-cover-angle:${coverAngle}deg`,
-			`--jl-leaf-angle:${leafAngle}deg`,
 			`--jl-book-shift:${bookShift}%`,
+			`--jl-spine-z:${leaves.length + 1}`,
 			`--jl-stack-behind:${stackBehind / pages.length}`,
 			`--jl-stack-ahead:${stackAhead / pages.length}`
 		].join('; ')
 	);
 
+	/** The reading position, in words, for the pager's live region. */
 	const status = $derived.by(() => {
 		if (position === COVER) return t('reader.cover');
+
 		const shown = pagesInView(position, geometry);
 		return shown.length > 1
 			? format(t('reader.statusSpread'), {
@@ -277,8 +350,8 @@
 		if (turned.mode !== 'turning') return;
 		if (turned.from !== COVER && turned.to !== COVER) return;
 
-		if (reader.mode === 'open') pageEls[reader.page - 1]?.focus();
-		else sheet?.querySelector<HTMLElement>('button')?.focus();
+		if (reader.mode === 'open') pageEls[reader.page]?.focus();
+		else root?.querySelector<HTMLElement>('.cover button')?.focus();
 	}
 
 	/** Enter a turn without moving yet, so a drag can carry it. */
@@ -460,7 +533,7 @@
 			reader = reflow(reader, { pageCount: pages.length, pagesPerView: next });
 			// A spread collapsing to one page changes which page leads the view, so
 			// the hash has to follow it.
-			if (enhanced) syncHash();
+			if (enhanced && manageHash) syncHash();
 		};
 
 		applyMotion();
@@ -487,12 +560,14 @@
 
 		// A hash already in the URL is a reading position, not an animation cue:
 		// the book is simply already open there.
-		const restored = pageOf(appPage.url.hash);
-		if (restored !== null) reader = reflow({ mode: 'open', page: restored }, geometry);
+		if (manageHash) {
+			const restored = pageOf(appPage.url.hash);
+			if (restored !== null) reader = reflow({ mode: 'open', page: restored }, geometry);
+		}
 
 		enhanced = true;
 
-		window.addEventListener('hashchange', onHashChange);
+		if (manageHash) window.addEventListener('hashchange', onHashChange);
 		window.addEventListener('pointermove', onPointerMove, { passive: false });
 		window.addEventListener('pointerup', onPointerUp);
 		window.addEventListener('pointercancel', onPointerCancel);
@@ -500,7 +575,7 @@
 		return () => {
 			observer.disconnect();
 			reduced.removeEventListener('change', applyMotion);
-			window.removeEventListener('hashchange', onHashChange);
+			if (manageHash) window.removeEventListener('hashchange', onHashChange);
 			window.removeEventListener('pointermove', onPointerMove);
 			window.removeEventListener('pointerup', onPointerUp);
 			window.removeEventListener('pointercancel', onPointerCancel);
@@ -519,6 +594,7 @@
 	 * shared without minting a second URL for the same prerendered page.
 	 */
 	function syncHash() {
+		if (!manageHash) return;
 		const id = reader.mode === 'open' ? (pages[reader.page - 1]?.id ?? '') : '';
 		// `location` is the authority on the hash: SvelteKit's own page URL does
 		// not follow a hash this component wrote through `replaceState`.
@@ -555,6 +631,37 @@
 	}
 </script>
 
+<!--
+	One face of one sheet. On a spread the leaf around it does the turning and the
+	face just rides; on a single page the face is the sheet itself.
+-->
+{#snippet side(face: Face, at: number, which: 'front' | 'back')}
+	<div
+		class="face {which}"
+		data-shown={faceShown(at) ? '' : undefined}
+		data-live={faceLive(face) ? '' : undefined}
+		style="--jl-face-angle:{faceAngle(at)}deg; --jl-face-z:{at === movingFace ? 2 : 1}"
+	>
+		{#if face.kind === 'cover'}
+			{@render cover({ enhanced, open: () => run(forward(reader, geometry)) })}
+		{:else if face.kind === 'page'}
+			<article
+				class="page"
+				id={pages[face.page - 1].id}
+				bind:this={pageEls[face.page]}
+				tabindex="-1"
+				aria-label={pages[face.page - 1].label}
+				inert={enhanced && !arriving.includes(face.page) ? true : undefined}
+			>
+				{@render pages[face.page - 1].content(pages[face.page - 1].id)}
+				<p class="folio" aria-hidden="true">{face.page} / {pages.length}</p>
+			</article>
+		{:else}
+			<div class="paper" aria-hidden="true"></div>
+		{/if}
+	</div>
+{/snippet}
+
 <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 <section
 	class="reader"
@@ -562,7 +669,6 @@
 	data-enhanced={enhanced ? '' : undefined}
 	data-mode={reader.mode}
 	data-dragging={dragging ? '' : undefined}
-	data-cover-stowed={coverStowed ? '' : undefined}
 	data-view={pagesPerView}
 	style={readerStyle}
 	aria-label={t('reader.label')}
@@ -571,35 +677,26 @@
 >
 	<div class="stage" bind:this={stage}>
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
-		<div class="book" bind:this={book} onpointerdown={onBookDown} onclickcapture={onClickCapture}>
+		<div
+			class="book"
+			bind:this={book}
+			onpointerdown={onBookDown}
+			onclickcapture={onClickCapture}
+			ondragstart={(event) => event.preventDefault()}
+		>
 			<span class="edge behind" aria-hidden="true"></span>
 			<span class="edge ahead" aria-hidden="true"></span>
+			<span class="gauge" aria-hidden="true"></span>
 
-			<div class="sheet" bind:this={sheet} inert={enhanced && opened ? true : undefined}>
-				<div class="face front">
-					{@render cover({ enhanced, open: () => run(forward(reader, geometry)) })}
-				</div>
-				<div class="face back" aria-hidden="true"></div>
-			</div>
-
-			{#each pages as item, index (item.id)}
-				{@const n = index + 1}
-				<article
-					class="page"
-					id={item.id}
-					bind:this={pageEls[index]}
-					tabindex="-1"
-					aria-label={item.label}
-					data-side={n % 2 === 1 ? 'left' : 'right'}
-					data-in-view={onscreen.includes(n) ? '' : undefined}
-					data-arriving={turn && arriving.includes(n) ? '' : undefined}
-					data-fading={fading === n ? '' : undefined}
-					data-sheet={leaf && !leaf.cover && leaf.page === n ? turn?.direction : undefined}
-					inert={enhanced && !arriving.includes(n) ? true : undefined}
+			{#each leaves as sheet (sheet.index)}
+				<div
+					class="leaf"
+					data-shown={leafShown(sheet.index) ? '' : undefined}
+					style="--jl-leaf-angle:{leafAngle(sheet.index)}deg; --jl-leaf-z:{leafDepth(sheet.index)}"
 				>
-					{@render item.content()}
-					<p class="folio" aria-hidden="true">{n} / {pages.length}</p>
-				</article>
+					{@render side(sheet.front, sheet.index * 2, 'front')}
+					{@render side(sheet.back, sheet.index * 2 + 1, 'back')}
+				</div>
 			{/each}
 		</div>
 	</div>
@@ -620,7 +717,8 @@
 	/* ------------------------------------------------- the static document --- */
 
 	/* Everything above the `[data-enhanced]` line is what a visitor without
-	   JavaScript gets: the cover, then every page, in reading order. */
+	   JavaScript gets. There a leaf is not a sheet, only a wrapper: the cover and
+	   then every page, straight down the document in reading order. */
 
 	.reader {
 		position: relative;
@@ -632,17 +730,18 @@
 		gap: var(--jl-gutter);
 	}
 
-	.sheet,
-	.page {
-		position: relative;
-		min-width: 0;
+	.leaf,
+	.face {
+		display: contents;
 	}
 
 	/* A column, so a page that fills its sheet still leaves the folio room at the
 	   foot instead of pushing it past the paper's edge. */
 	.page {
+		position: relative;
 		display: flex;
 		flex-direction: column;
+		min-width: 0;
 		padding: var(--jl-gutter);
 		background: var(--jl-white);
 		border: var(--jl-border) solid var(--jl-ink);
@@ -663,35 +762,52 @@
 		text-align: center;
 	}
 
-	.face.back,
-	.edge {
+	/* The inside of the back cover, the page edges and the size gauge: all
+	   presentation, none of it in the served document. */
+	.paper,
+	.edge,
+	.gauge {
 		display: none;
 	}
 
 	/* ------------------------------------------------------------- the book -- */
 
-	.reader[data-enhanced] .stage {
-		perspective: 2400px;
-		perspective-origin: 50% 40%;
+	/*
+	 * The perspective sits on the book, not above it, and the book stays flat.
+	 * Each leaf is then its own 3D context: it flips its two faces in space
+	 * while the sheets themselves stack as ordinary siblings, which is the only
+	 * way `z-index` and — more importantly — hit testing stay reliable. Inside
+	 * one shared `preserve-3d` context Chromium paints by depth but hit tests by
+	 * document order, so a sheet underneath was catching clicks meant for the
+	 * one on top.
+	 */
+	.reader[data-enhanced] .book {
+		perspective: 1800px;
+		perspective-origin: 50% 50%;
 	}
 
+	/* The page is something you take hold of, so nothing inside it may start a
+	   selection or the browser's own drag-and-drop: both fight the gesture, and
+	   dragging from a case file used to hand the pointer to a native link drag. */
 	.reader[data-enhanced] .book {
 		position: relative;
 		gap: 0;
+		cursor: grab;
+		user-select: none;
+		-webkit-user-select: none;
 		/* Vertical scrolling stays the browser's; horizontal is the page turn. */
 		touch-action: pan-y;
 		transform: translateX(var(--jl-book-shift, 0%));
-		transform-style: preserve-3d;
-	}
-
-	/* The whole book is the handle; links inside it keep their own pointer. */
-	.reader[data-enhanced] .book {
-		cursor: grab;
 	}
 
 	.reader[data-enhanced][data-dragging] .book {
 		cursor: grabbing;
-		user-select: none;
+	}
+
+	/* The pages come in as snippets from the route, so they are outside this
+	   component's style scope. */
+	.reader[data-enhanced] .book :global(:is(a, img)) {
+		-webkit-user-drag: none;
 	}
 
 	.reader[data-enhanced][data-view='2'] .book {
@@ -702,43 +818,8 @@
 		grid-template-columns: 1fr;
 	}
 
-	/* Every page shares one grid cell row, so the book keeps a single height and
-	   a turn never shifts the layout around it. */
-	.reader[data-enhanced] :is(.sheet, .page) {
-		grid-row: 1;
-		box-shadow: 0 20px 44px rgb(0 0 0 / 0.42);
-	}
-
-	.reader[data-enhanced][data-view='1'] :is(.sheet, .page) {
-		grid-column: 1;
-	}
-
-	.reader[data-enhanced][data-view='2'] .sheet,
-	.reader[data-enhanced][data-view='2'] .page[data-side='right'] {
-		grid-column: 2;
-	}
-
-	.reader[data-enhanced][data-view='2'] .page[data-side='left'] {
-		grid-column: 1;
-	}
-
-	/* Inside a `preserve-3d` context paint order comes from position in space,
-	   not from `z-index`, so the stack is expressed in millimetres of depth. */
 	.reader[data-enhanced] .page {
-		visibility: hidden;
-		transform: translateZ(0);
-	}
-
-	.reader[data-enhanced] .page[data-in-view] {
-		visibility: visible;
-	}
-
-	.reader[data-enhanced] .page[data-arriving] {
-		transform: translateZ(1px);
-	}
-
-	.reader[data-enhanced] .page[data-fading] {
-		opacity: calc(var(--jl-turn, 1) * 1.8);
+		height: 100%;
 	}
 
 	.reader[data-enhanced] .page:focus-visible {
@@ -746,63 +827,67 @@
 		outline-offset: -4px;
 	}
 
-	/* --------------------------------------------------------- turning leaf -- */
-
-	.reader[data-enhanced] .page[data-sheet] {
-		backface-visibility: hidden;
-		transform: translateZ(2px) rotateY(var(--jl-leaf-angle, 0deg));
-		transform-style: preserve-3d;
-	}
-
-	.reader[data-enhanced] .page[data-sheet='forward'] {
-		transform-origin: left center;
-	}
-
-	.reader[data-enhanced] .page[data-sheet='backward'] {
-		transform-origin: right center;
-	}
-
-	/* The back of the leaf in motion: bare paper, the way a printed issue has it. */
-	.reader[data-enhanced] .page[data-sheet]::after {
-		content: '';
-		position: absolute;
-		inset: 0;
-		backface-visibility: hidden;
+	/* Bare board: decoration, and never a thing to click through the sheet that
+	   is actually on top. */
+	.reader[data-enhanced] .paper {
+		display: block;
+		pointer-events: none;
 		background: linear-gradient(118deg, #efe9dc, #cfc7b4);
 		border: var(--jl-border) solid var(--jl-ink);
 		box-shadow: inset 0 0 70px rgb(5 7 12 / 0.3);
-		transform: rotateY(180deg);
 	}
 
-	/* ------------------------------------------------------------ the cover -- */
+	/* Every issue of the collection is printed at the same page size. Content
+	   decides how tall a page *may* be; this decides how tall one always *is*,
+	   so a short issue is not a squatter book than a long one. It is an empty
+	   grid item in the page column: percentage padding resolves against that
+	   column's width, which is exactly the page's width. */
+	.reader[data-enhanced] .gauge {
+		display: block;
+		grid-row: 1;
+		padding-top: calc(100% / var(--jl-page-ratio, 0.66));
+		pointer-events: none;
+	}
 
-	.reader[data-enhanced] .sheet {
-		transform: translateZ(3px) rotateY(var(--jl-cover-angle, 0deg));
+	.reader[data-enhanced][data-view='2'] .gauge {
+		grid-column: 2;
+	}
+
+	.reader[data-enhanced][data-view='1'] .gauge {
+		grid-column: 1;
+	}
+
+	/* ------------------------------------------------------------ the spread -- */
+
+	/* Every leaf shares one grid cell, so the book keeps a single height and the
+	   sheets stack on the right until they are turned onto the left. */
+	.reader[data-enhanced][data-view='2'] .leaf {
+		display: grid;
+		grid-row: 1;
+		grid-column: 2;
+		z-index: var(--jl-leaf-z, 1);
+		box-shadow: 0 18px 40px rgb(0 0 0 / 0.38);
+		transform: rotateY(var(--jl-leaf-angle, 0deg));
 		transform-origin: left center;
 		transform-style: preserve-3d;
 	}
 
-	/* Fully open, the cover lies exactly over the left page: hiding it there is
-	   seamless, and it keeps the cover out of the reading order. */
-	.reader[data-enhanced][data-cover-stowed] .sheet {
+	.reader[data-enhanced][data-view='2'] .leaf:not([data-shown]) {
 		visibility: hidden;
 	}
 
-	.reader[data-enhanced] .face {
+	.reader[data-enhanced][data-view='2'] .face {
+		display: grid;
+		grid-area: 1 / 1;
 		backface-visibility: hidden;
 	}
 
-	.reader[data-enhanced] .face.front {
-		height: 100%;
+	.reader[data-enhanced] .face:not([data-live]) {
+		pointer-events: none;
 	}
 
-	.reader[data-enhanced] .face.back {
-		display: block;
-		position: absolute;
-		inset: 0;
-		background: linear-gradient(118deg, #efe9dc, #cfc7b4);
-		border: var(--jl-border) solid var(--jl-ink);
-		box-shadow: inset 0 0 70px rgb(5 7 12 / 0.3);
+	/* The back of the sheet is a real page, printed the other way round. */
+	.reader[data-enhanced][data-view='2'] .face.back {
 		transform: rotateY(180deg);
 	}
 
@@ -823,7 +908,31 @@
 			transparent
 		);
 		pointer-events: none;
-		transform: translateZ(4px);
+		z-index: var(--jl-spine-z, 5);
+	}
+
+	/* -------------------------------------------------------- one at a time -- */
+
+	/* A single page has no facing page to carry, so the leaf stops being a sheet
+	   and each face becomes one: it lifts off the stack with its own content and
+	   uncovers the next, the way a card leaves the top of a deck. */
+	.reader[data-enhanced][data-view='1'] .leaf {
+		display: contents;
+	}
+
+	.reader[data-enhanced][data-view='1'] .face {
+		display: grid;
+		grid-area: 1 / 1;
+		visibility: hidden;
+		backface-visibility: hidden;
+		z-index: var(--jl-face-z, 1);
+		box-shadow: 0 18px 40px rgb(0 0 0 / 0.38);
+		transform: rotateY(var(--jl-face-angle, 0deg));
+		transform-origin: left center;
+	}
+
+	.reader[data-enhanced][data-view='1'] .face[data-shown] {
+		visibility: visible;
 	}
 
 	/* ------------------------------------------------------- the page edges -- */
@@ -838,8 +947,8 @@
 		bottom: 9px;
 		width: calc(var(--jl-edge, clamp(6px, 1.4vw, 15px)) * var(--jl-fill, 0));
 		background: repeating-linear-gradient(90deg, #efe9dc 0 1px, #b3ab99 1px 2px);
+		z-index: 0;
 		pointer-events: none;
-		transform: translateZ(-1px);
 	}
 
 	.reader[data-enhanced] .edge.behind {
@@ -856,13 +965,5 @@
 		left: 100%;
 		border-radius: 0 3px 3px 0;
 		box-shadow: 3px 14px 26px rgb(0 0 0 / 0.42);
-	}
-
-	/* Motion is the presentation, never the content: with it switched off the
-	   book still opens and turns, it just stops travelling to get there. */
-	@media (prefers-reduced-motion: reduce) {
-		.reader[data-enhanced] .edge {
-			transition: none;
-		}
 	}
 </style>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import { translator } from '$i18n';
 	import type { Snippet } from 'svelte';
 	import type { LayoutProps } from './$types';
@@ -6,11 +7,27 @@
 	let { data, children }: LayoutProps & { children: Snippet } = $props();
 
 	const t = $derived(translator(data.locale));
+
+	/**
+	 * The stage is lit by whatever issue is open on it. A case file brings its
+	 * world's colours; the introductory issue keeps the house palette.
+	 */
+	const palette = $derived(page.data.project?.palette);
+	const stageStyle = $derived(
+		palette
+			? `--jl-stage-a:${palette.accent}; --jl-stage-b:${palette.base}; --jl-stage-ground:${palette.base}`
+			: undefined
+	);
 </script>
 
 <a class="jl-skip" href="#content">{t('nav.skip')}</a>
 
-<div class="page-stage">
+<div
+	class="page-stage"
+	data-themed={palette ? '' : undefined}
+	data-archive={page.route.id === '/[lang=lang]' ? '' : undefined}
+	style={stageStyle}
+>
 	{@render children()}
 </div>
 
@@ -20,8 +37,12 @@
 		min-height: 100vh;
 		padding-block: clamp(22px, 3vw, 44px);
 		overflow: clip;
-		background: var(--jl-ink);
+		background: var(--jl-stage-ground, var(--jl-ink));
 		isolation: isolate;
+	}
+
+	.page-stage[data-archive] {
+		padding-block: 0;
 	}
 
 	/* Blurred comic ink outside the paper: the page stays crisp while its
@@ -39,16 +60,37 @@
 		transform: scale(1.08);
 	}
 
+	/* An issue of a case file is lit by its own world instead of the house one. */
+	.page-stage[data-themed]::before {
+		background:
+			radial-gradient(
+				circle at 14% 18%,
+				color-mix(in oklab, var(--jl-stage-a) 78%, transparent) 0,
+				transparent 30%
+			),
+			radial-gradient(
+				circle at 86% 32%,
+				color-mix(in oklab, var(--jl-stage-a) 52%, transparent) 0,
+				transparent 32%
+			),
+			radial-gradient(
+				circle at 24% 88%,
+				color-mix(in oklab, var(--jl-stage-a) 34%, transparent) 0,
+				transparent 26%
+			),
+			var(--jl-stage-b);
+	}
+
+	/* Paper grain, not a dot grid. The grid was a second halftone at a different
+	   pitch from the panels', fixed while they scrolled, and the two moiréd
+	   against each other. Turbulence has no pitch to beat against. */
 	.page-stage::after {
 		position: fixed;
 		inset: 0;
 		z-index: -1;
 		background:
-			linear-gradient(90deg, rgb(5 7 12 / 0.3), transparent 28% 72%, rgb(5 7 12 / 0.3)),
-			radial-gradient(circle at 2px 2px, rgb(255 255 255 / 0.06) 1px, transparent 1.2px);
-		background-size:
-			auto,
-			16px 16px;
+			linear-gradient(90deg, rgb(5 7 12 / 0.34), transparent 26% 74%, rgb(5 7 12 / 0.34)),
+			url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180"><filter id="g"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3"/><feColorMatrix type="saturate" values="0"/></filter><rect width="180" height="180" filter="url(%23g)" opacity="0.055"/></svg>');
 		content: '';
 	}
 

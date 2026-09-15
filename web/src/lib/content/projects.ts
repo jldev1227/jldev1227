@@ -3,6 +3,22 @@ import type { Localized } from '$i18n';
 /** Panel accent — maps to a CSS custom property in `comic.css`. */
 export type Accent = 'red' | 'blue' | 'yellow' | 'ink';
 
+/**
+ * The world's own colours, sampled from its screenshot so each issue is set in
+ * the app it is about rather than in the site's palette.
+ *
+ * `base` is the field the product actually sits on; `accent` its signal colour.
+ * `on` says whether type on `base` is paper or ink — decided from the measured
+ * luminance, not by eye.
+ */
+export interface Palette {
+	base: string;
+	accent: string;
+	on: 'paper' | 'ink';
+	/** What reads on `accent` — decided the same way, from its luminance. */
+	onAccent: 'paper' | 'ink';
+}
+
 export interface ProjectStat {
 	value: string;
 	label: Localized;
@@ -28,6 +44,7 @@ export interface Project {
 	tagline: Localized;
 	stack: string[];
 	accent: Accent;
+	palette: Palette;
 	image: {
 		src: string;
 		alt: Localized;
@@ -58,6 +75,12 @@ export const projects: Project[] = [
 		},
 		stack: ['SvelteKit', 'TypeScript', 'NestJS', 'PostgreSQL', 'Azure Blob', 'WebSockets'],
 		accent: 'red',
+		palette: {
+			base: '#020619',
+			accent: '#3d82ff',
+			on: 'paper',
+			onAccent: 'ink'
+		},
 		image: {
 			src: '/projects/segispro.webp',
 			alt: {
@@ -187,6 +210,12 @@ export const projects: Project[] = [
 			'H5P'
 		],
 		accent: 'blue',
+		palette: {
+			base: '#fdf6dc',
+			accent: '#2554e2',
+			on: 'ink',
+			onAccent: 'paper'
+		},
 		image: {
 			src: '/projects/formarpro.webp',
 			alt: {
@@ -307,6 +336,12 @@ export const projects: Project[] = [
 		},
 		stack: ['SvelteKit', 'Fastify', 'Prisma', 'PostgreSQL', 'Socket.IO', 'Univer', 'Mapbox', 'PDF'],
 		accent: 'yellow',
+		palette: {
+			base: '#0b1a15',
+			accent: '#17a06f',
+			on: 'paper',
+			onAccent: 'ink'
+		},
 		image: {
 			src: '/projects/transmeralda.webp',
 			alt: {
@@ -427,6 +462,12 @@ export const projects: Project[] = [
 		},
 		stack: ['Swift', 'SwiftUI', 'Kotlin', 'Jetpack Compose', 'SQLite', 'Git worktrees'],
 		accent: 'blue',
+		palette: {
+			base: '#071826',
+			accent: '#d2a53f',
+			on: 'paper',
+			onAccent: 'ink'
+		},
 		link: 'https://github.com/jldev1227',
 		image: {
 			src: '/projects/developer-os.webp',
@@ -548,6 +589,12 @@ export const projects: Project[] = [
 		},
 		stack: ['SvelteKit', 'TypeScript', 'Prisma', 'PostgreSQL', 'Tailwind CSS', 'AVIF', 'PDF'],
 		accent: 'ink',
+		palette: {
+			base: '#f8f3e9',
+			accent: '#c42c36',
+			on: 'ink',
+			onAccent: 'paper'
+		},
 		image: {
 			src: '/projects/gym-vancouver.webp',
 			alt: {

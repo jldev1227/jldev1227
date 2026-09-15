@@ -51,11 +51,14 @@ web/src/
 `src/lib/i18n/ui.ts`. A hard-coded English string in a `.svelte` file is a bug —
 it silently ships untranslated.
 
-**Two path families, not interchangeable.** `homePath` / `missionsPath` /
-`missionPath` wrap SvelteKit's `resolve()` and are for `href` attributes; they
-return *relative* paths during SSR. `path()` returns a root-absolute path and is
-for metadata — canonical, hreflang, JSON-LD, sitemap. Swapping them produces
-URLs like `/en/./es`. See `src/lib/i18n/paths.ts`.
+**Every path is root-absolute.** `path()`, `homePath`, `missionsPath` and
+`missionPath` all return `/es/missions/segispro`-shaped paths, for `href`
+attributes and metadata alike, and `kit.paths.relative` is `false` so SvelteKit's
+own asset URLs match. The href builders used to wrap `resolve()`, which
+type-checks the route id but returns a path *relative to the page being
+rendered*: from `/es/missions/segispro` the link home was served as `../../es`,
+which is only right while the URL carries no trailing slash. See
+`src/lib/i18n/paths.ts`.
 
 **Panels clip their contents.** `.jl-panel` sets `overflow: hidden` so the
 halftone and diagonal fills stay inside the frame. Anything absolutely

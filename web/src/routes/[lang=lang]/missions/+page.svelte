@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Panel, ProjectShot, Seo } from '$lib/components';
+	import { Masthead, PageFooter, Panel, ProjectShot, Seo } from '$lib/components';
 	import { projects } from '$content/projects';
 	import { identity, missionIntro } from '$content/site';
 	import { missionPath, path, translator } from '$i18n';
@@ -31,29 +31,37 @@
 	]}
 />
 
-<div class="jl-grid">
-	<Panel class="index-intro">
-		<h1 class="jl-display">{missionIntro.title[locale]}</h1>
-		<p>{missionIntro.body[locale]}</p>
-	</Panel>
-</div>
+<!-- The index is the shelf, not an issue: an ordinary document, so it keeps the
+     masthead and footer the comics do without. -->
+<div class="jl-page">
+	<Masthead {locale} />
+	<main id="content">
+		<div class="jl-grid">
+			<Panel class="index-intro">
+				<h1 class="jl-display">{missionIntro.title[locale]}</h1>
+				<p>{missionIntro.body[locale]}</p>
+			</Panel>
+		</div>
 
-<div class="jl-grid list">
-	{#each projects as project (project.slug)}
-		<Panel as="article" class="row" data-accent={project.accent}>
-			<a href={missionPath(locale, project.slug)}>
-				<ProjectShot src={project.image.src} alt={project.image.alt[locale]} compact />
-				<div class="row-copy">
-					<span class="jl-kicker number">{project.number}</span>
-					<div class="row-main">
-						<h2 class="jl-display">{project.title}</h2>
-						<p>{project.tagline[locale]}</p>
-					</div>
-					<span class="jl-kicker stack">{project.stack.join(' · ')}</span>
-				</div>
-			</a>
-		</Panel>
-	{/each}
+		<div class="jl-grid list">
+			{#each projects as project (project.slug)}
+				<Panel as="article" class="row" data-accent={project.accent}>
+					<a href={missionPath(locale, project.slug)}>
+						<ProjectShot src={project.image.src} alt={project.image.alt[locale]} compact />
+						<div class="row-copy">
+							<span class="jl-kicker number">{project.number}</span>
+							<div class="row-main">
+								<h2 class="jl-display">{project.title}</h2>
+								<p>{project.tagline[locale]}</p>
+							</div>
+							<span class="jl-kicker stack">{project.stack.join(' · ')}</span>
+						</div>
+					</a>
+				</Panel>
+			{/each}
+		</div>
+	</main>
+	<PageFooter {locale} />
 </div>
 
 <style>

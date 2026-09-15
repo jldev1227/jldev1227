@@ -1,6 +1,8 @@
 # Experimental comic reader
 
-Status: phases 0–4 built; phase 5 (authored artwork) outstanding.
+Status: phases 0–4 built. The next experiment is the three-state comic library
+described in [`LIBRARY-INTERACTION.md`](LIBRARY-INTERACTION.md); authored Rive
+hands remain an external asset milestone.
 
 Branch: `codex/experimental-comic-reader`
 
@@ -16,6 +18,10 @@ at a cover, open it, read spreads, turn pages, enter case files as chapters, and
 finish on a back cover.
 
 ## Experience model
+
+The current reader below remains the working fallback. The planned collection
+entry adds `browse → inspect → read` around it and tests StPageFlip behind an
+adapter; it does not delete this implementation before compatibility is proven.
 
 ```text
 Closed cover
@@ -102,7 +108,7 @@ only to make the page feel busy.
 Animate transforms and opacity wherever possible. Avoid large animated filters,
 continuous background loops, and layout-triggering geometry.
 
-## Technology decision
+## Technology decision for the current reader
 
 Use native browser capabilities first:
 
@@ -117,9 +123,10 @@ Anime.js may be added after the static reader works. Limit it to timeline
 coordination, staggered reveals, and mapping a drag gesture to visual progress.
 Import only the modules used. Svelte owns state and lifecycle; CSS owns layout.
 
-Do not start with a generic flipbook dependency. The site needs readable live
-HTML, bilingual reflow, focus management, and responsive composition more than
-it needs simulated paper curvature.
+The original implementation correctly proved the interaction without a generic
+flipbook dependency. The next experiment may add StPageFlip, Rive, and a tightly
+constrained Three.js inspector under the boundaries and fallback rules in
+[`LIBRARY-INTERACTION.md`](LIBRARY-INTERACTION.md).
 
 ## Delivery phases
 
@@ -174,7 +181,21 @@ switch is printed on the cover as an edition mark and repeated in the closing
 page's colophon, and the colophon carries what the footer used to say. The
 case-file routes keep their masthead and footer — they are ordinary documents.
 
-### Phase 4 — narrative migration — done
+### Phase 4 — narrative migration — done, and a collection
+
+The site is no longer one comic but a collection of them. `/[lang]` is issue
+#1227, the introductory one; every `/[lang]/missions/[slug]` is its own issue of
+`JLDEV case files`, with its own cover — number, cover story, accent — and six
+pages built from the case content: the challenge, the engineering snapshot and
+stack, the approach, the architecture, before/after with the key decisions, and
+the outcome with the way back. Both are read exactly the same way.
+
+The index at `/[lang]/missions` is the shelf rather than an issue, so it stays an
+ordinary document and keeps the masthead and footer the comics do without.
+
+In the introductory issue a case panel is no longer one big link: the panel is
+drag surface and an explicit control opens that issue, so a gesture crossing a
+case file never opens it by accident.
 
 Origin, powers, missions and contact are all pages of the book; nothing is left
 below the reader. Case-file routes remain independent documents and the case
@@ -194,6 +215,14 @@ page.
 Replace temporary graphic composition only with approved authored artwork.
 Tune textures, shadows, transitions, performance, and production metadata.
 
+### Phase 6 — library interaction — planned
+
+Add a semantic comic-box selector inside the library scene, a front/back-only
+book inspector, first-person Rive hands, and an experimental StPageFlip adapter.
+This phase is specified separately
+because it adds an outer experience state machine and three browser runtimes;
+see [`LIBRARY-INTERACTION.md`](LIBRARY-INTERACTION.md).
+
 ## Acceptance criteria
 
 - A first-time visitor understands how to open and navigate the comic.
@@ -206,11 +235,11 @@ Tune textures, shadows, transitions, performance, and production metadata.
 - Existing canonical, hreflang, sitemap, and mission routes do not regress.
 - The final validation gate in `.claude/skills/ship-web/SKILL.md` passes.
 
-## Out of scope for the first prototype
+## Out of scope for the original prototype
 
 - Rewriting case-file narratives.
 - Production deployment.
 - Sound effects.
 - A full-page scroll-controlled cinematic sequence.
-- WebGL or a realistic cloth/paper physics engine.
+- A realistic cloth/paper physics engine.
 - Replacing every current artwork asset.
