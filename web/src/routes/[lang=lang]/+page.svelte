@@ -54,7 +54,7 @@
 		lead: hero.lead[locale],
 		blurb: hero.caption[locale],
 		bubble: hero.bubble[locale],
-		art: { src: '/art/julian-cover-freelancer-v1.webp', width: 1024, height: 1536 }
+		art: { src: '/art/julian-cover-freelancer-v2.webp', width: 1024, height: 1536 }
 	});
 
 	const otherLocale = $derived(other(locale));

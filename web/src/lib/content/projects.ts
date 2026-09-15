@@ -162,7 +162,7 @@ export const projects: Project[] = [
 			onAccent: 'ink'
 		},
 		coverArt: {
-			src: '/art/project-covers/segispro-cover-v1.webp',
+			src: '/art/project-covers/segispro-cover-v2.webp',
 			width: 1024,
 			height: 1536
 		},
@@ -364,7 +364,7 @@ export const projects: Project[] = [
 			onAccent: 'paper'
 		},
 		coverArt: {
-			src: '/art/project-covers/formarpro-cover-v1.webp',
+			src: '/art/project-covers/formarpro-cover-v2.webp',
 			width: 1024,
 			height: 1536
 		},
@@ -559,7 +559,7 @@ export const projects: Project[] = [
 			onAccent: 'ink'
 		},
 		coverArt: {
-			src: '/art/project-covers/transmeralda-cover-v1.webp',
+			src: '/art/project-covers/transmeralda-cover-v2.webp',
 			width: 1024,
 			height: 1536
 		},
@@ -737,7 +737,7 @@ export const projects: Project[] = [
 			onAccent: 'ink'
 		},
 		coverArt: {
-			src: '/art/project-covers/developer-os-cover-v1.webp',
+			src: '/art/project-covers/developer-os-cover-v2.webp',
 			width: 1024,
 			height: 1536
 		},
@@ -928,7 +928,7 @@ export const projects: Project[] = [
 			onAccent: 'paper'
 		},
 		coverArt: {
-			src: '/art/project-covers/gym-vancouver-cover-v1.webp',
+			src: '/art/project-covers/gym-vancouver-cover-v2.webp',
 			width: 1024,
 			height: 1536
 		},
