@@ -7,8 +7,11 @@ description: Add, rename, remove or write a project case file (one of the five w
 
 Projects are **case files** in a comic: `Case file 01 · Platform`. Five of them
 exist, defined once in `web/src/lib/content/projects.ts` and rendered in three
-places — the home page mission panels, `/[lang]/missions`, and
-`/[lang]/missions/[slug]`.
+places — the archive grid on the home page (each case file is its own issue,
+read in a modal), `/[lang]/missions`, and `/[lang]/missions/[slug]`. The eight
+pages of an issue are laid out once, in
+`web/src/lib/components/comic-reader/CaseFilePage.svelte`: challenge, log,
+stack, approach, architecture, modules, before → after, outcome.
 
 ## Adding one
 
@@ -21,7 +24,9 @@ Append to `projects` in `projects.ts`. Every field is required except `link`:
 	kicker: { en: 'Case file 06 · Ops', es: 'Expediente 06 · Operaciones' },
 	title: 'PROJECT NAME',       // rendered uppercase; not translated
 	tagline: { en: '…', es: '…' },
-	stack: ['NestJS', 'Postgres'],
+	stack: ['NestJS', 'Postgres'],             // the core; names as `tech-marks` knows them
+	libraries: ['Prisma', 'Zod', 'Resend'],    // the wider toolkit, read off the repo's manifest
+	modules: [{ name: { en, es }, detail: { en, es } }],   // one per area of the app
 	accent: 'blue',              // red | blue | yellow | ink
 	challenge: { en: '…', es: '…' },
 	approach: { en: '…', es: '…' },
@@ -29,8 +34,23 @@ Append to `projects` in `projects.ts`. Every field is required except `link`:
 }
 ```
 
-Nothing else needs editing. The route's `entries()` generator reads `projects`,
-so the new page prerenders, and the sitemap picks it up.
+Then two generated files:
+
+- **The log.** Add the case file's repositories to `PROJECTS` in
+  `web/scripts/project-history.mjs` and run `node scripts/project-history.mjs`.
+  It reads the local Git history and the tree and writes
+  `src/lib/content/project-history.ts`: first and last commit, commits per
+  month, repositories, and what the tree holds. Aggregates only — no code,
+  path or message leaves the machine. The log page and the calendar in the
+  introductory issue print from it; never type those numbers by hand.
+- **The marks.** Every `stack` and `libraries` entry should have a mark. Add
+  the technology to `MAP` in `web/scripts/tech-marks.mjs` when Simple Icons
+  has it, or to `HAND` with a drawn glyph when it is a concept without a
+  brand, and run `node scripts/tech-marks.mjs`. A wordmark with neither falls
+  back to a monogram on its own.
+
+The route's `entries()` generator reads `projects`, so the new page
+prerenders, and the sitemap picks it up.
 
 **The home page shows the first two large and the rest in a three-up row.** Order
 in the array is the reading order of the comic page; a sixth project makes that

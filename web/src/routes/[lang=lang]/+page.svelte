@@ -1,21 +1,32 @@
 <script lang="ts">
-	import { Caption, Panel, ProjectShot, Seo } from '$lib/components';
-	import { type CoverIssue, type ReaderPage } from '$lib/components/comic-reader';
+	import { Caption, Panel, Seo } from '$lib/components';
+	import {
+		CASE_SECTIONS,
+		CaseFilePage,
+		caseSectionLabel,
+		isCaseSection,
+		type CoverIssue,
+		type ReaderPage
+	} from '$lib/components/comic-reader';
 	import { ComicExperience, type ExperienceVolume } from '$lib/components/comic-experience';
-	import { findProject, projects, type Project } from '$content/projects';
+	import { findProject, projects } from '$content/projects';
+	import { histories, monthSpan } from '$content/project-history';
 	import {
 		contact,
 		// `cover` is aliased: the snippet handed to the reader is named `cover` too.
 		cover as coverCopy,
 		hero,
 		identity,
-		missionIntro,
 		origin,
 		powers,
 		powersPage,
 		seo,
+		stack,
+		stackPage,
+		timelinePage,
 		years
 	} from '$content/site';
+	import { techMark, techMonogram } from '$content/tech-marks';
 	import { page as appPage } from '$app/state';
 	import { homePath, LOCALE_LABEL, missionPath, other, path, swapLocale, translator } from '$i18n';
 	import type { PageProps } from './$types';
@@ -25,12 +36,11 @@
 	const locale = $derived(data.locale);
 	const t = $derived(translator(locale));
 
-	// One case file to a page: a mission gets a page of its own, and every page of
-	// every issue is then printed at the same size.
-
-	// The comic has no masthead, so the closing page carries the indicia: the
-	// colophon, and the second place the other language can be reached.
-	/** This issue's cover furniture, already localized for the cover to print. */
+	/**
+	 * The introductory issue: who is writing, what with, and where to reach
+	 * them. The case files are no longer pages of it — each is an issue of its
+	 * own on the same table.
+	 */
 	const issue = $derived<CoverIssue>({
 		volume: coverCopy.volume[locale],
 		issue: coverCopy.issue,
@@ -53,27 +63,66 @@
 
 	// The reader owns presentation only; the pages it turns are these snippets,
 	// and their copy comes from `$content` like every other string on the site.
-	// A page id is also the URL hash that reopens the book at it, which is what
-	// makes the masthead's #origin, #missions and #contact links work.
-	const readerPages = $derived<ReaderPage[]>([
+	const introPages = $derived<ReaderPage[]>([
 		{ id: 'origin', label: origin.pageLabel[locale], content: pageOrigin },
 		{ id: 'powers', label: powersPage.pageLabel[locale], content: pagePowers },
-		{ id: 'missions', label: missionIntro.pageLabel[locale], content: pageMissions },
-		...projects.map((project) => ({
-			id: project.slug,
-			label: project.title,
-			content: caseFilePage
-		})),
+		{ id: 'stack', label: stackPage.pageLabel[locale], content: pageStack },
+		{ id: 'timeline', label: timelinePage.pageLabel[locale], content: pageTimeline },
 		{ id: 'contact', label: contact.pageLabel[locale], content: pageContact }
 	]);
 
+	/**
+	 * The case files on one calendar, from the earliest first commit to the
+	 * latest last one. Each bar is positioned in months, so overlapping work
+	 * overlaps on the page the way it did in the year.
+	 */
+	const calendar = $derived.by(() => {
+		const since = histories.map((h) => h.since).sort()[0];
+		const until =
+			histories
+				.map((h) => h.until)
+				.sort()
+				.at(-1) ?? since;
+		const months = monthSpan(since, until);
+		const monthName = new Intl.DateTimeFormat(locale, { month: 'short', year: '2-digit' });
+		const label = (id: string) => {
+			const [y, m] = id.split('-').map(Number);
+			return monthName.format(new Date(y, m - 1, 1));
+		};
+		return {
+			months,
+			ticks: months
+				.filter((m, i) => i === 0 || m.endsWith('-01') || i === months.length - 1)
+				.map(label),
+			rows: projects.map((project) => {
+				const history = histories.find((h) => h.slug === project.slug);
+				const start = history ? months.indexOf(history.since) : 0;
+				const end = history ? months.indexOf(history.until) : 0;
+				return {
+					title: project.title,
+					palette: project.palette,
+					commits: history?.commits ?? 0,
+					left: (start / months.length) * 100,
+					width: ((end - start + 1) / months.length) * 100,
+					from: history ? label(history.since) : '',
+					to: history ? label(history.until) : ''
+				};
+			}),
+			total: histories.reduce((sum, h) => sum + h.commits, 0)
+		};
+	});
+
+	/**
+	 * A page snippet is handed its own id and nothing else, so for a case file
+	 * the id carries the issue as well as the section: `segispro--outcome`.
+	 */
 	const archiveVolumes = $derived<ExperienceVolume[]>([
 		{
 			id: 'intro',
 			href: homePath(locale),
 			title: `${identity.alias} ${coverCopy.issue}`,
 			cover: issue,
-			pages: readerPages
+			pages: introPages
 		},
 		...projects.map((project) => ({
 			id: project.slug,
@@ -90,15 +139,18 @@
 				titleTop: project.title,
 				lead: project.tagline[locale],
 				blurb: project.image.caption[locale],
+				art: project.coverArt,
+				coverText: project.coverText,
 				palette: project.palette
 			} satisfies CoverIssue,
-			pages: [
-				{
-					id: project.slug,
-					label: project.title,
-					content: caseFilePage
-				}
-			]
+			pages: CASE_SECTIONS.map(
+				(section) =>
+					({
+						id: `${project.slug}--${section}`,
+						label: caseSectionLabel(t, section),
+						content: casePage
+					}) satisfies ReaderPage
+			)
 		}))
 	]);
 </script>
@@ -158,65 +210,79 @@
 	</div>
 {/snippet}
 
-<!-- ----------------------------------------------------- pages 3, 4 and 5 -- -->
+<!-- ------------------------------------------------------------- page 3 ---- -->
+{#snippet pageStack()}
+	<div class="jl-grid fill">
+		<Panel class="toolkit jl-bleed jl-bleed-top" data-shade="head">
+			<Caption>{stackPage.caption[locale]}</Caption>
+			<div class="toolkit-copy">
+				<h2 class="jl-display">{stackPage.title[locale]}</h2>
+				<p>{stackPage.body[locale]}</p>
 
-<!-- A case file keeps its ordinary anchor: the reader turns pages, it does not
-     replace navigation into the mission routes. -->
-{#snippet caseFile(project: Project, index: number)}
-	{@const flipped = index % 2 === 1}
-	<div
-		class="jl-grid case-page"
-		data-flipped={flipped ? '' : undefined}
-		style="--jl-world-base:{project.palette.base}; --jl-world-accent:{project.palette
-			.accent}; --jl-world-on:{project.palette.on === 'ink'
-			? 'var(--jl-ink)'
-			: 'var(--jl-white)'}; --jl-world-on-accent:{project.palette.onAccent === 'ink'
-			? 'var(--jl-ink)'
-			: 'var(--jl-white)'}"
-	>
-		<Panel class="case-shot jl-bleed">
-			<ProjectShot src={project.image.src} alt={project.image.alt[locale]} compact />
-		</Panel>
-
-		<Panel
-			as="article"
-			class="case"
-			data-accent={project.accent}
-			data-shade={flipped ? 'head' : 'corner'}
-		>
-			<div class="case-copy">
-				<span class="jl-kicker">{project.kicker[locale]}</span>
-				<h3 class="jl-display">{project.title}</h3>
-				<p>{project.tagline[locale]}</p>
-				<span class="jl-kicker stack">{project.stack.slice(0, 4).join(' · ')}</span>
-				<a class="case-open" href={missionPath(locale, project.slug)}>
-					{t('missions.readFile')} · {project.number}
-				</a>
+				<dl class="groups">
+					{#each stack as group (group.label.en)}
+						<div class="group">
+							<dt class="jl-kicker">{group.label[locale]}</dt>
+							<dd>
+								<ul>
+									{#each group.items as tool (tool)}
+										{@const mark = techMark(tool)}
+										<li class="jl-kicker">
+											{#if mark}
+												<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+													<path d={mark.path} />
+												</svg>
+											{:else}
+												<span class="monogram" aria-hidden="true">{techMonogram(tool)}</span>
+											{/if}
+											{tool}
+										</li>
+									{/each}
+								</ul>
+							</dd>
+						</div>
+					{/each}
+				</dl>
 			</div>
 		</Panel>
 	</div>
 {/snippet}
 
-<!--
-	One page per case file. The reader renders a page with its own id, and a case
-	page's id is the project's slug, so one snippet stands in for all five.
--->
-{#snippet caseFilePage(slug: string)}
-	{@const project = findProject(slug)}
-	{#if project}
-		{@render caseFile(project, projects.indexOf(project))}
-	{/if}
-{/snippet}
-
-{#snippet pageMissions()}
+<!-- ------------------------------------------------------------- page 4 ---- -->
+{#snippet pageTimeline()}
 	<div class="jl-grid fill">
-		<Panel class="mission-intro jl-bleed jl-bleed-top" data-shade="head">
-			<h2 class="jl-display">{missionIntro.title[locale]}</h2>
-			<p>{missionIntro.body[locale]}</p>
+		<Panel class="calendar jl-bleed jl-bleed-top" data-shade="corner">
+			<Caption>{timelinePage.caption[locale]}</Caption>
+			<div class="calendar-copy">
+				<h2 class="jl-display">{timelinePage.title[locale]}</h2>
+				<p>{timelinePage.body[locale]}</p>
+
+				<ol class="calendar-rows">
+					{#each calendar.rows as row (row.title)}
+						<li
+							style="--row-left:{row.left}%; --row-width:{row.width}%; --row-accent:{row.palette
+								.accent}"
+						>
+							<span class="calendar-name jl-display">{row.title}</span>
+							<span class="calendar-track" aria-hidden="true"
+								><span class="calendar-bar"></span></span
+							>
+							<span class="calendar-meta jl-kicker">{row.from} → {row.to} · {row.commits}</span>
+						</li>
+					{/each}
+				</ol>
+				<p class="calendar-ticks jl-kicker" aria-hidden="true">
+					{#each calendar.ticks as tick (tick)}<span>{tick}</span>{/each}
+				</p>
+				<p class="calendar-total jl-kicker">
+					{timelinePage.commits[locale].replace('{count}', String(calendar.total))}
+				</p>
+			</div>
 		</Panel>
 	</div>
 {/snippet}
 
+<!-- ------------------------------------------------------------- page 5 ---- -->
 {#snippet pageContact()}
 	<div class="jl-grid fill">
 		<Panel class="contact jl-bleed jl-bleed-top" data-shade="corner">
@@ -230,6 +296,9 @@
 					<li><a href={identity.linkedin} rel="me noopener">{t('contact.linkedin')}</a></li>
 				</ul>
 
+				<!-- The comic has no masthead, so the closing page carries the
+				     indicia: the colophon, and the other place the other language
+				     can be reached. -->
 				<p class="colophon jl-kicker">
 					<span>{t('footer.rights')}</span>
 					<span>© {year} {identity.name} · {identity.domain}</span>
@@ -247,6 +316,19 @@
 			</div>
 		</Panel>
 	</div>
+{/snippet}
+
+<!-- ---------------------------------------------------------- case files -- -->
+
+<!-- One snippet stands in for every page of every case file: the id says
+     which issue and which section, and `CaseFilePage` prints the same page
+     the canonical route does. -->
+{#snippet casePage(id: string)}
+	{@const [slug, section] = id.split('--')}
+	{@const project = findProject(slug)}
+	{#if project && isCaseSection(section)}
+		<CaseFilePage {locale} {project} {section} context="archive" />
+	{/if}
 {/snippet}
 
 <!-- The archive is the homepage. Canonical mission routes remain independent
@@ -276,12 +358,6 @@
 	.fill {
 		flex: 1;
 		grid-template-rows: 1fr;
-	}
-
-	/* Case files only. */
-	.stack {
-		flex: 1;
-		grid-auto-rows: 1fr;
 	}
 
 	/* A panel that sets its own height, then one that takes the rest of the sheet. */
@@ -371,7 +447,7 @@
 	:global(.jl-panel.powers) {
 		display: grid;
 		grid-template-columns: 1.3fr 0.7fr;
-		grid-template-rows: 1.15fr 0.85fr;
+		grid-template-rows: 1.15fr 0.85fr 0.75fr;
 		gap: 5px;
 		min-height: 300px;
 		padding: 5px;
@@ -382,7 +458,7 @@
 		display: flex;
 		flex-direction: column;
 		justify-content: end;
-		min-height: 138px;
+		min-height: 120px;
 		padding: 16px;
 		color: var(--jl-white);
 		background: var(--jl-blue-deep);
@@ -409,22 +485,12 @@
 	.power:nth-child(3) {
 		grid-row: 2;
 		grid-column: 1;
+		background: var(--jl-red);
 	}
 
 	.power:nth-child(4) {
 		grid-row: 3;
 		grid-column: 1 / -1;
-	}
-
-	:global(.jl-panel.powers) {
-		grid-template-rows: 1.15fr 0.85fr 0.75fr;
-	}
-
-	.power:nth-child(3) {
-		background: var(--jl-red);
-	}
-
-	.power:nth-child(4) {
 		background: #1b2a43;
 	}
 
@@ -450,172 +516,275 @@
 		}
 	}
 
-	/* -------------------------------------------------- pages three to five -- */
+	/* -------------------------------------------------------- page three ---- */
 
-	:global(.jl-panel.mission-intro) {
+	/* The deep blue is the reading ground; the signal blue on the diagonal is
+	   a graphic, and nothing is set on it. */
+	:global(.jl-panel.toolkit) {
+		--jl-display-stroke: var(--jl-navy-deep);
+
+		display: grid;
+		min-height: 320px;
+		color: var(--jl-white);
+		background: linear-gradient(160deg, var(--jl-navy-deep) 0 64%, var(--jl-blue-deep) 64%);
+	}
+
+	.toolkit-copy {
 		display: flex;
 		flex-direction: column;
-		justify-content: center;
-		gap: 14px;
-		min-height: 190px;
-		padding: clamp(20px, 5cqi, 34px);
-		color: var(--jl-white);
-		background: linear-gradient(115deg, var(--jl-red) 0 62%, var(--jl-ink) 62%);
+		gap: 12px;
+		min-height: 320px;
+		padding: 104px clamp(18px, 4.5cqi, 34px) clamp(18px, 4.5cqi, 34px);
 	}
 
-	:global(.jl-panel.mission-intro) h2 {
-		max-width: 12ch;
-		font-size: clamp(2rem, 11cqi, 3.6rem);
-		line-height: 0.86;
-		text-shadow: 4px 4px 0 var(--jl-ink);
-	}
-
-	/* A caption plate, so the copy is not crossing the diagonal in mid-sentence. */
-	:global(.jl-panel.mission-intro) p {
-		max-width: 48ch;
+	.toolkit-copy h2 {
 		margin: 0;
-		padding: 11px 13px;
-		color: var(--jl-white);
-		background: color-mix(in oklab, var(--jl-ink) 84%, transparent);
+		font-size: clamp(2rem, 9cqi, 3.4rem);
+		line-height: 0.9;
+		text-shadow: 4px 4px 0 var(--jl-red);
+	}
+
+	.toolkit-copy > p {
+		max-width: 50ch;
+		margin: 0;
+		color: var(--jl-on-dark);
 		font-size: clamp(0.78rem, 2.3cqi, 0.9rem);
 		line-height: 1.55;
 	}
 
-	/*
-	 * Two tones of the world's own palette, on the comic's diagonal.
-	 *
-	 * The far side is a tint of the accent rather than the accent itself. The
-	 * copy block is anchored to the foot of the panel, which is precisely where
-	 * the diagonal has crossed over, so at full strength the summary ran from
-	 * near-black onto raw gold at 2.2:1. The accent keeps full strength only
-	 * where the text on it is `--jl-world-on-accent`: the open control, the
-	 * snapshot panel, the cover plate.
-	 */
-	:global(.jl-panel.case) {
-		--jl-display-stroke: var(--jl-world-base, var(--jl-ink));
-
-		color: var(--jl-world-on, var(--jl-white));
-		background: linear-gradient(
-			150deg,
-			var(--jl-world-base, var(--jl-navy-deep)) 0 55%,
-			color-mix(
-					in oklab,
-					var(--jl-world-accent, var(--jl-red)) 32%,
-					var(--jl-world-base, var(--jl-navy-deep))
-				)
-				55%
-		);
+	.groups {
+		display: grid;
+		gap: 10px;
+		margin: 6px 0 0;
 	}
 
-	/* Two case files share a page, so the shot is a band across the top of the
-	   panel rather than the 16:9 hero it is on the case-file route. */
-	:global(.jl-panel.case .frame) {
-		aspect-ratio: 16 / 7;
+	.group {
+		display: grid;
+		gap: 6px;
 	}
 
-	/* One shot, one block of copy, and which of the two leads alternates down the
-	   issue, so no two case files are laid out the same way. */
-	.case-page {
-		flex: 1;
-		grid-template-rows: 1.05fr 1fr;
+	.group dt {
+		color: var(--jl-yellow);
+		font-size: clamp(0.56rem, 1.8cqi, 0.66rem);
 	}
 
-	.case-page[data-flipped] {
-		grid-template-rows: 1fr 1.05fr;
+	.group dd {
+		margin: 0;
 	}
 
-	.case-page > :global(:nth-child(1)) {
-		grid-row: 1;
+	.group ul {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
 	}
 
-	.case-page > :global(:nth-child(2)) {
-		grid-row: 2;
+	/* Chips, the way a case file lists its technologies: the mark first, then
+	   the name, in a rule of the accent rather than a filled block. */
+	.group li {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		padding: 5px 9px;
+		border: 2px solid color-mix(in oklab, var(--jl-yellow) 55%, transparent);
+		font-size: clamp(0.54rem, 1.7cqi, 0.64rem);
 	}
 
-	.case-page[data-flipped] > :global(:nth-child(1)) {
-		grid-row: 2;
+	.group svg {
+		width: 13px;
+		height: 13px;
+		fill: var(--jl-yellow);
 	}
 
-	.case-page[data-flipped] > :global(:nth-child(2)) {
-		grid-row: 1;
+	.monogram {
+		display: grid;
+		place-items: center;
+		width: 13px;
+		height: 13px;
+		color: var(--jl-yellow);
+		font-size: 0.45rem;
+		font-weight: 600;
+		letter-spacing: 0;
 	}
 
-	/* The shot sits on its own world's colour, with room for its frame. */
-	:global(.jl-panel.case-shot) {
-		--jl-shot-mat: var(--jl-world-base, var(--jl-ink));
+	/* --------------------------------------------------------- page four ---- */
+
+	:global(.jl-panel.calendar) {
+		--jl-display-stroke: var(--jl-navy-deep);
 
 		display: grid;
-		padding: clamp(12px, 3.5cqi, 24px);
-		background: var(--jl-world-base, var(--jl-ink));
+		min-height: 320px;
+		color: var(--jl-white);
+		background: linear-gradient(160deg, var(--jl-navy-deep) 0 62%, var(--jl-blue-deep) 62%);
 	}
 
-	:global(.jl-panel.case-shot figure) {
-		height: 100%;
-	}
-
-	/* The panel itself is drag surface: only the control below navigates, so a
-	   gesture that crosses a case file never opens it by accident. */
-	:global(.jl-panel.case) {
+	.calendar-copy {
 		display: flex;
 		flex-direction: column;
+		gap: 12px;
+		min-height: 320px;
+		padding: 104px clamp(18px, 4.5cqi, 34px) clamp(18px, 4.5cqi, 34px);
 	}
 
-	.case-copy {
-		display: flex;
-		flex-direction: column;
-		align-items: start;
-		margin-top: auto;
-		padding: clamp(14px, 4cqi, 24px);
-	}
-
-	.case-copy h3 {
-		max-width: 13ch;
-		margin: 6px 0 8px;
-		font-size: clamp(1.5rem, 7cqi, 2.5rem);
+	.calendar-copy h2 {
+		margin: 0;
+		font-size: clamp(2rem, 9cqi, 3.4rem);
 		line-height: 0.9;
+		text-shadow: 4px 4px 0 var(--jl-red);
 	}
 
-	.case-copy p {
-		max-width: 40ch;
-		margin: 0 0 12px;
-		font-size: clamp(0.74rem, 2.2cqi, 0.82rem);
-		line-height: 1.5;
+	.calendar-copy > p {
+		max-width: 50ch;
+		margin: 0;
+		color: var(--jl-on-dark);
+		font-size: clamp(0.78rem, 2.3cqi, 0.9rem);
+		line-height: 1.55;
 	}
 
-	.case-copy .stack {
-		font-size: clamp(0.58rem, 1.8cqi, 0.66rem);
-		opacity: 0.75;
+	.calendar-rows {
+		display: grid;
+		gap: 9px;
+		margin: 6px 0 0;
+		padding: 0;
+		list-style: none;
 	}
 
-	.case-open {
-		margin-top: 14px;
-		padding: 9px 14px;
-		color: var(--jl-world-on-accent, var(--jl-ink));
-		background: var(--jl-world-accent, var(--jl-yellow));
-		border: 3px solid var(--jl-world-on, var(--jl-ink));
-		box-shadow: 4px 4px 0 var(--jl-world-on, var(--jl-ink));
-		font-family: var(--jl-font-body);
-		font-size: clamp(0.62rem, 2cqi, 0.72rem);
-		font-weight: 600;
-		letter-spacing: 0.06em;
-		text-decoration: none;
-		text-transform: uppercase;
+	/* Name, then the bar on a shared axis, then the dates it spans. */
+	.calendar-rows li {
+		display: grid;
+		gap: 3px;
 	}
 
-	.case-open:hover {
-		color: var(--jl-world-accent, var(--jl-red));
-		background: var(--jl-world-on, var(--jl-white));
+	.calendar-name {
+		font-size: clamp(0.72rem, 2.6cqi, 0.9rem);
+		letter-spacing: 0.03em;
 	}
 
-	/* ---------------------------------------------------------- page six ---- */
+	.calendar-track {
+		position: relative;
+		display: block;
+		height: 12px;
+		background: repeating-linear-gradient(
+			90deg,
+			rgb(255 253 246 / 0.1) 0 1px,
+			transparent 1px calc(100% / 12)
+		);
+		border-bottom: 1px solid rgb(255 253 246 / 0.25);
+	}
+
+	.calendar-bar {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: var(--row-left);
+		width: var(--row-width);
+		background: var(--row-accent, var(--jl-yellow));
+		box-shadow: 2px 2px 0 var(--jl-ink);
+	}
+
+	.calendar-meta {
+		color: var(--jl-on-dark-dim);
+		font-size: clamp(0.5rem, 1.6cqi, 0.6rem);
+	}
+
+	.calendar-ticks {
+		display: flex;
+		justify-content: space-between;
+		margin: 2px 0 0;
+		color: var(--jl-on-dark-dim);
+		font-size: clamp(0.5rem, 1.6cqi, 0.6rem);
+	}
+
+	.calendar-total {
+		margin: 4px 0 0;
+		color: var(--jl-yellow);
+		font-size: clamp(0.56rem, 1.8cqi, 0.66rem);
+	}
+
+	/* ------------------------------------------------------- a short page ---- */
+
+	/* Same rule as the case files: a page sized to a short screen tightens. */
+	@container jl-page (max-height: 720px) {
+		.origin-copy,
+		.toolkit-copy,
+		.calendar-copy,
+		.contact-copy {
+			padding-top: 84px;
+		}
+
+		.toolkit-copy,
+		.calendar-copy {
+			gap: 8px;
+			padding-inline: clamp(14px, 3.5cqi, 24px);
+			padding-bottom: 14px;
+		}
+
+		.toolkit-copy h2,
+		.calendar-copy h2 {
+			font-size: clamp(1.6rem, 7cqi, 2.6rem);
+		}
+
+		.toolkit-copy > p,
+		.calendar-copy > p {
+			font-size: clamp(0.7rem, 2.1cqi, 0.82rem);
+			line-height: 1.45;
+		}
+
+		.groups {
+			gap: 6px;
+		}
+
+		.group {
+			gap: 4px;
+		}
+
+		.group ul {
+			gap: 4px;
+		}
+
+		.group li {
+			padding: 3px 7px;
+			font-size: clamp(0.5rem, 1.6cqi, 0.58rem);
+		}
+
+		.calendar-rows {
+			gap: 5px;
+		}
+
+		.calendar-track {
+			height: 9px;
+		}
+
+		.years-copy {
+			min-height: 180px;
+			padding-top: 84px;
+		}
+
+		.contact-copy p {
+			margin: 10px 0 14px;
+		}
+
+		:global(.jl-panel.years) {
+			min-height: 180px;
+		}
+
+		.power {
+			min-height: 96px;
+			padding: 10px 12px;
+		}
+	}
+
+	/* --------------------------------------------------------- page five ---- */
 
 	:global(.jl-panel.contact) {
 		min-height: 300px;
 		background: linear-gradient(135deg, var(--jl-ink) 0 58%, var(--jl-blue-deep) 58%);
 	}
 
-	/* Top padding reserves the caption's corner, the same way page one does. */
-	/* The closing page fills a whole sheet, so the copy sits in the middle of it
+	/* Top padding reserves the caption's corner, the same way page one does.
+	   The closing page fills a whole sheet, so the copy sits in the middle of it
 	   rather than at the foot of a short panel. */
 	.contact-copy {
 		display: flex;

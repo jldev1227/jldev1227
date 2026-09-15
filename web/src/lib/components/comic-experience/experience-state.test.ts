@@ -46,7 +46,7 @@ describe('the direct box-to-reader flow', () => {
 });
 
 describe('URL restoration', () => {
-	it('stores the selected issue and StPageFlip page', () => {
+	it('stores the selected issue and reading position', () => {
 		expect(toHash(BROWSE)).toBe('');
 		expect(toHash(read('segispro'))).toBe('#segispro/p0');
 		expect(toHash(read('segispro', 4))).toBe('#segispro/p4');

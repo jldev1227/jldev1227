@@ -4,17 +4,17 @@
 	import type { ExperienceVolume } from './ComicExperience.svelte';
 
 	/**
-	 * One issue standing on the shelf: a cover face and the sliver of spine you
-	 * see when a comic is stacked with its neighbours.
+	 * One issue in the grid: a cover, face up.
 	 *
 	 * It is an ordinary anchor to the issue's canonical route. Without scripting
-	 * that is the whole behaviour — a link to a readable document — and the shelf
+	 * that is the whole behaviour — a link to a readable document — and the grid
 	 * only takes the click over once it has enhanced itself.
 	 *
-	 * The cover is drawn from the issue's own palette rather than the house
-	 * colours, so the five volumes read as five different comics at a glance.
-	 * It is not a miniature of `ComicCover`: at this size the furniture would be
-	 * illegible, so the face carries only what identifies the issue.
+	 * The introductory issue is the one with an illustration; the case files are
+	 * drawn from their own palettes rather than the house colours, so the six
+	 * read as six different comics at a glance. Neither is a miniature of
+	 * `ComicCover`: at this size the furniture would be illegible, so the face
+	 * carries only what identifies the issue.
 	 */
 
 	interface Props {
@@ -22,24 +22,22 @@
 		volume: ExperienceVolume;
 		/** Roving tabindex: exactly one volume is in the tab order at a time. */
 		tabbable: boolean;
-		disabled?: boolean;
-		variant?: 'shelf' | 'box';
-		onselect: (rect: DOMRect) => void;
+		/**
+		 * The cover the reader will open next, or has just closed. It carries the
+		 * view-transition name, so opening morphs this face into the book's
+		 * cover and closing morphs it back. One volume at a time, or the browser
+		 * skips the transition.
+		 */
+		named?: boolean;
+		onselect: () => void;
 		onfocus: () => void;
 	}
 
-	let {
-		locale,
-		volume,
-		tabbable,
-		disabled = false,
-		variant = 'shelf',
-		onselect,
-		onfocus
-	}: Props = $props();
+	let { locale, volume, tabbable, named = false, onselect, onfocus }: Props = $props();
 
 	const t = $derived(translator(locale));
 	const palette = $derived(volume.cover.palette);
+	const art = $derived(volume.cover.art);
 
 	const style = $derived(
 		palette
@@ -54,85 +52,80 @@
 	export function focus() {
 		anchor?.focus();
 	}
-
-	export function rect(): DOMRect {
-		return anchor?.getBoundingClientRect() ?? new DOMRect();
-	}
 </script>
 
 <a
 	bind:this={anchor}
 	class="volume"
-	data-variant={variant}
+	data-art={art ? '' : undefined}
+	data-cover-text={volume.cover.coverText}
 	href={volume.href}
 	{style}
 	tabindex={tabbable ? 0 : -1}
 	aria-label={format(t('library.pickUp'), { title: volume.title })}
-	aria-disabled={disabled}
 	onfocus={() => onfocus()}
 	onclick={(event) => {
-		if (disabled) {
-			event.preventDefault();
-			return;
-		}
 		if (event.metaKey || event.ctrlKey || event.shiftKey) return;
 		event.preventDefault();
-		onselect(rect());
+		onselect();
 	}}
 >
-	<!-- The spine is what a comic shows its neighbours; it carries no copy a
-	     screen reader would want, because the link is already named. -->
-	<span class="spine" aria-hidden="true"></span>
+	<span class="face" style:view-transition-name={named ? 'issue-cover' : undefined}>
+		{#if art}
+			<img
+				class="art"
+				src={art.src}
+				alt=""
+				width={art.width}
+				height={art.height}
+				loading="lazy"
+				decoding="async"
+				draggable="false"
+			/>
+		{/if}
 
-	<span class="face">
 		<span class="masthead" aria-hidden="true">{identity.alias}</span>
 		<span class="number">{volume.cover.issue}</span>
-		<span class="kicker">{volume.cover.storyKicker}</span>
-		<strong class="title jl-display">{volume.cover.titleTop}</strong>
+
+		<span class="story">
+			<span class="kicker">{volume.cover.storyKicker}</span>
+			<strong class="title jl-display">
+				{volume.cover.titleTop}
+				{#if volume.cover.titleAccent}
+					<span class="accent">{volume.cover.titleAccent}</span>
+				{/if}
+			</strong>
+			<!-- The illustrated cover already says what it is; a case file gets
+			     its tagline, because at this size the title alone is a name. -->
+			{#if !art}
+				<span class="lead">{volume.cover.lead}</span>
+			{/if}
+		</span>
 	</span>
 </a>
 
 <style>
 	/*
-	 * A book on a shelf is seen at an angle, so the resting state is turned
-	 * slightly away and the hover/focus state squares up and steps forward —
-	 * the camera-like push-in the plan asks for. Everything is transform and
-	 * opacity: no layout moves, so a row of five does not reflow on hover.
+	 * A comic lying face up on the table. Hover and focus lift it towards the
+	 * reader; everything is transform and filter, so a row of covers does not
+	 * reflow when one of them rises.
 	 */
 	.volume {
 		position: relative;
 		display: block;
 		width: 100%;
-		aspect-ratio: var(--jl-page-ratio, 0.66);
+		aspect-ratio: 2 / 3;
 		color: var(--jl-world-on, var(--jl-white));
 		text-decoration: none;
-		transform: perspective(900px) rotateY(-13deg) translateZ(0);
-		transform-origin: left center;
 		transition:
 			transform var(--jl-motion-panel, 220ms) var(--jl-paper-ease, ease),
 			filter var(--jl-motion-panel, 220ms) var(--jl-paper-ease, ease);
-		filter: drop-shadow(10px 10px 0 rgb(5 7 12 / 0.45));
+		filter: drop-shadow(8px 10px 0 rgb(5 7 12 / 0.55));
 	}
 
 	.volume:is(:hover, :focus-visible) {
-		transform: perspective(900px) rotateY(0deg) translateY(-10px) scale(1.04);
-		filter: drop-shadow(14px 16px 0 rgb(5 7 12 / 0.55));
-	}
-
-	.volume[data-variant='box'] {
-		height: 100%;
-		aspect-ratio: auto;
-		transform: perspective(700px) rotateY(-8deg) translateZ(0);
-		filter: drop-shadow(3px 5px 0 rgb(5 7 12 / 0.42));
-	}
-
-	.volume[data-variant='box']:is(:hover, :focus-visible) {
-		transform: perspective(700px) rotateY(0) translateY(-7%) scale(1.04);
-		filter: drop-shadow(5px 8px 0 rgb(5 7 12 / 0.55));
-	}
-
-	.volume[aria-disabled='true'] {
-		pointer-events: none;
+		transform: translateY(-8px) scale(1.03);
+		filter: drop-shadow(12px 16px 0 rgb(5 7 12 / 0.6));
 	}
 
 	/* The ink outline a comic panel wears, kept on focus rather than the
@@ -142,54 +135,21 @@
 		outline-offset: 4px;
 	}
 
-	/* ------------------------------------------------------------- spine ---- */
-
-	.spine {
-		position: absolute;
-		top: 0;
-		bottom: 0;
-		left: -11px;
-		width: 11px;
-		background: color-mix(in oklab, var(--jl-world-base, var(--jl-navy)) 62%, var(--jl-ink));
-		border: 3px solid var(--jl-ink);
-		border-right: 0;
-	}
-
 	/* -------------------------------------------------------------- face ---- */
 
 	.face {
 		container-type: inline-size;
 		position: relative;
 		display: grid;
-		grid-template-rows: auto auto 1fr;
+		grid-template-columns: 1fr auto;
+		grid-template-rows: auto 1fr;
 		gap: 4px;
 		height: 100%;
+		overflow: hidden;
 		padding: clamp(8px, 7cqi, 16px);
 		background: var(--jl-world-base, var(--jl-navy));
 		border: var(--jl-border) solid var(--jl-ink);
-	}
-
-	.volume[data-variant='box'] .face {
-		gap: 2px;
-		padding: 5px 3px;
-	}
-
-	.volume[data-variant='box'] .masthead,
-	.volume[data-variant='box'] .kicker {
-		display: none;
-	}
-
-	.volume[data-variant='box'] .number {
-		font-size: clamp(0.34rem, 1vw, 0.48rem);
-		text-align: center;
-	}
-
-	.volume[data-variant='box'] .title {
-		justify-self: center;
-		font-size: clamp(0.46rem, 1.35vw, 0.72rem);
-		line-height: 0.9;
-		writing-mode: vertical-rl;
-		transform: rotate(180deg);
+		isolation: isolate;
 	}
 
 	/*
@@ -214,21 +174,29 @@
 		);
 	}
 
-	.face {
-		isolation: isolate;
+	.art {
+		position: absolute;
+		inset: 0;
+		z-index: -2;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: center top;
 	}
 
 	.masthead {
 		font-family: var(--jl-font-display);
-		font-size: clamp(0.62rem, 9cqi, 1.1rem);
+		font-size: clamp(0.72rem, 10cqi, 1.3rem);
 		letter-spacing: 0.02em;
 		line-height: 1;
+		text-shadow: 2px 2px 0 var(--jl-ink);
+		transform: skewX(-7deg);
 	}
 
 	.number,
 	.kicker {
 		font-family: var(--jl-font-mono);
-		font-size: clamp(0.38rem, 3.6cqi, 0.52rem);
+		font-size: clamp(0.4rem, 3.8cqi, 0.56rem);
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
 	}
@@ -240,6 +208,7 @@
 	 * measuring 3.0–4.2:1 across the five worlds.
 	 */
 	.number {
+		align-self: start;
 		color: color-mix(
 			in oklab,
 			var(--jl-world-accent, var(--jl-yellow)) 62%,
@@ -248,24 +217,88 @@
 		font-weight: 600;
 	}
 
+	.story {
+		grid-column: 1 / -1;
+		align-self: end;
+		display: grid;
+		gap: 4px;
+	}
+
 	.kicker {
 		color: color-mix(in oklab, var(--jl-world-on, var(--jl-white)) 78%, transparent);
 	}
 
 	.title {
-		align-self: end;
-		font-size: clamp(0.8rem, 13cqi, 1.6rem);
+		font-size: clamp(0.82rem, 13cqi, 1.6rem);
 		line-height: 0.88;
 		/* Anton's accents sit above the line box; the stroke is what separates
 		   them from the line above. On a world's own ground that is the ground. */
 		--jl-display-stroke: var(--jl-world-base, var(--jl-navy));
 	}
 
+	.title .accent {
+		display: block;
+		color: var(--jl-yellow);
+	}
+
+	.lead {
+		display: -webkit-box;
+		overflow: hidden;
+		margin-top: 2px;
+		color: color-mix(in oklab, var(--jl-world-on, var(--jl-white)) 84%, transparent);
+		font-size: clamp(0.5rem, 4cqi, 0.66rem);
+		line-height: 1.4;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 3;
+		line-clamp: 3;
+	}
+
+	/* ---------------------------------------------------- the illustrated one -- */
+
+	/*
+	 * Lettering over an illustration needs something to sit on, the same way the
+	 * full cover prints a flat field under its cover lines. The masthead gets a
+	 * band across the top, the story a band across the foot, and the middle of
+	 * the drawing is left alone.
+	 */
+	.volume[data-art] .face {
+		background: #0d182b;
+		--jl-world-base: #0d182b;
+	}
+
+	.volume[data-art] .face::before {
+		background: linear-gradient(
+			to bottom,
+			rgb(13 24 43 / 0.86) 0 18%,
+			transparent 30% 62%,
+			rgb(13 24 43 / 0.9) 74%
+		);
+	}
+
+	.volume[data-art] .number {
+		color: var(--jl-yellow);
+	}
+
+	.volume[data-art] .title {
+		text-shadow: 3px 3px 0 var(--jl-ink);
+	}
+
+	/* The two light illustrated issues keep their grid furniture in paper white;
+	   the dark press bands provide the contrast, not the project's page palette. */
+	.volume[data-cover-text='paper'] {
+		--jl-world-on: var(--jl-white);
+		color: var(--jl-white);
+	}
+
+	.volume[data-cover-text='paper'] :is(.masthead, .number, .kicker, .title) {
+		color: var(--jl-white);
+	}
+
 	/* --------------------------------------------------- reduced motion ---- */
 
 	/*
-	 * No pickup, no tilt, no travel. The volume still has to say which one is
-	 * under the pointer or the focus ring, so the accent border does it.
+	 * No lift, no travel. The volume still has to say which one is under the
+	 * pointer or the focus ring, so the accent border does it.
 	 */
 	@media (prefers-reduced-motion: reduce) {
 		.volume,
@@ -275,24 +308,7 @@
 		}
 
 		.volume:is(:hover, :focus-visible) .face {
-			border-color: var(--jl-world-accent, var(--jl-yellow));
-		}
-	}
-
-	/*
-	 * A phone is not a shelf seen from an angle: the perspective goes, and what
-	 * is left is a flat card in a snap row. Handled here rather than in the
-	 * shelf so a volume is correct wherever it is placed.
-	 */
-	@media (width < 640px) {
-		.volume,
-		.volume:is(:hover, :focus-visible) {
-			transform: none;
-			filter: drop-shadow(6px 6px 0 rgb(5 7 12 / 0.4));
-		}
-
-		.spine {
-			display: none;
+			border-color: var(--jl-yellow);
 		}
 	}
 </style>

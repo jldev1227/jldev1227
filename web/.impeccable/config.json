@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "src/lib/components/comic-reader/CaseFilePage.svelte"
+        ],
+        "createdAt": "2026-09-15T05:41:29.150Z",
+        "reason": "Claude: rule moved verbatim from routes/[lang=lang]/missions/[slug]/+page.svelte, the existing case-file architecture list; not a new design decision"
+      }
+    ]
+  }
+}

@@ -48,7 +48,13 @@
 	 * pages and becomes two cramped ones. Measured on the book's stage, not the
 	 * window, so the reader answers to the room it actually has.
 	 */
-	const SPREAD_MIN = 800;
+	export const SPREAD_MIN = 800;
+
+	/**
+	 * Width over height of one printed page — the proportion every issue is set
+	 * at, and the number a host needs to size the book to the room it has.
+	 */
+	export const PAGE_RATIO = 0.66;
 </script>
 
 <script lang="ts">
@@ -81,11 +87,31 @@
 		pages: ReaderPage[];
 		/** Disable when a parent experience owns the URL hash. */
 		manageHash?: boolean;
+		/** Where to open, when the host owns the position: 0 is the cover. */
+		initialPage?: number;
+		/** The leading page of the view, every time a turn lands or a reflow moves it. */
+		onpagechange?: (page: number) => void;
+		/**
+		 * Take the arrow keys from the window rather than from within the reader.
+		 * For a host that is already modal, where nothing else could want them.
+		 */
+		globalKeys?: boolean;
+		/** Put focus on the book as soon as it can be read. */
+		focusOnMount?: boolean;
 		/** The cover is handed the controls it needs rather than reaching for them. */
 		cover: Snippet<[{ enhanced: boolean; open: () => void }]>;
 	}
 
-	let { locale, pages, manageHash = true, cover }: Props = $props();
+	let {
+		locale,
+		pages,
+		manageHash = true,
+		initialPage = 0,
+		onpagechange,
+		globalKeys = false,
+		focusOnMount = false,
+		cover
+	}: Props = $props();
 
 	const t = $derived(translator(locale));
 
@@ -198,6 +224,16 @@
 	function faceAngle(at: number): number {
 		if (pagesPerView === 2 || !turn || at !== movingFace) return 0;
 		return turn.direction === 'forward' ? -180 * turn.progress : -180 * (1 - turn.progress);
+	}
+
+	/**
+	 * How much of the light a sheet is turned away from, 0 lying flat to 1
+	 * standing upright between the pages. The eye reads paper from this more
+	 * than from the rotation itself: a card sliding stays evenly lit, a page
+	 * turning goes into shadow and comes back out of it.
+	 */
+	function light(angle: number): number {
+		return Math.sin((Math.abs(angle) * Math.PI) / 180);
 	}
 
 	/**
@@ -341,14 +377,18 @@
 		const turned = reader;
 		reader = settle(reader);
 		syncHash();
+		onpagechange?.(target(reader));
 
 		await tick();
 
-		// Only when the cover is involved: opening it takes its own open control
-		// out of reach, and closing it takes the page away. A page-to-page turn
-		// leaves focus where the reader put it.
+		// Focus follows the reading. The page just left is inert now, and a
+		// focused element that goes inert is dropped on the body — after which
+		// the next Tab starts from the top of the document. Only a focus that
+		// was somewhere else on purpose is left alone.
 		if (turned.mode !== 'turning') return;
-		if (turned.from !== COVER && turned.to !== COVER) return;
+		const active = document.activeElement;
+		const inside = !active || active === document.body || root?.contains(active);
+		if (!inside) return;
 
 		if (reader.mode === 'open') pageEls[reader.page]?.focus();
 		else root?.querySelector<HTMLElement>('.cover button')?.focus();
@@ -530,10 +570,12 @@
 			if (next === pagesPerView) return;
 
 			pagesPerView = next;
+			const before = target(reader);
 			reader = reflow(reader, { pageCount: pages.length, pagesPerView: next });
 			// A spread collapsing to one page changes which page leads the view, so
-			// the hash has to follow it.
+			// the hash — or the host that keeps it — has to follow.
 			if (enhanced && manageHash) syncHash();
+			if (enhanced && target(reader) !== before) onpagechange?.(target(reader));
 		};
 
 		applyMotion();
@@ -558,16 +600,27 @@
 			observer.observe(stage);
 		}
 
-		// A hash already in the URL is a reading position, not an animation cue:
-		// the book is simply already open there.
+		// A position already known — a hash in the URL, or the host's — is a
+		// reading position, not an animation cue: the book is simply already
+		// open there.
 		if (manageHash) {
 			const restored = pageOf(appPage.url.hash);
 			if (restored !== null) reader = reflow({ mode: 'open', page: restored }, geometry);
+		} else if (initialPage > COVER) {
+			reader = reflow({ mode: 'open', page: initialPage }, geometry);
 		}
 
 		enhanced = true;
 
+		if (focusOnMount) {
+			void tick().then(() => {
+				if (reader.mode === 'open') pageEls[reader.page]?.focus();
+				else root?.querySelector<HTMLElement>('.cover button')?.focus();
+			});
+		}
+
 		if (manageHash) window.addEventListener('hashchange', onHashChange);
+		if (globalKeys) window.addEventListener('keydown', onKeydown);
 		window.addEventListener('pointermove', onPointerMove, { passive: false });
 		window.addEventListener('pointerup', onPointerUp);
 		window.addEventListener('pointercancel', onPointerCancel);
@@ -576,6 +629,7 @@
 			observer.disconnect();
 			reduced.removeEventListener('change', applyMotion);
 			if (manageHash) window.removeEventListener('hashchange', onHashChange);
+			if (globalKeys) window.removeEventListener('keydown', onKeydown);
 			window.removeEventListener('pointermove', onPointerMove);
 			window.removeEventListener('pointerup', onPointerUp);
 			window.removeEventListener('pointercancel', onPointerCancel);
@@ -640,7 +694,9 @@
 		class="face {which}"
 		data-shown={faceShown(at) ? '' : undefined}
 		data-live={faceLive(face) ? '' : undefined}
-		style="--jl-face-angle:{faceAngle(at)}deg; --jl-face-z:{at === movingFace ? 2 : 1}"
+		style="--jl-face-angle:{faceAngle(at)}deg; --jl-face-z:{at === movingFace
+			? 2
+			: 1}; --jl-face-light:{light(faceAngle(at))}"
 	>
 		{#if face.kind === 'cover'}
 			{@render cover({ enhanced, open: () => run(forward(reader, geometry)) })}
@@ -673,7 +729,7 @@
 	style={readerStyle}
 	aria-label={t('reader.label')}
 	aria-roledescription={t('reader.roledescription')}
-	onkeydown={onKeydown}
+	onkeydown={globalKeys ? undefined : onKeydown}
 >
 	<div class="stage" bind:this={stage}>
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -692,7 +748,9 @@
 				<div
 					class="leaf"
 					data-shown={leafShown(sheet.index) ? '' : undefined}
-					style="--jl-leaf-angle:{leafAngle(sheet.index)}deg; --jl-leaf-z:{leafDepth(sheet.index)}"
+					style="--jl-leaf-angle:{leafAngle(sheet.index)}deg; --jl-leaf-z:{leafDepth(
+						sheet.index
+					)}; --jl-leaf-light:{light(leafAngle(sheet.index))}"
 				>
 					{@render side(sheet.front, sheet.index * 2, 'front')}
 					{@render side(sheet.back, sheet.index * 2 + 1, 'back')}
@@ -818,8 +876,22 @@
 		grid-template-columns: 1fr;
 	}
 
+	/*
+	 * Once the gauge gives every sheet its height, a page knows both of its
+	 * dimensions, and its panels can answer to the height as well as the
+	 * width: a short screen gets a short book, and the pages inside it have
+	 * to set their type accordingly. What does not fit is clipped at the
+	 * paper's edge rather than spilling out from under the sheet.
+	 */
 	.reader[data-enhanced] .page {
 		height: 100%;
+	}
+
+	/* On a spread only: one page at a time is allowed to grow with what is on
+	   it, the way the phone layout always has. */
+	.reader[data-enhanced][data-view='2'] .page {
+		overflow: hidden;
+		container-type: size;
 	}
 
 	.reader[data-enhanced] .page:focus-visible {
@@ -865,6 +937,10 @@
 		display: grid;
 		grid-row: 1;
 		grid-column: 2;
+		/* The gauge sets the page's height; a sheet contributes none of its own,
+		   so a cover with more on it than a page does not make the book taller
+		   while it is closed and shorter once it opens. */
+		contain: size;
 		z-index: var(--jl-leaf-z, 1);
 		box-shadow: 0 18px 40px rgb(0 0 0 / 0.38);
 		transform: rotateY(var(--jl-leaf-angle, 0deg));
@@ -877,9 +953,37 @@
 	}
 
 	.reader[data-enhanced][data-view='2'] .face {
+		position: relative;
 		display: grid;
 		grid-area: 1 / 1;
 		backface-visibility: hidden;
+	}
+
+	/*
+	 * The light. A sheet standing between the pages is turned away from it:
+	 * the face goes into shadow towards the upright and comes back out as it
+	 * lies down, with a thin highlight along the edge that is nearest the lamp.
+	 * An overlay driven by the angle, so it costs the compositor an opacity and
+	 * nothing else.
+	 */
+	.reader[data-enhanced] .face::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		z-index: 5;
+		background: linear-gradient(
+			90deg,
+			rgb(5 7 12 / 0.5),
+			rgb(5 7 12 / 0.18) 40%,
+			rgb(255 253 246 / 0.08) 85%,
+			rgb(255 253 246 / 0.18)
+		);
+		opacity: var(--jl-leaf-light, 0);
+		pointer-events: none;
+	}
+
+	.reader[data-enhanced][data-view='1'] .face::after {
+		opacity: var(--jl-face-light, 0);
 	}
 
 	.reader[data-enhanced] .face:not([data-live]) {
@@ -921,6 +1025,7 @@
 	}
 
 	.reader[data-enhanced][data-view='1'] .face {
+		position: relative;
 		display: grid;
 		grid-area: 1 / 1;
 		visibility: hidden;

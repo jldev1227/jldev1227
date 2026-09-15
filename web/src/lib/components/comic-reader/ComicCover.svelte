@@ -18,6 +18,7 @@
 		blurb: string;
 		bubble?: string;
 		art?: { src: string; width: number; height: number };
+		coverText?: 'paper';
 		/**
 		 * The world's own colours, so every issue is set in the app it is about.
 		 * Omitted on the introductory issue, which uses the house palette.
@@ -53,6 +54,7 @@
 	<div
 		class="cover"
 		data-themed={issue.palette ? '' : undefined}
+		data-cover-text={issue.coverText}
 		style={issue.palette
 			? `--jl-world-base:${issue.palette.base}; --jl-world-accent:${issue.palette.accent}; --jl-world-on:${issue.palette.on === 'ink' ? 'var(--jl-ink)' : 'var(--jl-white)'}; --jl-world-on-accent:${issue.palette.onAccent === 'ink' ? 'var(--jl-ink)' : 'var(--jl-white)'}`
 			: undefined}
@@ -152,6 +154,20 @@
 			var(--jl-world-base) 0 54%,
 			color-mix(in oklab, var(--jl-world-accent) 36%, var(--jl-world-base)) 54%
 		);
+	}
+
+	/* Bright illustrated issues need one stable ink colour across the whole
+	   composition, independent of the lighter palette used by their inner pages. */
+	.cover[data-themed][data-cover-text='paper'] {
+		--jl-world-on: var(--jl-white);
+		--jl-display-stroke: var(--jl-ink);
+		--jl-cover-ground: #0d182b;
+		color: var(--jl-white);
+	}
+
+	.cover[data-themed][data-cover-text='paper']
+		:is(.issue, .price, .imprint, .lead, .story > .jl-kicker) {
+		color: var(--jl-white);
 	}
 
 	/*

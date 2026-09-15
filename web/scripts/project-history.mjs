@@ -1,0 +1,217 @@
+import { execFileSync } from 'node:child_process';
+import { existsSync, writeFileSync } from 'node:fs';
+import { homedir } from 'node:os';
+import { join } from 'node:path';
+
+/**
+ * The project log, measured from the repositories themselves.
+ *
+ * Every case file in `projects.ts` is backed by real repositories on this
+ * machine. This script reads their Git history and their trees and writes the
+ * aggregate — first and last commit, commits per month, what the tree holds —
+ * to `src/lib/content/project-history.ts`. Numbers only: no code, no paths,
+ * no messages leave the machine.
+ *
+ * Regenerate with `node scripts/project-history.mjs`. The repositories are
+ * looked up under `~/Developer/github` unless `GITHUB_DIR` says otherwise.
+ */
+
+const ROOT = process.env.GITHUB_DIR ?? join(homedir(), 'Developer', 'github');
+
+/** Case file → the repositories behind it, with what each one is. */
+const PROJECTS = {
+	segispro: [
+		{ path: 'segispro/app-segispro', name: 'app', kind: 'app' },
+		{ path: 'segispro/segispro-backend-v2', name: 'api', kind: 'api' }
+	],
+	formarpro: [
+		{ path: 'formarpro/app-formar-pro', name: 'app', kind: 'app' },
+		{ path: 'formarpro/formar-pro-backend', name: 'api', kind: 'api' }
+	],
+	transmeralda: [
+		{ path: 'transmeralda/ingreso-svelte', name: 'transmeralda · app', kind: 'app' },
+		{ path: 'transmeralda/backend-nest', name: 'transmeralda · api', kind: 'api' },
+		{ path: 'cotransmeq/cotransmeq-app', name: 'cotransmeq · app', kind: 'app' },
+		{ path: 'cotransmeq/backend-cotransmeq', name: 'cotransmeq · api', kind: 'api' }
+	],
+	'developer-os': [{ path: 'developer-os', name: 'developer-os', kind: 'native' }],
+	'gym-vancouver': [{ path: 'gimnasio-vancouver-2', name: 'app', kind: 'app' }]
+};
+
+const git = (repo, args) =>
+	execFileSync('git', ['-C', repo, ...args], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+
+function measure(entry) {
+	const repo = join(ROOT, entry.path);
+	if (!existsSync(join(repo, '.git'))) throw new Error(`not a repository: ${repo}`);
+
+	const dates = git(repo, ['log', '--format=%cs']).trim().split('\n').filter(Boolean);
+	const byMonth = new Map();
+	for (const date of dates) {
+		const month = date.slice(0, 7);
+		byMonth.set(month, (byMonth.get(month) ?? 0) + 1);
+	}
+	const months = [...byMonth.keys()].sort();
+
+	const files = git(repo, ['ls-files']).trim().split('\n').filter(Boolean);
+	const count = (test) => files.filter(test).length;
+	const prisma = files.filter((f) => f.endsWith('schema.prisma'));
+	let models = 0;
+	for (const schema of prisma) {
+		const text = execFileSync('cat', [join(repo, schema)], { encoding: 'utf8' });
+		models += (text.match(/^model /gm) ?? []).length;
+	}
+
+	return {
+		name: entry.name,
+		kind: entry.kind,
+		commits: dates.length,
+		since: months[0],
+		until: months[months.length - 1],
+		files: files.length,
+		byMonth,
+		counts: {
+			pages: count((f) => f.endsWith('+page.svelte')),
+			controllers: count((f) => f.endsWith('.controller.ts')),
+			models,
+			migrations: count((f) => /migrations\/.*\.sql$/.test(f)),
+			tests: count((f) => /\.(spec|test)\.(ts|js|swift|kt)$/.test(f)),
+			native: count((f) => /\.(swift|kt)$/.test(f))
+		}
+	};
+}
+
+/** Every month from `from` to `to`, inclusive, as `YYYY-MM`. */
+function span(from, to) {
+	const out = [];
+	let [y, m] = from.split('-').map(Number);
+	const [ty, tm] = to.split('-').map(Number);
+	while (y < ty || (y === ty && m <= tm)) {
+		out.push(`${y}-${String(m).padStart(2, '0')}`);
+		m += 1;
+		if (m > 12) {
+			m = 1;
+			y += 1;
+		}
+	}
+	return out;
+}
+
+const measuredAt = new Date().toISOString().slice(0, 10);
+const histories = Object.entries(PROJECTS).map(([slug, entries]) => {
+	const repos = entries.map(measure);
+	const since = repos.map((r) => r.since).sort()[0];
+	const until = repos
+		.map((r) => r.until)
+		.sort()
+		.at(-1);
+	const months = span(since, until).map((month) => ({
+		month,
+		commits: repos.reduce((sum, r) => sum + (r.byMonth.get(month) ?? 0), 0)
+	}));
+	const sum = (key) => repos.reduce((total, r) => total + r.counts[key], 0);
+	return {
+		slug,
+		measuredAt,
+		since,
+		until,
+		commits: repos.reduce((total, r) => total + r.commits, 0),
+		activeMonths: months.filter((m) => m.commits > 0).length,
+		months,
+		repos: repos.map((r) => ({
+			name: r.name,
+			kind: r.kind,
+			commits: r.commits,
+			since: r.since,
+			until: r.until,
+			files: r.files
+		})),
+		files: repos.reduce((total, r) => total + r.files, 0),
+		counts: {
+			pages: sum('pages'),
+			controllers: sum('controllers'),
+			models: sum('models'),
+			migrations: sum('migrations'),
+			tests: sum('tests'),
+			native: sum('native')
+		}
+	};
+});
+
+const body = JSON.stringify(histories, null, '\t').replace(/"([a-zA-Z]+)":/g, '$1:');
+
+writeFileSync(
+	'src/lib/content/project-history.ts',
+	`/**
+ * The project log: what the repositories behind each case file say about it.
+ *
+ * GENERATED by \`scripts/project-history.mjs\` from the local Git history on
+ * ${measuredAt}. Do not edit by hand — rerun the script. Aggregates only:
+ * dates, counts and the shape of the tree. No code, path or message leaves the
+ * machine.
+ */
+
+export interface RepositoryLog {
+	name: string;
+	/** What the repository is: the product, its API, or a native app. */
+	kind: 'app' | 'api' | 'native';
+	commits: number;
+	since: string;
+	until: string;
+	files: number;
+}
+
+export interface ProjectHistory {
+	slug: string;
+	/** The day the repositories were read, \`YYYY-MM-DD\`. */
+	measuredAt: string;
+	/** First and last month with a commit, \`YYYY-MM\`. */
+	since: string;
+	until: string;
+	commits: number;
+	activeMonths: number;
+	/** Every month from \`since\` to \`until\`, quiet ones included. */
+	months: { month: string; commits: number }[];
+	repos: RepositoryLog[];
+	files: number;
+	/** What the tree holds, counted: SvelteKit pages, Nest controllers, Prisma
+	 * models, SQL migrations, test files, Swift and Kotlin sources. */
+	counts: {
+		pages: number;
+		controllers: number;
+		models: number;
+		migrations: number;
+		tests: number;
+		native: number;
+	};
+}
+
+export const histories: ProjectHistory[] = ${body};
+
+/** Every month from \`from\` to \`to\` inclusive, as \`YYYY-MM\`. */
+export function monthSpan(from: string, to: string): string[] {
+	const out: string[] = [];
+	let [year, month] = from.split('-').map(Number);
+	const [endYear, endMonth] = to.split('-').map(Number);
+	while (year < endYear || (year === endYear && month <= endMonth)) {
+		out.push(\`\${year}-\${String(month).padStart(2, '0')}\`);
+		month += 1;
+		if (month > 12) {
+			month = 1;
+			year += 1;
+		}
+	}
+	return out;
+}
+
+export function historyOf(slug: string): ProjectHistory | undefined {
+	return histories.find((history) => history.slug === slug);
+}
+`
+);
+
+for (const h of histories) {
+	console.log(
+		`${h.slug.padEnd(14)} ${h.since} → ${h.until}  ${String(h.commits).padStart(4)} commits  ${h.activeMonths} active months  ${h.repos.length} repos`
+	);
+}

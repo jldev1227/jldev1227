@@ -14,11 +14,10 @@
 <script lang="ts">
 	import { pushState, replaceState } from '$app/navigation';
 	import { page as appPage } from '$app/state';
-	import { tick } from 'svelte';
-	import { ComicCover, StPageFlipReader } from '$lib/components/comic-reader';
-	import { translator, type Locale } from '$i18n';
-	import ComicBoxSelector from './ComicBoxSelector.svelte';
-	import FirstPersonHands, { type HandPose } from './FirstPersonHands.svelte';
+	import { tick, untrack } from 'svelte';
+	import { ComicCover, ComicReader, PAGE_RATIO, SPREAD_MIN } from '$lib/components/comic-reader';
+	import { format, translator, type Locale } from '$i18n';
+	import ComicGrid from './ComicGrid.svelte';
 	import {
 		BROWSE,
 		fromHash,
@@ -30,21 +29,20 @@
 		type ExperienceState
 	} from './experience-state';
 
+	/**
+	 * The archive: a grid of covers, and the issue that is open on top of it.
+	 *
+	 * Two application states, `browse` and `read`. Reading happens in a modal
+	 * dialog over the grid rather than on a page of its own, so the collection
+	 * is still there when the issue closes and focus has somewhere to go back
+	 * to. The dialog is the browser's: it traps focus, makes the grid inert and
+	 * answers Escape without any of that being written here. The book inside it
+	 * is `ComicReader`, the same hand-written sheets the mission routes turn.
+	 */
+
 	interface Props {
 		locale: Locale;
 		volumes: ExperienceVolume[];
-	}
-
-	interface Pickup {
-		id: string;
-		left: number;
-		top: number;
-		width: number;
-		height: number;
-		dx: number;
-		dy: number;
-		scale: number;
-		active: boolean;
 	}
 
 	let { locale, volumes }: Props = $props();
@@ -55,9 +53,10 @@
 
 	let experience = $state<ExperienceState>(BROWSE);
 	let enhanced = $state(false);
-	let reducedMotion = $state(false);
-	let pickup = $state<Pickup | null>(null);
-	let pickupGuard: ReturnType<typeof setTimeout> | undefined;
+	let reducedMotion = false;
+	let dialog = $state<HTMLDialogElement | null>(null);
+	let host = $state<HTMLElement | null>(null);
+	let stage = $state<HTMLElement | null>(null);
 
 	const current = $derived.by(() => {
 		const state = experience;
@@ -65,13 +64,11 @@
 			? volumes.find((volume) => volume.id === state.issueId)
 			: undefined;
 	});
-	const pickupVolume = $derived(
-		pickup ? volumes.find((volume) => volume.id === pickup?.id) : undefined
-	);
-	const handPose = $derived<HandPose>(
-		experience.mode === 'read' ? 'hidden' : pickup ? 'reaching' : 'idle'
-	);
+	const focusedId = $derived(experience.mode === 'browse' ? experience.focusedIssueId : undefined);
+	const initialPage = $derived(experience.mode === 'read' ? experience.page : 0);
 
+	// One history entry per level, so browser Back closes the issue and nothing
+	// finer; a page turn only replaces the entry it is reading in.
 	function writeState(previous: ExperienceState, next: ExperienceState) {
 		const url = `${appPage.url.pathname}${appPage.url.search}${toHash(next)}`;
 		if (previous.mode === next.mode) replaceState(url, appPage.state);
@@ -82,158 +79,177 @@
 		const next = reduce(experience, event, catalogue);
 		if (isSame(next, experience)) return;
 		const previous = experience;
-		experience = next;
-		writeState(previous, next);
-	}
-
-	function finishPickup() {
-		if (!pickup) return;
-		const id = pickup.id;
-		clearTimeout(pickupGuard);
-		pickup = null;
-		send({ type: 'select', issueId: id });
-	}
-
-	async function selectIssue(id: string, rect: DOMRect) {
-		if (pickup || experience.mode !== 'browse' || rect.width <= 0) return;
-
-		const targetWidth = Math.min(window.innerWidth < 640 ? window.innerWidth * 0.62 : 360, 420);
-		const scale = targetWidth / rect.width;
-		const targetHeight = rect.height * scale;
-		pickup = {
-			id,
-			left: rect.left,
-			top: rect.top,
-			width: rect.width,
-			height: rect.height,
-			dx: window.innerWidth / 2 - targetWidth / 2 - rect.left,
-			dy: window.innerHeight / 2 - targetHeight / 2 - rect.top,
-			scale,
-			active: false
+		const apply = () => {
+			experience = next;
+			writeState(previous, next);
 		};
+		// Opening and closing are the two moves worth a transition: the cover
+		// in the grid becomes the cover of the book, and comes back the same
+		// way. Page turns and focus changes are the reader's own.
+		if (previous.mode !== next.mode) transition(apply);
+		else apply();
+	}
 
-		if (reducedMotion) {
-			finishPickup();
+	/**
+	 * A View Transition when the browser has them and the visitor wants
+	 * motion; the plain update otherwise. The DOM must have settled inside
+	 * the callback, which is what the `tick()` is for.
+	 */
+	function transition(update: () => void) {
+		if (reducedMotion || typeof document.startViewTransition !== 'function') {
+			update();
 			return;
 		}
-
-		await tick();
-		requestAnimationFrame(() => {
-			requestAnimationFrame(() => {
-				if (pickup?.id === id) pickup.active = true;
-			});
+		document.startViewTransition(async () => {
+			update();
+			await tick();
 		});
-		pickupGuard = setTimeout(finishPickup, 900);
 	}
 
 	function restore() {
-		clearTimeout(pickupGuard);
-		pickup = null;
-		experience = fromHash(window.location.hash, catalogue);
+		const next = fromHash(window.location.hash, catalogue);
+		// Browser Back out of an issue is the same reversal as closing it, and the
+		// hash alone cannot say which issue was just put down. Read without
+		// tracking: this runs inside the mount effect, which must not re-run —
+		// and so call this again — every time the state changes.
+		const previous = untrack(() => experience);
+		const resolved: ExperienceState =
+			next.mode === 'browse' && previous.mode === 'read'
+				? { mode: 'browse', focusedIssueId: previous.issueId }
+				: next;
+		if (!isSame(resolved, previous)) experience = resolved;
 	}
 
 	$effect(() => {
 		enhanced = true;
 		restore();
-		const media = window.matchMedia('(prefers-reduced-motion: reduce)');
-		const onMotion = () => (reducedMotion = media.matches);
-		const onPop = () => restore();
+		const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+		const onMotion = () => (reducedMotion = motion.matches);
 		onMotion();
-		media.addEventListener('change', onMotion);
+		motion.addEventListener('change', onMotion);
+		const onPop = () => restore();
 		window.addEventListener('popstate', onPop);
-
 		return () => {
-			clearTimeout(pickupGuard);
-			media.removeEventListener('change', onMotion);
+			motion.removeEventListener('change', onMotion);
 			window.removeEventListener('popstate', onPop);
 		};
 	});
 
-	function onkeydown(event: KeyboardEvent) {
-		if (event.key !== 'Escape' || experience.mode !== 'read') return;
-		const target = event.target as HTMLElement | null;
-		if (target?.closest('input, textarea, select, [contenteditable="true"]')) return;
-		event.preventDefault();
-		send({ type: 'back' });
-	}
+	// The dialog exists only while an issue is open, and opens itself as a
+	// modal the moment it does. `showModal()` is the only way to get the top
+	// layer, the focus trap and the inert grid; the `open` attribute is not.
+	$effect(() => {
+		const el = dialog;
+		if (el && !el.open) el.showModal();
+	});
+
+	/*
+	 * The reader sizes its pages from the width it is given and never looks at
+	 * the height, which is right for a document and wrong for a modal: here the
+	 * book has to fit the room. The stage is measured in both dimensions and
+	 * given the width at which the book fits — two pages across when there is
+	 * room for two comfortable ones, one otherwise, using the reader's own
+	 * threshold so the two can never disagree.
+	 */
+	$effect(() => {
+		const room = host;
+		const book = stage;
+		if (!room || !book) return;
+
+		const fit = () => {
+			// The room's content box: `clientHeight` would count the padding that
+			// keeps the close control and the pager clear of the book.
+			const box = getComputedStyle(room);
+			const width = room.clientWidth - parseFloat(box.paddingLeft) - parseFloat(box.paddingRight);
+			const height = room.clientHeight - parseFloat(box.paddingTop) - parseFloat(box.paddingBottom);
+			if (width <= 0 || height <= 0) return;
+			let bookWidth = Math.min(width, height * PAGE_RATIO * 2);
+			if (bookWidth < SPREAD_MIN) {
+				bookWidth = Math.min(width, height * PAGE_RATIO, SPREAD_MIN - 1);
+			}
+			book.style.width = `${Math.floor(bookWidth)}px`;
+		};
+
+		const observer = new ResizeObserver(fit);
+		observer.observe(room);
+		fit();
+		return () => observer.disconnect();
+	});
 </script>
 
-<svelte:window {onkeydown} />
-
 <section class="experience" aria-label={t('library.label')} data-mode={experience.mode}>
-	{#if experience.mode === 'browse'}
-		<div class="scene">
-			<img
-				class="room"
-				src="/art/library-experience/library-room-v1.webp"
-				alt=""
-				width="1672"
-				height="941"
-				aria-hidden="true"
-				draggable="false"
-				fetchpriority="high"
-			/>
-			<div class="atmosphere" aria-hidden="true"></div>
+	<div class="scene">
+		<img
+			class="room"
+			src="/art/library-experience/bg-room.jpg"
+			alt=""
+			width="3840"
+			height="2160"
+			aria-hidden="true"
+			draggable="false"
+			fetchpriority="high"
+		/>
+		<div class="atmosphere" aria-hidden="true"></div>
 
-			<ComicBoxSelector
-				{locale}
-				{volumes}
-				{enhanced}
-				focusedId={experience.focusedIssueId}
-				disabled={Boolean(pickup)}
-				selectedId={pickup?.id}
-				onfocusissue={(id) => send({ type: 'focus', issueId: id })}
-				onselect={selectIssue}
-			/>
+		<ComicGrid
+			{locale}
+			{volumes}
+			{enhanced}
+			{focusedId}
+			onfocusissue={(id) => send({ type: 'focus', issueId: id })}
+			onselect={(id) => send({ type: 'select', issueId: id })}
+		/>
+	</div>
 
-			{#if pickup && pickupVolume}
-				<div
-					class="pickup"
-					class:active={pickup.active}
-					ontransitionend={(event) => {
-						if (event.propertyName === 'transform') finishPickup();
-					}}
-					style={`--pickup-left:${pickup.left}px; --pickup-top:${pickup.top}px; --pickup-width:${pickup.width}px; --pickup-height:${pickup.height}px; --pickup-x:${pickup.dx}px; --pickup-y:${pickup.dy}px; --pickup-scale:${pickup.scale}`}
-					aria-hidden="true"
-				>
-					<div
-						class="pickup-face"
-						style={pickupVolume.cover.palette
-							? `--pickup-base:${pickupVolume.cover.palette.base}; --pickup-accent:${pickupVolume.cover.palette.accent}`
-							: undefined}
-					>
-						<span>{pickupVolume.cover.issue}</span>
-						<strong class="jl-display">{pickupVolume.title}</strong>
-					</div>
-				</div>
-			{/if}
-
-			<FirstPersonHands pose={handPose} />
-		</div>
-	{:else if current}
-		<div class="read">
-			<StPageFlipReader
-				{locale}
-				pages={current.pages}
-				initialPage={experience.page}
-				onpagechange={(page) => send({ type: 'turnTo', page })}
-			>
-				{#snippet cover({ enhanced: readerEnhanced, open })}
-					<ComicCover {locale} issue={current.cover} enhanced={readerEnhanced} onopen={open} />
-				{/snippet}
-			</StPageFlipReader>
-
-			<button class="return" type="button" onclick={() => send({ type: 'return' })}>
-				{t('library.toBox')}
+	{#if current}
+		<!-- Every way out ends in `send`: the button, Escape, and browser Back,
+		     which unmounts the dialog outright. `close` is there for whatever
+		     else the browser closes a dialog for, so the state can never say
+		     "read" over an empty top layer. Escape is handled on the element
+		     rather than left to the dialog's close watcher, which not every
+		     embedded browser runs. -->
+		<dialog
+			class="issue"
+			data-cover={initialPage === 0 ? '' : undefined}
+			bind:this={dialog}
+			aria-label={format(t('library.reading'), { title: current.title })}
+			onkeydown={(event) => {
+				if (event.key !== 'Escape') return;
+				event.preventDefault();
+				send({ type: 'back' });
+			}}
+			onclose={() => {
+				if (experience.mode === 'read') send({ type: 'back' });
+			}}
+		>
+			<button class="close" type="button" onclick={() => send({ type: 'back' })}>
+				{t('library.close')}
 			</button>
-		</div>
+
+			<div class="host" bind:this={host}>
+				<div class="stage" bind:this={stage}>
+					<ComicReader
+						{locale}
+						pages={current.pages}
+						manageHash={false}
+						{initialPage}
+						globalKeys
+						focusOnMount
+						onpagechange={(page) => send({ type: 'turnTo', page })}
+					>
+						{#snippet cover({ enhanced: readerEnhanced, open })}
+							<ComicCover {locale} issue={current.cover} enhanced={readerEnhanced} onopen={open} />
+						{/snippet}
+					</ComicReader>
+				</div>
+			</div>
+		</dialog>
 	{/if}
 </section>
 
 <style>
 	.experience,
-	.scene,
-	.read {
+	.scene {
 		position: relative;
 		min-height: 100svh;
 		color: var(--jl-white);
@@ -261,8 +277,8 @@
 		inset: 0;
 		z-index: 1;
 		background:
-			radial-gradient(circle at 50% 72%, transparent 0 26%, rgb(5 7 12 / 0.22) 62%),
-			linear-gradient(to bottom, rgb(5 7 12 / 0.08), rgb(5 7 12 / 0.28));
+			radial-gradient(circle at 50% 40%, transparent 0 30%, rgb(5 7 12 / 0.4) 70%),
+			linear-gradient(to bottom, rgb(5 7 12 / 0.18), rgb(5 7 12 / 0.4));
 		pointer-events: none;
 	}
 
@@ -272,52 +288,81 @@
 		min-height: 100svh;
 	}
 
-	.pickup {
+	/* ------------------------------------------------------------ the issue -- */
+
+	/*
+	 * The dialog is the viewport: the book needs the whole of it on a phone,
+	 * and the backdrop is what says "modal" — the grid still there behind it,
+	 * dimmed and blurred, the way a table looks past the comic you are holding.
+	 */
+	.issue {
 		position: fixed;
-		top: var(--pickup-top);
-		left: var(--pickup-left);
-		z-index: 8;
-		width: var(--pickup-width);
-		height: var(--pickup-height);
-		pointer-events: none;
-		transform-origin: left top;
-		transition: transform 760ms var(--jl-paper-ease, ease);
-		filter: drop-shadow(0 20px 18px rgb(0 0 0 / 0.5));
-	}
-
-	.pickup.active {
-		transform: translate(var(--pickup-x), var(--pickup-y)) scale(var(--pickup-scale));
-	}
-
-	.pickup-face {
+		inset: 0;
 		display: flex;
 		flex-direction: column;
-		justify-content: space-between;
-		height: 100%;
-		padding: 9%;
-		color: var(--jl-white);
-		background:
-			linear-gradient(150deg, transparent 0 55%, var(--pickup-accent, var(--jl-red)) 55%),
-			var(--pickup-base, var(--jl-navy));
-		border: var(--jl-border) solid var(--jl-ink);
-	}
-
-	.pickup-face span {
-		font-family: var(--jl-font-mono);
-		font-size: 0.55rem;
-	}
-
-	.pickup-face strong {
-		font-size: clamp(0.7rem, 10cqi, 1.5rem);
-		line-height: 0.9;
-	}
-
-	.read {
+		width: 100vw;
 		max-width: none;
-		margin: 0 auto;
+		height: 100dvh;
+		max-height: none;
+		margin: 0;
+		padding: 0;
+		/* A single page may grow with its content; the dialog scrolls for it. */
+		overflow: hidden auto;
+		color: var(--jl-white);
+		background: transparent;
+		border: 0;
 	}
 
-	.return {
+	/* The room the book is measured against: the close control above, the
+	   pager's line below, and the page edges either side. */
+	.host {
+		display: grid;
+		flex: 1;
+		min-height: 0;
+		padding: clamp(56px, 8vh, 84px) clamp(28px, 4vw, 52px) 64px;
+		place-items: center;
+	}
+
+	.stage {
+		width: 100%;
+	}
+
+	.issue::backdrop {
+		background:
+			radial-gradient(circle at 50% 46%, rgb(255 253 246 / 0.1), transparent 38%),
+			rgb(5 7 12 / 0.86);
+	}
+
+	/*
+	 * The grid is blurred, not the backdrop. A `backdrop-filter` re-samples
+	 * everything behind the dialog on every frame a page turns; a filter on the
+	 * grid itself is rendered once and kept, because nothing there moves.
+	 */
+	.experience[data-mode='read'] .scene {
+		filter: blur(10px) saturate(0.85);
+	}
+
+	/* Not a document here, so no gutter above the first sheet. */
+	.stage > :global(.reader) {
+		margin-top: 0;
+	}
+
+	/*
+	 * Arriving is a View Transition, set up in `comic.css`: the whole page
+	 * crossfades and the cover in the grid morphs into the cover of the book.
+	 * While the book is closed the reader's cover face carries the name; once
+	 * it opens there is nothing on the grid for it to return to as itself.
+	 */
+	.issue[data-cover] :global(.leaf:first-of-type .face.front) {
+		view-transition-name: issue-cover;
+	}
+
+	/* Nothing scrolls behind an open issue. */
+	:global(body:has(dialog.issue[open])) {
+		overflow: hidden;
+	}
+
+	.close {
 		position: fixed;
 		top: 16px;
 		right: 16px;
@@ -335,25 +380,19 @@
 		cursor: pointer;
 	}
 
-	.return:focus-visible {
+	.close:focus-visible {
 		outline: 3px solid var(--jl-white);
 		outline-offset: 3px;
 	}
 
 	@media (width < 700px) {
-		.room {
-			object-position: 50% center;
+		.host {
+			padding: 52px 18px 60px;
 		}
 
-		.return {
+		.close {
 			top: 8px;
 			right: 8px;
-		}
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.pickup {
-			transition: none;
 		}
 	}
 </style>

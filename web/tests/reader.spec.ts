@@ -156,14 +156,20 @@ test.describe('every link goes where it says', () => {
 		}
 	});
 
-	test('following a case control opens that issue', async ({ page }) => {
+	test('the closing page of an issue read from the archive', async ({ page }) => {
 		await page.goto('/es');
-		await page.getByRole('link', { name: 'Toma SEGISPRO' }).click();
-		await expect(page.locator('.st-reader.enhanced .stf__parent')).toBeVisible();
-		await page.keyboard.press('ArrowRight');
-		await expect(page.locator('.case-open')).toBeVisible();
+		await page.getByRole('link', { name: 'Abre SEGISPRO' }).click();
+		await expect(page.locator('dialog.issue .reader[data-enhanced] .book')).toBeVisible();
+		await page.keyboard.press('End');
+		await expect
+			.poll(() => page.locator('dialog.issue .reader').getAttribute('data-mode'), { timeout: 4000 })
+			.not.toBe('turning');
 
-		await page.locator('.case-open').first().click();
+		const control = page.locator('#segispro--outcome .actions a', {
+			hasText: 'Leer el expediente'
+		});
+		await expect(control).toBeVisible();
+		await control.click();
 		await page.waitForURL('**/missions/segispro');
 		await expect(page).toHaveTitle(/SEGISPRO/);
 	});

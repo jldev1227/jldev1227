@@ -3,11 +3,11 @@
 The progressive comic-reader presentation. The reader stays independent from
 page copy and project data.
 
-This component is also the required fallback for the planned comic archive, Rive,
-Three.js, and StPageFlip experiment. Read
+This component is the book everywhere: the canonical mission routes and the
+modal on the home page archive both turn its sheets. There is no page-turn
+library behind it; the physics are in this file and `reader-state.ts`. Read
 [`../../../docs/comic-reader/LIBRARY-INTERACTION.md`](../../../docs/comic-reader/LIBRARY-INTERACTION.md)
-before changing its public contract. Do not remove this implementation until
-the adapter passes the compatibility and accessibility gates documented there.
+before changing its public contract.
 
 ## Module shape
 

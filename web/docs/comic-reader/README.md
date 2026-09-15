@@ -1,8 +1,9 @@
 # Experimental comic reader
 
-Status: phases 0–4 built. The next experiment is the three-state comic library
-described in [`LIBRARY-INTERACTION.md`](LIBRARY-INTERACTION.md); authored Rive
-hands remain an external asset milestone.
+Status: phases 0–4 built. The home page now lays the collection out as a grid
+of covers with this reader in a modal, described in
+[`LIBRARY-INTERACTION.md`](LIBRARY-INTERACTION.md). No page-turn library is
+involved anywhere.
 
 Branch: `codex/experimental-comic-reader`
 
@@ -19,9 +20,10 @@ finish on a back cover.
 
 ## Experience model
 
-The current reader below remains the working fallback. The planned collection
-entry adds `browse → inspect → read` around it and tests StPageFlip behind an
-adapter; it does not delete this implementation before compatibility is proven.
+The reader below is the book everywhere. The collection entry on the home page
+adds `browse → read` around it in a modal; an adapter for a page-turn library
+was tried in between and removed, because the physics here proved the better
+ones to keep.
 
 ```text
 Closed cover
@@ -123,10 +125,10 @@ Anime.js may be added after the static reader works. Limit it to timeline
 coordination, staggered reveals, and mapping a drag gesture to visual progress.
 Import only the modules used. Svelte owns state and lifecycle; CSS owns layout.
 
-The original implementation correctly proved the interaction without a generic
-flipbook dependency. The next experiment may add StPageFlip, Rive, and a tightly
-constrained Three.js inspector under the boundaries and fallback rules in
-[`LIBRARY-INTERACTION.md`](LIBRARY-INTERACTION.md).
+The implementation proved the interaction without a generic flipbook
+dependency, and that is how it stays: a StPageFlip adapter, Rive hands and a
+Three.js inspector were each tried or planned and removed. The current shape is
+in [`LIBRARY-INTERACTION.md`](LIBRARY-INTERACTION.md).
 
 ## Delivery phases
 
@@ -217,9 +219,10 @@ Tune textures, shadows, transitions, performance, and production metadata.
 
 ### Phase 6 — library interaction — planned
 
-Add a semantic comic-box selector inside the library scene, a front/back-only
-book inspector, first-person Rive hands, and an experimental StPageFlip adapter.
-This phase is specified separately
+Historical: this phase proposed a comic-box selector inside a library scene, a
+front/back-only book inspector, first-person Rive hands and a StPageFlip
+adapter. All four were removed; what shipped is the grid and the modal in
+[`LIBRARY-INTERACTION.md`](LIBRARY-INTERACTION.md). It was specified separately
 because it adds an outer experience state machine and three browser runtimes;
 see [`LIBRARY-INTERACTION.md`](LIBRARY-INTERACTION.md).
 

@@ -119,6 +119,62 @@ export const powers = [
 	}
 ] satisfies { title: Localized; body: Localized }[];
 
+/**
+ * Page three of the introductory issue: the tools, grouped by where they do
+ * their work. Nothing here is aspirational — every entry is drawn from the
+ * `stack` of a case file in `projects.ts`, and a unit test holds it to that.
+ */
+export const stackPage = {
+	pageLabel: { en: 'Stack', es: 'Stack' },
+	caption: {
+		en: 'Meanwhile, on the utility belt… the tools every mission was built with.',
+		es: 'Mientras tanto, en el cinturón… las herramientas con las que se construyó cada misión.'
+	},
+	title: { en: 'The stack', es: 'El stack' },
+	body: {
+		en: 'Nothing on this page is decorative: every tool has shipped inside one of the case files in this archive.',
+		es: 'Nada en esta página es decorativo: cada herramienta ya salió a producción en algún expediente de este archivo.'
+	}
+} satisfies Record<string, Localized>;
+
+/**
+ * Page four of the introductory issue: the case files laid on one timeline,
+ * from the repositories' own first commits to their latest. The data is
+ * `project-history.ts`, generated from the local Git history.
+ */
+export const timelinePage = {
+	pageLabel: { en: 'Timeline', es: 'Cronología' },
+	caption: {
+		en: 'Meanwhile… every case file, on one calendar.',
+		es: 'Mientras tanto… todos los expedientes, en un solo calendario.'
+	},
+	title: { en: 'The calendar', es: 'El calendario' },
+	body: {
+		en: 'One bar per case file, from its first commit to its latest, read from the repositories themselves. Overlaps are real: these products were built side by side.',
+		es: 'Una barra por expediente, desde su primer commit hasta el último, leída de los propios repositorios. Los solapes son reales: estos productos se construyeron en paralelo.'
+	},
+	commits: { en: '{count} commits in total', es: '{count} commits en total' }
+} satisfies Record<string, Localized>;
+
+export const stack = [
+	{
+		label: { en: 'Product', es: 'Producto' },
+		items: ['SvelteKit', 'TypeScript', 'Tailwind CSS']
+	},
+	{
+		label: { en: 'Backend & data', es: 'Backend y datos' },
+		items: ['NestJS', 'Fastify', 'Prisma', 'PostgreSQL', 'Redis', 'BullMQ']
+	},
+	{
+		label: { en: 'Real time & integrations', es: 'Tiempo real e integraciones' },
+		items: ['WebSockets', 'Socket.IO', 'SAML/OIDC', 'Azure Blob', 'Mapbox']
+	},
+	{
+		label: { en: 'Mobile', es: 'Móvil' },
+		items: ['Swift', 'SwiftUI', 'Kotlin', 'Jetpack Compose', 'SQLite']
+	}
+] satisfies { label: Localized; items: string[] }[];
+
 export const missionIntro = {
 	pageLabel: { en: 'Selected missions', es: 'Misiones destacadas' },
 	pageLabelMore: { en: 'Case files, continued', es: 'Expedientes, continuación' },

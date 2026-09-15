@@ -13,8 +13,7 @@
 		"test:unit": "vitest run",
 		"format": "prettier --write .",
 		"test:e2e": "playwright test",
-		"test:e2e:ui": "playwright test --ui",
-		"test:spike": "playwright test -c playwright.spike.config.ts"
+		"test:e2e:ui": "playwright test --ui"
 	},
 	"devDependencies": {
 		"@eslint/js": "^10.0.1",
@@ -39,7 +38,6 @@
 		"@fontsource-variable/inter": "^5.3.0",
 		"@fontsource/anton": "^5.3.0",
 		"@vercel/analytics": "^2.0.1",
-		"@vercel/speed-insights": "^2.0.0",
-		"page-flip": "^2.0.7"
+		"@vercel/speed-insights": "^2.0.0"
 	}
 }

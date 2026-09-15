@@ -366,3 +366,38 @@ body {
 		transition-duration: 0.01ms !important;
 	}
 }
+
+/* ---------------------------------------------------- view transitions ---- */
+
+/*
+ * Opening an issue from the archive: the page crossfades and the chosen cover
+ * — named `issue-cover` on the grid, then on the book — travels and grows into
+ * place on the paper ease. Closing runs it back. Only one element may carry
+ * the name at a time, which the components arrange; everything here is timing.
+ */
+::view-transition-old(root),
+::view-transition-new(root) {
+	animation-duration: 320ms;
+	animation-timing-function: var(--jl-paper-ease);
+}
+
+::view-transition-group(issue-cover) {
+	animation-duration: 560ms;
+	animation-timing-function: var(--jl-paper-ease);
+}
+
+::view-transition-old(issue-cover),
+::view-transition-new(issue-cover) {
+	animation-duration: 560ms;
+	/* Both faces keep their own proportions while the group resizes. */
+	height: 100%;
+	object-fit: cover;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	::view-transition-group(*),
+	::view-transition-old(*),
+	::view-transition-new(*) {
+		animation: none !important;
+	}
+}

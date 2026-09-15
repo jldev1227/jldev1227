@@ -29,12 +29,43 @@ const UI = {
 	'missions.approach': { en: 'The approach', es: 'El enfoque' },
 	'missions.outcome': { en: 'The outcome', es: 'El resultado' },
 	'missions.stack': { en: 'Stack', es: 'Stack' },
-	'missions.snapshot': { en: 'Engineering snapshot', es: 'Foto técnica' },
-	'missions.snapshotNote': {
-		en: 'Local Git history · 5 Sep 2026',
-		es: 'Historial Git local · 5 sep 2026'
-	},
 	'missions.technologies': { en: 'Technologies', es: 'Tecnologías' },
+	'missions.libraries': { en: 'The wider toolkit', es: 'El resto de la caja' },
+	'missions.marksNote': {
+		en: 'Brand marks from Simple Icons; concepts without one are drawn in-house.',
+		es: 'Marcas de Simple Icons; los conceptos sin marca están dibujados en casa.'
+	},
+
+	// The project log: what the repositories themselves say about a case file.
+	'missions.log': { en: 'Project log', es: 'Bitácora' },
+	'missions.logNote': {
+		en: 'Read from the local Git history on {date}. Aggregates only.',
+		es: 'Leído del historial Git local el {date}. Solo agregados.'
+	},
+	'missions.logSpan': { en: '{from} → {to}', es: '{from} → {to}' },
+	'missions.activeMonths': { en: '{count} active months', es: '{count} meses activos' },
+	'missions.commits': { en: 'commits', es: 'commits' },
+	'missions.repository': { en: 'repository', es: 'repositorio' },
+	'missions.repositories': { en: 'repositories', es: 'repositorios' },
+	'missions.busiest': { en: 'Busiest month', es: 'Mes más intenso' },
+	'missions.busiestValue': { en: '{month} · {count} commits', es: '{month} · {count} commits' },
+	'missions.monthly': { en: 'Commits per month', es: 'Commits por mes' },
+	'missions.counts': { en: 'In the tree', es: 'En el árbol' },
+	'missions.pages': { en: 'routes', es: 'rutas' },
+	'missions.controllers': { en: 'API controllers', es: 'controladores de API' },
+	'missions.models': { en: 'data models', es: 'modelos de datos' },
+	'missions.migrations': { en: 'migrations', es: 'migraciones' },
+	'missions.tests': { en: 'test files', es: 'archivos de prueba' },
+	'missions.native': { en: 'Swift & Kotlin files', es: 'archivos Swift y Kotlin' },
+	'missions.files': { en: 'tracked files', es: 'archivos versionados' },
+	'missions.repoApp': { en: 'app', es: 'app' },
+	'missions.repoApi': { en: 'API', es: 'API' },
+	'missions.repoNative': { en: 'native', es: 'nativo' },
+	'missions.modules': { en: 'Modules', es: 'Módulos' },
+	'missions.modulesNote': {
+		en: 'What the product is made of, as its own screens divide it.',
+		es: 'De qué está hecho el producto, tal como lo dividen sus propias pantallas.'
+	},
 	'missions.decisions': { en: 'Key decisions', es: 'Decisiones clave' },
 	'missions.architecture': { en: 'Technical architecture', es: 'Arquitectura técnica' },
 	'missions.architectureNote': {
@@ -61,37 +92,26 @@ const UI = {
 		es: 'Páginas {from}–{to} de {total}'
 	},
 	'reader.hint': {
-		en: 'Drag a page corner, or use the arrow keys.',
-		es: 'Arrastra una esquina, o usa las flechas.'
+		en: 'Drag the page, or use the arrow keys.',
+		es: 'Arrastra la página, o usa las flechas.'
 	},
 
-	// The comic archive: project issues filed inside the box on the reading table.
-	// See `docs/comic-reader/LIBRARY-INTERACTION.md`.
-	'library.label': { en: 'Immersive comic archive', es: 'Archivo inmersivo de cómics' },
-	'library.boxLabel': { en: 'Project comic box', es: 'Caja de cómics de proyectos' },
-	'library.archiveEyebrow': {
+	// The comic archive: the collection laid out as a grid of covers, and the
+	// modal reader an issue opens in. See `docs/comic-reader/LIBRARY-INTERACTION.md`.
+	'library.label': { en: 'Comic archive', es: 'Archivo de cómics' },
+	'library.collection': { en: 'The collection', es: 'La colección' },
+	'library.eyebrow': {
 		en: 'JLDEV private archive · file 1227',
 		es: 'Archivo privado JLDEV · expediente 1227'
 	},
-	'library.archiveTitle': { en: 'Choose your next world', es: 'Elige tu próximo mundo' },
-	'library.archiveHint': {
-		en: 'Take a comic from the box. Each issue opens a real project.',
-		es: 'Toma un cómic de la caja. Cada número abre un proyecto real.'
+	'library.title': { en: 'Choose your next world', es: 'Elige tu próximo mundo' },
+	'library.hint': {
+		en: 'Issue #1227 is me. Every other issue is a real project.',
+		es: 'El número #1227 soy yo. Los demás números son proyectos reales.'
 	},
-	'library.shelf': { en: 'The collection', es: 'La colección' },
-	'library.pickUp': { en: 'Pick up {title}', es: 'Toma {title}' },
-	'library.inspecting': { en: 'In your hands: {title}', es: 'En tus manos: {title}' },
-	'library.front': { en: 'Front cover', es: 'Portada' },
-	'library.back': { en: 'Back cover', es: 'Contraportada' },
-	'library.turnOver': { en: 'Turn it over', es: 'Dale la vuelta' },
-	'library.read': { en: 'Read this issue', es: 'Lee este número' },
+	'library.pickUp': { en: 'Open {title}', es: 'Abre {title}' },
+	'library.reading': { en: 'Reading {title}', es: 'Leyendo {title}' },
 	'library.close': { en: 'Close the issue', es: 'Cierra el número' },
-	'library.toShelf': { en: 'Back to the collection', es: 'Vuelve a la colección' },
-	'library.toBox': { en: 'Return it to the box', es: 'Devuélvelo a la caja' },
-	'library.indicia': {
-		en: 'JLDEV Comics · Colombia to the world · 1227jl.dev',
-		es: 'JLDEV Comics · De Colombia al mundo · 1227jl.dev'
-	},
 
 	'missions.source': { en: 'See it on GitHub', es: 'Verlo en GitHub' },
 	'missions.readFile': { en: 'Read the case file', es: 'Leer el expediente' },

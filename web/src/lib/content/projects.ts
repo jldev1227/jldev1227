@@ -19,11 +19,6 @@ export interface Palette {
 	onAccent: 'paper' | 'ink';
 }
 
-export interface ProjectStat {
-	value: string;
-	label: Localized;
-}
-
 export interface ProjectArchitectureNode {
 	layer: Localized;
 	technology: string;
@@ -35,6 +30,12 @@ export interface ProjectTransformation {
 	after: Localized;
 }
 
+/** One part of the product, the way its routes and screens divide it. */
+export interface ProjectModule {
+	name: Localized;
+	detail: Localized;
+}
+
 export interface Project {
 	slug: string;
 	/** Case file number, rendered as `Case file 01`. */
@@ -42,15 +43,27 @@ export interface Project {
 	kicker: Localized;
 	title: string;
 	tagline: Localized;
+	/** The core: what the product is built on. */
 	stack: string[];
+	/**
+	 * The wider toolkit, read off the repositories' own manifests: the
+	 * libraries that do the real work behind the core. Names as `tech-marks`
+	 * knows them, so each can carry its mark.
+	 */
+	libraries: string[];
+	/** What the product is made of, one entry per area of the app. */
+	modules: ProjectModule[];
 	accent: Accent;
 	palette: Palette;
+	/** Full-bleed comic illustration; cover typography remains live HTML. */
+	coverArt: { src: string; width: number; height: number };
+	/** Force paper-white cover lettering when the illustration is visually busy. */
+	coverText?: 'paper';
 	image: {
 		src: string;
 		alt: Localized;
 		caption: Localized;
 	};
-	stats: ProjectStat[];
 	architecture: ProjectArchitectureNode[];
 	transformation: ProjectTransformation[];
 	decisions: Localized[];
@@ -75,11 +88,83 @@ export const projects: Project[] = [
 		},
 		stack: ['SvelteKit', 'TypeScript', 'NestJS', 'PostgreSQL', 'Azure Blob', 'WebSockets'],
 		accent: 'red',
+		libraries: [
+			'Drizzle ORM',
+			'BullMQ',
+			'Passport',
+			'JSON Web Tokens',
+			'Swagger',
+			'Chart.js',
+			'D3',
+			'FullCalendar',
+			'ExcelJS',
+			'Azure AI',
+			'Microsoft Graph',
+			'Google Calendar',
+			'Vitest',
+			'Lucide'
+		],
+		modules: [
+			{
+				name: { en: 'HSE talent', es: 'Talento HSE' },
+				detail: {
+					en: 'Professional profiles, documents, availability and payments.',
+					es: 'Perfiles profesionales, documentos, disponibilidad y pagos.'
+				}
+			},
+			{
+				name: { en: 'Clients & contracts', es: 'Clientes y contratos' },
+				detail: {
+					en: 'Accounts, sites and the contracts that frame each service.',
+					es: 'Cuentas, sedes y los contratos que enmarcan cada servicio.'
+				}
+			},
+			{
+				name: { en: 'Planning & work orders', es: 'Planeación y órdenes' },
+				detail: {
+					en: 'Calendar planning turned into orders with evidence attached.',
+					es: 'Planeación en calendario convertida en órdenes con evidencia.'
+				}
+			},
+			{
+				name: { en: 'Billing', es: 'Facturación' },
+				detail: {
+					en: 'Service billing and professional payouts from the same records.',
+					es: 'Facturación de servicios y pagos a profesionales desde los mismos registros.'
+				}
+			},
+			{
+				name: { en: 'Reports & statistics', es: 'Reportes y estadísticas' },
+				detail: {
+					en: 'Activity, dashboards and exports for operations and management.',
+					es: 'Actividad, tableros y exportaciones para operación y gerencia.'
+				}
+			},
+			{
+				name: { en: 'Notifications', es: 'Notificaciones' },
+				detail: {
+					en: 'In-app notices and WhatsApp templates for every process step.',
+					es: 'Avisos en la app y plantillas de WhatsApp para cada paso del proceso.'
+				}
+			},
+			{
+				name: { en: 'Backups & manual', es: 'Backups y manual' },
+				detail: {
+					en: 'Scheduled backups and the built-in user manual.',
+					es: 'Copias programadas y el manual de usuario integrado.'
+				}
+			}
+		],
 		palette: {
 			base: '#020619',
 			accent: '#3d82ff',
 			on: 'paper',
 			onAccent: 'ink'
+		},
+		coverArt: {
+			src: '/art/project-covers/segispro-cover-v1.webp',
+			width: 1024,
+			height: 1536
 		},
 		image: {
 			src: '/projects/segispro.webp',
@@ -92,11 +177,6 @@ export const projects: Project[] = [
 				es: 'Presentación pública renderizada desde el producto local; explica el flujo sin exponer datos de clientes.'
 			}
 		},
-		stats: [
-			{ value: '740', label: { en: 'commits', es: 'commits' } },
-			{ value: '2', label: { en: 'codebases', es: 'repositorios' } },
-			{ value: '44', label: { en: 'product routes', es: 'rutas de producto' } }
-		],
 		architecture: [
 			{
 				layer: { en: 'Product experience', es: 'Experiencia de producto' },
@@ -210,12 +290,85 @@ export const projects: Project[] = [
 			'H5P'
 		],
 		accent: 'blue',
+		libraries: [
+			'TypeORM',
+			'BullMQ',
+			'Passport',
+			'JSON Web Tokens',
+			'SAML/OIDC',
+			'OpenAI',
+			'Resend',
+			'TanStack',
+			'GSAP',
+			'H5P',
+			'SCORM',
+			'hls.js',
+			'jsPDF',
+			'Mapbox'
+		],
+		modules: [
+			{
+				name: { en: 'Catalogue & learning paths', es: 'Catálogo y rutas de aprendizaje' },
+				detail: {
+					en: 'Courses, packages and prerequisites arranged into paths.',
+					es: 'Cursos, paquetes y prerrequisitos organizados en rutas.'
+				}
+			},
+			{
+				name: { en: 'Training delivery', es: 'Capacitaciones' },
+				detail: {
+					en: 'Interactive H5P and SCORM content, video and reading tracked per learner.',
+					es: 'Contenido interactivo H5P y SCORM, video y lectura con seguimiento por persona.'
+				}
+			},
+			{
+				name: { en: 'Assessment', es: 'Evaluaciones' },
+				detail: {
+					en: 'Evaluations with instructors, approvals and results.',
+					es: 'Evaluaciones con instructores, aprobaciones y resultados.'
+				}
+			},
+			{
+				name: { en: 'Verifiable certificates', es: 'Certificados verificables' },
+				detail: {
+					en: 'QR-signed certificates anyone can verify on the public site.',
+					es: 'Certificados firmados con QR que cualquiera verifica en el sitio público.'
+				}
+			},
+			{
+				name: { en: 'Companies & orders', es: 'Empresas y órdenes' },
+				detail: {
+					en: 'Corporate accounts, purchase orders and catalogue requests.',
+					es: 'Cuentas corporativas, órdenes de compra y solicitudes de catálogo.'
+				}
+			},
+			{
+				name: { en: 'Corporate SSO', es: 'SSO corporativo' },
+				detail: {
+					en: 'SAML and OIDC sign-in configured per company.',
+					es: 'Inicio de sesión SAML y OIDC configurado por empresa.'
+				}
+			},
+			{
+				name: { en: 'Public site', es: 'Sitio público' },
+				detail: {
+					en: 'Catalogue, docs, status and the verification page.',
+					es: 'Catálogo, documentación, estado y la página de verificación.'
+				}
+			}
+		],
 		palette: {
 			base: '#fdf6dc',
 			accent: '#2554e2',
 			on: 'ink',
 			onAccent: 'paper'
 		},
+		coverArt: {
+			src: '/art/project-covers/formarpro-cover-v1.webp',
+			width: 1024,
+			height: 1536
+		},
+		coverText: 'paper',
 		image: {
 			src: '/projects/formarpro.webp',
 			alt: {
@@ -227,11 +380,6 @@ export const projects: Project[] = [
 				es: 'Superficie pública del producto capturada desde el frontend local.'
 			}
 		},
-		stats: [
-			{ value: '73', label: { en: 'commits', es: 'commits' } },
-			{ value: '2', label: { en: 'codebases', es: 'repositorios' } },
-			{ value: '68', label: { en: 'product routes', es: 'rutas de producto' } }
-		],
 		architecture: [
 			{
 				layer: { en: 'Learning experiences', es: 'Experiencias de aprendizaje' },
@@ -336,11 +484,84 @@ export const projects: Project[] = [
 		},
 		stack: ['SvelteKit', 'Fastify', 'Prisma', 'PostgreSQL', 'Socket.IO', 'Univer', 'Mapbox', 'PDF'],
 		accent: 'yellow',
+		libraries: [
+			'Prisma',
+			'Zod',
+			'Pino',
+			'Swagger',
+			'JSON Web Tokens',
+			'Puppeteer',
+			'Univer',
+			'Chart.js',
+			'Mapbox',
+			'ExcelJS',
+			'pdfmake',
+			'Anthropic',
+			'Azure Blob',
+			'Amazon S3',
+			'Resend'
+		],
+		modules: [
+			{
+				name: { en: 'Fleet & drivers', es: 'Flota y conductores' },
+				detail: {
+					en: 'Vehicles, drivers, documents and their expiry.',
+					es: 'Vehículos, conductores, documentos y sus vencimientos.'
+				}
+			},
+			{
+				name: { en: 'Services & settlements', es: 'Servicios y liquidaciones' },
+				detail: {
+					en: 'Trips, third-party and service settlements, statements.',
+					es: 'Viajes, liquidaciones de servicios y terceros, extractos.'
+				}
+			},
+			{
+				name: { en: 'Payroll & surcharges', es: 'Nómina y recargos' },
+				detail: {
+					en: 'Payroll with surcharges computed from the operation itself.',
+					es: 'Nómina con recargos calculados desde la propia operación.'
+				}
+			},
+			{
+				name: { en: 'Road safety (PESV)', es: 'PESV' },
+				detail: {
+					en: 'The road-safety plan: checks, forms and evidence.',
+					es: 'El plan estratégico de seguridad vial: controles, formularios y evidencia.'
+				}
+			},
+			{
+				name: { en: 'Compliance', es: 'Cumplimiento' },
+				detail: {
+					en: 'SARLAFT, corrective actions and non-conformity exits.',
+					es: 'SARLAFT, acciones correctivas y salidas no conformes.'
+				}
+			},
+			{
+				name: { en: 'Forms & attendance', es: 'Formularios y asistencias' },
+				detail: {
+					en: 'Custom forms and token-based attendance, no login needed.',
+					es: 'Formularios propios y asistencia por token, sin iniciar sesión.'
+				}
+			},
+			{
+				name: { en: 'Two operators, one base', es: 'Dos operadoras, una base' },
+				detail: {
+					en: 'The same codebase branded and deployed for each company.',
+					es: 'La misma base de código con marca y despliegue por empresa.'
+				}
+			}
+		],
 		palette: {
 			base: '#0b1a15',
 			accent: '#17a06f',
 			on: 'paper',
 			onAccent: 'ink'
+		},
+		coverArt: {
+			src: '/art/project-covers/transmeralda-cover-v1.webp',
+			width: 1024,
+			height: 1536
 		},
 		image: {
 			src: '/projects/transmeralda.webp',
@@ -353,11 +574,6 @@ export const projects: Project[] = [
 				es: 'Presentación pública renderizada en local; Cotransmeq comparte la arquitectura con identidad propia.'
 			}
 		},
-		stats: [
-			{ value: '884', label: { en: 'commits', es: 'commits' } },
-			{ value: '4', label: { en: 'codebases', es: 'repositorios' } },
-			{ value: '2', label: { en: 'operators', es: 'operadoras' } }
-		],
 		architecture: [
 			{
 				layer: { en: 'Field and office', es: 'Campo y oficina' },
@@ -462,11 +678,68 @@ export const projects: Project[] = [
 		},
 		stack: ['Swift', 'SwiftUI', 'Kotlin', 'Jetpack Compose', 'SQLite', 'Git worktrees'],
 		accent: 'blue',
+		libraries: ['Xcode', 'macOS', 'Android', 'Android Studio', 'Keychain'],
+		modules: [
+			{
+				name: { en: 'Projects & tasks', es: 'Proyectos y tareas' },
+				detail: {
+					en: 'Local projects, their tasks and the specs behind them.',
+					es: 'Proyectos locales, sus tareas y las especificaciones detrás.'
+				}
+			},
+			{
+				name: { en: 'Executions in worktrees', es: 'Ejecuciones en worktrees' },
+				detail: {
+					en: 'Every task execution isolated in its own Git worktree.',
+					es: 'Cada ejecución de tarea aislada en su propio worktree de Git.'
+				}
+			},
+			{
+				name: { en: 'Agent providers', es: 'Proveedores de agentes' },
+				detail: {
+					en: 'Agents behind a provider-independent protocol.',
+					es: 'Agentes detrás de un protocolo independiente del proveedor.'
+				}
+			},
+			{
+				name: { en: 'Validation & review', es: 'Validación y revisión' },
+				detail: {
+					en: 'Checks that do not trust the agent’s own account of its work.',
+					es: 'Comprobaciones que no se fían del relato del propio agente.'
+				}
+			},
+			{
+				name: { en: 'Approval & merge', es: 'Aprobación y merge' },
+				detail: {
+					en: 'Two distinct actions, then cleanup of the worktree.',
+					es: 'Dos acciones distintas, y después limpieza del worktree.'
+				}
+			},
+			{
+				name: { en: 'Local-first security', es: 'Seguridad local' },
+				detail: {
+					en: 'Keychain, audit trail, explicit permissions and a kill switch.',
+					es: 'Keychain, auditoría, permisos explícitos y un interruptor de emergencia.'
+				}
+			},
+			{
+				name: { en: 'Android companion', es: 'Compañero Android' },
+				detail: {
+					en: 'A Kotlin and Jetpack Compose app after the core MVP.',
+					es: 'Una app en Kotlin y Jetpack Compose después del MVP central.'
+				}
+			}
+		],
 		palette: {
 			base: '#071826',
 			accent: '#d2a53f',
 			on: 'paper',
 			onAccent: 'ink'
+		},
+		coverArt: {
+			src: '/art/project-covers/developer-os-cover-v1.webp',
+			width: 1024,
+			height: 1536
 		},
 		link: 'https://github.com/jldev1227',
 		image: {
@@ -480,11 +753,6 @@ export const projects: Project[] = [
 				es: 'Mockup maestro del centro de control que guía la implementación nativa para macOS.'
 			}
 		},
-		stats: [
-			{ value: '114', label: { en: 'commits', es: 'commits' } },
-			{ value: '2', label: { en: 'native apps', es: 'apps nativas' } },
-			{ value: '105', label: { en: 'test files', es: 'archivos de prueba' } }
-		],
 		architecture: [
 			{
 				layer: { en: 'Native interfaces', es: 'Interfaces nativas' },
@@ -589,12 +857,82 @@ export const projects: Project[] = [
 		},
 		stack: ['SvelteKit', 'TypeScript', 'Prisma', 'PostgreSQL', 'Tailwind CSS', 'AVIF', 'PDF'],
 		accent: 'ink',
+		libraries: [
+			'Prisma',
+			'Zod',
+			'Paraglide',
+			'sharp',
+			'React PDF',
+			'Resend',
+			'Azure Blob',
+			'argon2',
+			'Lucide',
+			'Playwright',
+			'Vercel'
+		],
+		modules: [
+			{
+				name: { en: 'Students & groups', es: 'Estudiantes y grupos' },
+				detail: {
+					en: 'Enrolment, groups and the family behind each student.',
+					es: 'Matrícula, grupos y la familia detrás de cada estudiante.'
+				}
+			},
+			{
+				name: { en: 'Academics', es: 'Académico' },
+				detail: {
+					en: 'Subjects, grades and the academic calendar.',
+					es: 'Asignaturas, calificaciones y el calendario académico.'
+				}
+			},
+			{
+				name: { en: 'Attendance', es: 'Asistencia' },
+				detail: {
+					en: 'Daily attendance per group, with reports.',
+					es: 'Asistencia diaria por grupo, con reportes.'
+				}
+			},
+			{
+				name: { en: 'Report cards', es: 'Boletines' },
+				detail: {
+					en: 'Report cards rendered to PDF from the same records.',
+					es: 'Boletines generados en PDF desde los mismos registros.'
+				}
+			},
+			{
+				name: { en: 'Fees & payments', es: 'Cartera y pagos' },
+				detail: {
+					en: 'Balances, payments and what each family owes.',
+					es: 'Saldos, pagos y lo que debe cada familia.'
+				}
+			},
+			{
+				name: { en: 'Circulars & posts', es: 'Circulares y publicaciones' },
+				detail: {
+					en: 'School circulars and publications for families.',
+					es: 'Circulares y publicaciones del colegio para las familias.'
+				}
+			},
+			{
+				name: { en: 'Files', es: 'Archivos' },
+				detail: {
+					en: 'Images normalised to AVIF and documents in blob storage.',
+					es: 'Imágenes normalizadas a AVIF y documentos en blob storage.'
+				}
+			}
+		],
 		palette: {
 			base: '#f8f3e9',
 			accent: '#c42c36',
 			on: 'ink',
 			onAccent: 'paper'
 		},
+		coverArt: {
+			src: '/art/project-covers/gym-vancouver-cover-v1.webp',
+			width: 1024,
+			height: 1536
+		},
+		coverText: 'paper',
 		image: {
 			src: '/projects/gym-vancouver.webp',
 			alt: {
@@ -606,11 +944,6 @@ export const projects: Project[] = [
 				es: 'Portada pública real capturada desde la aplicación local; no muestra registros de estudiantes.'
 			}
 		},
-		stats: [
-			{ value: '34', label: { en: 'commits', es: 'commits' } },
-			{ value: '4', label: { en: 'role journeys', es: 'recorridos por rol' } },
-			{ value: '31', label: { en: 'product routes', es: 'rutas de producto' } }
-		],
 		architecture: [
 			{
 				layer: { en: 'Role experiences', es: 'Experiencias por rol' },
