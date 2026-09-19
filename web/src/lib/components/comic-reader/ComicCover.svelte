@@ -363,6 +363,8 @@
 	 * kicker and the lead were measuring around 1.2:1 against the artwork.
 	 */
 	.story {
+		align-self: stretch;
+		min-width: 0;
 		margin-top: auto;
 		margin-inline: calc(-1 * clamp(13px, 3cqi, 26px));
 		padding: 16px clamp(13px, 3cqi, 26px) 12px;
@@ -470,7 +472,12 @@
 	}
 
 	@container (max-width: 360px) {
-		.foot .imprint {
+		.plate {
+			gap: 8px;
+		}
+
+		.plate .price,
+		.foot :is(.barcode, .imprint) {
 			display: none;
 		}
 	}

@@ -35,7 +35,8 @@ const PROJECTS = {
 		{ path: 'cotransmeq/backend-cotransmeq', name: 'cotransmeq · api', kind: 'api' }
 	],
 	'developer-os': [{ path: 'developer-os', name: 'developer-os', kind: 'native' }],
-	'gym-vancouver': [{ path: 'gimnasio-vancouver-2', name: 'app', kind: 'app' }]
+	'gym-vancouver': [{ path: 'gimnasio-vancouver-2', name: 'app', kind: 'app' }],
+	'manejo-comentado': [{ path: 'manejo-comentado', name: 'platform', kind: 'app' }]
 };
 
 const git = (repo, args) =>
@@ -75,7 +76,9 @@ function measure(entry) {
 			controllers: count((f) => f.endsWith('.controller.ts')),
 			models,
 			migrations: count((f) => /migrations\/.*\.sql$/.test(f)),
-			tests: count((f) => /\.(spec|test)\.(ts|js|swift|kt)$/.test(f)),
+			tests: count(
+				(f) => /(?:\.|-)(spec|test)\.(ts|js)$/.test(f) || /(?:Test|Tests)\.(swift|kt)$/.test(f)
+			),
 			native: count((f) => /\.(swift|kt)$/.test(f))
 		}
 	};

@@ -4,7 +4,7 @@ The progressive comic-reader presentation. The reader stays independent from
 page copy and project data.
 
 This component is the book everywhere: the canonical mission routes and the
-modal on the home page archive both turn its sheets. There is no page-turn
+modal in the `/missions` archive both turn its sheets. There is no page-turn
 library behind it; the physics are in this file and `reader-state.ts`. Read
 [`../../../docs/comic-reader/LIBRARY-INTERACTION.md`](../../../docs/comic-reader/LIBRARY-INTERACTION.md)
 before changing its public contract.
@@ -21,8 +21,8 @@ comic-reader/
   README.md
 ```
 
-The reader is used by more than one issue: `/[lang]` is the introductory one and
-every `/[lang]/missions/[slug]` is its own, so nothing here may reach into
+The reader is used by more than one issue: every project archive volume and
+every `/[lang]/missions/[slug]` route is its own, so nothing here may reach into
 `$content` for a particular issue's words. `ComicCover` takes a `CoverIssue` of
 already-localized strings; the route decides which issue it is printing.
 

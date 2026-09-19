@@ -6,7 +6,7 @@ import type { Locale, Localized } from './locales';
  */
 const UI = {
 	'nav.origin': { en: 'Origin', es: 'Origen' },
-	'nav.missions': { en: 'Missions', es: 'Misiones' },
+	'nav.missions': { en: 'Worlds', es: 'Universos' },
 	'nav.resume': { en: 'Résumé', es: 'Hoja de vida' },
 	'nav.contact': { en: 'Contact', es: 'Contacto' },
 	'nav.primary': { en: 'Primary navigation', es: 'Navegación principal' },
@@ -106,8 +106,8 @@ const UI = {
 	},
 	'library.title': { en: 'Choose your next world', es: 'Elige tu próximo mundo' },
 	'library.hint': {
-		en: 'Issue #1227 is me. Every other issue is a real project.',
-		es: 'El número #1227 soy yo. Los demás números son proyectos reales.'
+		en: 'Every issue is a real project. Choose a cover and enter its world.',
+		es: 'Cada número es un proyecto real. Elige una portada y entra a su mundo.'
 	},
 	'library.pickUp': { en: 'Open {title}', es: 'Abre {title}' },
 	'library.reading': { en: 'Reading {title}', es: 'Leyendo {title}' },

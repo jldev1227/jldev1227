@@ -1,6 +1,6 @@
 # Comic archive component contract
 
-The homepage archive progressively enhances ordinary issue links. It owns
+The `/missions` archive progressively enhances ordinary issue links. It owns
 presentation state but never replaces canonical mission routes or project data.
 
 ```text
@@ -29,9 +29,8 @@ Rules:
   and is told where to open (`manageHash={false}`, `initialPage`).
 - The modal measures the room and gives the reader the width at which the
   book fits it in both dimensions.
-- The introductory issue is the only one with an illustrated cover and tells
-  who is writing; every case file is an issue of its own, printing the same six
-  pages as its canonical route through `CaseFilePage`.
+- Every case file is an issue of its own, printing the same eight pages as its
+  canonical route through `CaseFilePage`.
 - `ComicReader.svelte` is also the standalone mission-route reader.
 
 Read `web/docs/comic-reader/LIBRARY-INTERACTION.md` before changing the flow.

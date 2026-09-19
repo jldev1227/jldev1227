@@ -48,7 +48,7 @@ src/
     styles/comic.css      tokens + the panel/caption/bubble primitives
     i18n/                 locales, UI dictionary, path builders
     content/site.ts       every page string, bilingual
-    content/projects.ts   the five case files
+    content/projects.ts   the six case files
     components/           Panel · Caption · Bubble · ArtSlot · Masthead · Seo
   routes/
     +page.server.ts       `/` → `/en` or `/es` — the only dynamic route

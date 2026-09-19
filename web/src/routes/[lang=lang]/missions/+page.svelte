@@ -1,7 +1,16 @@
 <script lang="ts">
-	import { Masthead, PageFooter, Panel, ProjectShot, Seo } from '$lib/components';
-	import { projects } from '$content/projects';
-	import { identity, missionIntro } from '$content/site';
+	import { Masthead, PageFooter, Seo } from '$lib/components';
+	import {
+		CASE_SECTIONS,
+		CaseFilePage,
+		caseSectionLabel,
+		isCaseSection,
+		type CoverIssue,
+		type ReaderPage
+	} from '$lib/components/comic-reader';
+	import { ComicExperience, type ExperienceVolume } from '$lib/components/comic-experience';
+	import { findProject, projects } from '$content/projects';
+	import { cover, identity, missionIntro } from '$content/site';
 	import { missionPath, path, translator } from '$i18n';
 	import type { PageProps } from './$types';
 
@@ -10,6 +19,41 @@
 	const locale = $derived(data.locale);
 	const t = $derived(translator(locale));
 	const canonicalPath = $derived(path(locale, 'missions'));
+
+	/**
+	 * The complete shelf. Each cover remains an ordinary canonical link until
+	 * JavaScript enhances it into the modal reader.
+	 */
+	const archiveVolumes = $derived<ExperienceVolume[]>(
+		projects.map((project) => ({
+			id: project.slug,
+			href: missionPath(locale, project.slug),
+			title: project.title,
+			cover: {
+				volume: t('missions.collection'),
+				issue: `#${project.number}`,
+				price: cover.price[locale],
+				imprint: cover.imprint[locale],
+				date: cover.date[locale],
+				stamp: cover.stamp[locale],
+				storyKicker: project.kicker[locale],
+				titleTop: project.title,
+				lead: project.tagline[locale],
+				blurb: project.image.caption[locale],
+				art: project.coverArt,
+				coverText: project.coverText,
+				palette: project.palette
+			} satisfies CoverIssue,
+			pages: CASE_SECTIONS.map(
+				(section) =>
+					({
+						id: `${project.slug}--${section}`,
+						label: caseSectionLabel(t, section),
+						content: casePage
+					}) satisfies ReaderPage
+			)
+		}))
+	);
 </script>
 
 <Seo
@@ -31,129 +75,41 @@
 	]}
 />
 
-<!-- The index is the shelf, not an issue: an ordinary document, so it keeps the
-     masthead and footer the comics do without. -->
-<div class="jl-page">
+{#snippet casePage(id: string)}
+	{@const [slug, section] = id.split('--')}
+	{@const project = findProject(slug)}
+	{#if project && isCaseSection(section)}
+		<CaseFilePage {locale} {project} {section} context="archive" />
+	{/if}
+{/snippet}
+
+<div class="archive-shell">
 	<Masthead {locale} />
 	<main id="content">
-		<div class="jl-grid">
-			<Panel class="index-intro">
-				<h1 class="jl-display">{missionIntro.title[locale]}</h1>
-				<p>{missionIntro.body[locale]}</p>
-			</Panel>
-		</div>
-
-		<div class="jl-grid list">
-			{#each projects as project (project.slug)}
-				<Panel as="article" class="row" data-accent={project.accent}>
-					<a href={missionPath(locale, project.slug)}>
-						<ProjectShot src={project.image.src} alt={project.image.alt[locale]} compact />
-						<div class="row-copy">
-							<span class="jl-kicker number">{project.number}</span>
-							<div class="row-main">
-								<h2 class="jl-display">{project.title}</h2>
-								<p>{project.tagline[locale]}</p>
-							</div>
-							<span class="jl-kicker stack">{project.stack.join(' · ')}</span>
-						</div>
-					</a>
-				</Panel>
-			{/each}
-		</div>
+		<ComicExperience {locale} volumes={archiveVolumes} />
 	</main>
 	<PageFooter {locale} />
 </div>
 
 <style>
-	:global(.jl-panel.index-intro) {
-		padding: 36px;
-		color: var(--jl-white);
-		background: linear-gradient(115deg, var(--jl-red) 0 62%, var(--jl-ink) 62%);
+	.archive-shell {
+		position: relative;
+		z-index: 1;
+		width: 100%;
+		margin: 0 auto;
+		background: var(--jl-ink);
+		box-shadow:
+			0 0 0 1px rgb(255 255 255 / 0.12),
+			0 28px 90px rgb(0 0 0 / 0.55);
 	}
 
-	:global(.jl-panel.index-intro) h1 {
-		max-width: 12ch;
-		font-size: clamp(2.4rem, 6vw, 4.6rem);
-		text-shadow: 4px 4px 0 var(--jl-ink);
-	}
-
-	:global(.jl-panel.index-intro) p {
-		max-width: 52ch;
-		margin: 18px 0 0;
-		color: var(--jl-on-dark);
-		line-height: 1.6;
-	}
-
-	:global(.jl-panel.row) {
-		color: var(--jl-white);
-		background: var(--jl-navy-deep);
-	}
-
-	:global(.jl-panel.row[data-accent='yellow']) {
-		color: var(--jl-ink);
-		background: var(--jl-yellow);
-	}
-
-	.list a {
-		display: grid;
-		grid-template-columns: minmax(240px, 0.75fr) minmax(0, 1.5fr);
-		align-items: center;
-		gap: 24px;
-		padding: 24px 26px;
-		text-decoration: none;
-	}
-
-	.row-copy {
-		display: grid;
-		grid-template-columns: auto minmax(0, 1fr);
-		align-items: start;
-		gap: 8px 20px;
-	}
-
-	.number {
-		font-family: var(--jl-font-display);
-		font-size: 2.4rem;
-		line-height: 1;
-		opacity: 0.5;
-	}
-
-	.list h2 {
-		margin: 0 0 6px;
-		font-size: 1.9rem;
-	}
-
-	.list p {
-		max-width: 60ch;
-		margin: 0;
-		font-size: 0.85rem;
-		line-height: 1.5;
-	}
-
-	.list .stack {
-		grid-column: 2;
-		margin-top: 4px;
-		font-size: 0.65rem;
-		line-height: 1.5;
-		opacity: 0.7;
-	}
-
-	.list a:hover h2 {
-		color: var(--jl-yellow);
-	}
-
-	:global(.jl-panel.row[data-accent='yellow']) a:hover h2 {
-		color: var(--jl-red);
+	main {
+		min-height: 100svh;
 	}
 
 	@media (max-width: 760px) {
-		.list a {
-			grid-template-columns: 1fr;
-			gap: 16px;
-			padding: 0 0 22px;
-		}
-
-		.row-copy {
-			margin-inline: 22px;
+		.archive-shell {
+			box-shadow: none;
 		}
 	}
 </style>

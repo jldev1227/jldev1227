@@ -10,9 +10,8 @@
 	 * that is the whole behaviour — a link to a readable document — and the grid
 	 * only takes the click over once it has enhanced itself.
 	 *
-	 * The introductory issue is the one with an illustration; the case files are
-	 * drawn from their own palettes rather than the house colours, so the six
-	 * read as six different comics at a glance. Neither is a miniature of
+	 * Every project carries its own illustration and palette, so the six read as
+	 * six different comics at a glance. This is not a miniature of
 	 * `ComicCover`: at this size the furniture would be illegible, so the face
 	 * carries only what identifies the issue.
 	 */
@@ -205,7 +204,7 @@
 	 * Accent as lettering, pulled towards the world's reading colour — the rule
 	 * the cover and the case panels already follow. At full strength the issue
 	 * number clears its own ground but not the accent wedge it can cross,
-	 * measuring 3.0–4.2:1 across the five worlds.
+	 * measuring 3.0–4.2:1 across the six worlds.
 	 */
 	.number {
 		align-self: start;

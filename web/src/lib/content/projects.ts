@@ -75,7 +75,7 @@ export interface Project {
 	link?: string;
 }
 
-/** The five worlds. Order is the reading order of the comic page. */
+/** The six worlds. Order is the reading order of the comic page. */
 export const projects: Project[] = [
 	{
 		slug: 'segispro',
@@ -1036,6 +1036,209 @@ export const projects: Project[] = [
 			en: 'The working rebuild already demonstrates the four role journeys with seeded, fictional data across academics, attendance, communication and finance. Its current snapshot includes 31 product routes and a documented capture set used to review the experience without touching production records.',
 			es: 'La reconstrucción funcional ya demuestra los cuatro recorridos con datos ficticios sembrados en módulos académicos, asistencia, comunicación y cartera. La versión actual incluye 31 rutas de producto y un conjunto documentado de capturas para revisar la experiencia sin tocar registros productivos.'
 		}
+	},
+	{
+		slug: 'manejo-comentado',
+		number: '06',
+		kicker: { en: 'Case file 06 · Road safety', es: 'Expediente 06 · Seguridad vial' },
+		title: 'MANEJO COMENTADO',
+		tagline: {
+			en: 'An offline-first platform that turns every commentary-driving course into auditable evidence: audio, GPS, photos, scoring and reports.',
+			es: 'Una plataforma offline-first que convierte cada curso de manejo comentado en evidencia auditable: audio, GPS, fotografías, puntaje e informes.'
+		},
+		stack: [
+			'Kotlin',
+			'Jetpack Compose',
+			'Room',
+			'WorkManager',
+			'SvelteKit',
+			'NestJS',
+			'PostgreSQL',
+			'OpenAPI'
+		],
+		accent: 'blue',
+		libraries: [
+			'Hilt',
+			'CameraX',
+			'MediaRecorder',
+			'Fused Location',
+			'Android Keystore',
+			'Retrofit',
+			'Prisma',
+			'WebSockets',
+			'Mapbox',
+			'WaveSurfer',
+			'QRCode',
+			'Puppeteer',
+			'Argon2'
+		],
+		modules: [
+			{
+				name: { en: 'Field agenda', es: 'Agenda de campo' },
+				detail: {
+					en: 'Assigned sessions, offline packages and provisional enrolment when operations change.',
+					es: 'Sesiones asignadas, paquetes offline y altas provisionales cuando la operación cambia.'
+				}
+			},
+			{
+				name: { en: 'Consent & pre-operation', es: 'Autorización y preoperacional' },
+				detail: {
+					en: 'Versioned consent, identity checks, signatures and the vehicle go/no-go decision.',
+					es: 'Autorización versionada, identidad, firmas y decisión de aptitud del vehículo.'
+				}
+			},
+			{
+				name: { en: 'Guided road session', es: 'Sesión guiada en vía' },
+				detail: {
+					en: 'Three phases with continuous audio, GPS, photos, hazards and scoring.',
+					es: 'Tres fases con audio continuo, GPS, fotografías, peligros y calificación.'
+				}
+			},
+			{
+				name: { en: 'Offline evidence', es: 'Evidencia offline' },
+				detail: {
+					en: 'Local-first capture, encrypted storage and resumable synchronization.',
+					es: 'Captura local-first, almacenamiento cifrado y sincronización reanudable.'
+				}
+			},
+			{
+				name: { en: 'Review room', es: 'Sala de revisión' },
+				detail: {
+					en: 'A synchronized timeline for audio, route, photographs, events and score changes.',
+					es: 'Una línea de tiempo que sincroniza audio, recorrido, fotos, eventos y cambios de nota.'
+				}
+			},
+			{
+				name: { en: 'Issuance & verification', es: 'Emisión y verificación' },
+				detail: {
+					en: 'Revocable reports plus a limited QR code that verifies printed authenticity.',
+					es: 'Informes revocables y un QR limitado que verifica la autenticidad del papel.'
+				}
+			},
+			{
+				name: { en: 'Client & administration portals', es: 'Portales de cliente y administración' },
+				detail: {
+					en: 'Scheduling, accounts, templates and result-only access scoped to each company.',
+					es: 'Programación, cuentas, plantillas y acceso a resultados limitado por empresa.'
+				}
+			}
+		],
+		palette: {
+			base: '#041233',
+			accent: '#45d4ff',
+			on: 'paper',
+			onAccent: 'ink'
+		},
+		coverArt: {
+			src: '/art/project-covers/manejo-comentado-cover-v1.webp',
+			width: 1024,
+			height: 1536
+		},
+		coverText: 'paper',
+		image: {
+			src: '/projects/manejo-comentado.webp',
+			alt: {
+				en: 'Manejo Comentado product identity with an illuminated road and GPS route',
+				es: 'Identidad de Manejo Comentado con una vía iluminada y un recorrido GPS'
+			},
+			caption: {
+				en: 'The public product identity states the contract clearly: auditable evidence, with or without signal.',
+				es: 'La identidad pública del producto declara el contrato con claridad: evidencia auditable, con o sin señal.'
+			}
+		},
+		architecture: [
+			{
+				layer: { en: 'Field application', es: 'Aplicación de campo' },
+				technology: 'Kotlin · Compose · Room',
+				detail: {
+					en: 'A recoverable state machine captures the complete session without connectivity.',
+					es: 'Una máquina de estados recuperable captura la sesión completa sin conectividad.'
+				}
+			},
+			{
+				layer: { en: 'Contract and domain', es: 'Contrato y dominio' },
+				technology: 'OpenAPI · NestJS',
+				detail: {
+					en: 'One contract joins the surfaces; the server enforces roles and recalculates results.',
+					es: 'Un contrato une las superficies; el servidor aplica roles y recalcula resultados.'
+				}
+			},
+			{
+				layer: { en: 'Evidence custody', es: 'Custodia de evidencia' },
+				technology: 'PostgreSQL · Hash-addressed files',
+				detail: {
+					en: 'Original payloads, immutable files, hashes and versioned rules remain auditable.',
+					es: 'Cargas originales, archivos inmutables, huellas y reglas versionadas conservan la auditoría.'
+				}
+			},
+			{
+				layer: { en: 'Review and delivery', es: 'Revisión y entrega' },
+				technology: 'SvelteKit · Mapbox · WaveSurfer',
+				detail: {
+					en: 'The portal aligns route, sound and events before issuing a revocable report.',
+					es: 'El portal alinea recorrido, sonido y eventos antes de emitir un informe revocable.'
+				}
+			}
+		],
+		transformation: [
+			{
+				before: {
+					en: 'A signed certificate with little proof behind it.',
+					es: 'Una constancia firmada con poca evidencia detrás.'
+				},
+				after: {
+					en: 'Audio, GPS, photos and decisions tied to one traceable session.',
+					es: 'Audio, GPS, fotos y decisiones ligados a una sesión trazable.'
+				}
+			},
+			{
+				before: {
+					en: 'Field work blocked whenever coverage disappears.',
+					es: 'Trabajo de campo bloqueado cuando desaparece la señal.'
+				},
+				after: {
+					en: 'The full session runs offline and synchronizes afterwards.',
+					es: 'La sesión completa funciona offline y sincroniza después.'
+				}
+			},
+			{
+				before: {
+					en: 'A field score accepted as the final truth.',
+					es: 'Una nota de campo aceptada como verdad final.'
+				},
+				after: {
+					en: 'Independent server recalculation and human resolution of discrepancies.',
+					es: 'Recálculo independiente en servidor y resolución humana de discrepancias.'
+				}
+			}
+		],
+		decisions: [
+			{
+				en: 'Model the session as an explicit state machine and retain the original evidence separately from every derived conclusion.',
+				es: 'Modelar la sesión como una máquina de estados explícita y conservar la evidencia original separada de cada conclusión derivada.'
+			},
+			{
+				en: 'Capture to Room first, encrypt sensitive material with Android Keystore, and synchronize idempotently by content fingerprint.',
+				es: 'Capturar primero en Room, cifrar lo sensible con Android Keystore y sincronizar de forma idempotente por huella de contenido.'
+			},
+			{
+				en: 'Give the evidence link and the printed QR different powers: one opens authorized detail, the other only verifies authenticity.',
+				es: 'Dar poderes distintos al enlace de evidencia y al QR impreso: uno abre el detalle autorizado; el otro solo verifica autenticidad.'
+			}
+		],
+		challenge: {
+			en: 'A commentary-driving course happens inside a vehicle, often with unreliable coverage, and joins road safety with identity, voice, location, photographs, signatures and scoring. The challenge was not to produce another certificate, but to turn a one-time field session into evidence that can withstand an audit without distracting the instructor or exposing sensitive data.',
+			es: 'Un curso de manejo comentado ocurre dentro de un vehículo, a menudo con señal inestable, y mezcla seguridad vial con identidad, voz, ubicación, fotografías, firmas y calificación. El reto no era producir otra constancia, sino convertir una sesión irrepetible en evidencia defendible ante una auditoría sin distraer al instructor ni exponer datos sensibles.'
+		},
+		approach: {
+			en: 'I designed the Android experience as an offline-first state machine backed by Room, WorkManager and protected device storage. A contract-first NestJS API receives immutable evidence, recalculates the score and sends discrepancies to human review; SvelteKit then brings audio, GPS, photographs and events together for review, issuance and limited public verification.',
+			es: 'Diseñé la experiencia Android como una máquina de estados offline-first respaldada por Room, WorkManager y almacenamiento protegido en el dispositivo. Una API NestJS contract-first recibe evidencia inmutable, recalcula el puntaje y envía las discrepancias a revisión humana; SvelteKit reúne audio, GPS, fotografías y eventos para revisar, emitir y verificar públicamente con alcance limitado.'
+		},
+		outcome: {
+			en: 'The current build covers the technical journey from scheduling and Android capture to synchronization, web review, revocable issuance and public authenticity checks. The repository snapshot contains 103 commits, 28 web routes and handlers, and 30 test files across the native app, API and portal, while the product advances through internal beta.',
+			es: 'La versión actual cubre el recorrido técnico desde la programación y la captura Android hasta la sincronización, la revisión web, la emisión revocable y la verificación pública de autenticidad. La foto del repositorio reúne 103 commits, 28 rutas y handlers web y 30 archivos de prueba entre la app nativa, la API y el portal, mientras el producto avanza en beta interna.'
+		},
+		link: 'https://manejo-comentado.vercel.app'
 	}
 ];
 

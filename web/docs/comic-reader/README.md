@@ -1,7 +1,7 @@
 # Experimental comic reader
 
-Status: phases 0–4 built. The home page now lays the collection out as a grid
-of covers with this reader in a modal, described in
+Status: phases 0–4 built. The `/[lang]/missions` archive lays the project
+collection out as a grid of covers with this reader in a modal, described in
 [`LIBRARY-INTERACTION.md`](LIBRARY-INTERACTION.md). No page-turn library is
 involved anywhere.
 
@@ -20,7 +20,7 @@ finish on a back cover.
 
 ## Experience model
 
-The reader below is the book everywhere. The collection entry on the home page
+The reader below is the book everywhere. The collection entry on `/missions`
 adds `browse → read` around it in a modal; an adapter for a page-turn library
 was tried in between and removed, because the physics here proved the better
 ones to keep.
@@ -65,8 +65,8 @@ graphic storytelling must carry the cover.
 
 The experiment changes presentation, not the public URL model:
 
-- `/en` and `/es` remain the home and reader entry points.
-- `/[lang]/missions` remains the accessible case-file index.
+- `/en` and `/es` are the personal, multiverse-style landing pages.
+- `/[lang]/missions` is the complete cover archive and modal reader.
 - `/[lang]/missions/[slug]` remains the canonical project route.
 - A hash or `history.state` may preserve the open spread, but it must not create
   a second canonical URL for the same content.
@@ -185,27 +185,17 @@ case-file routes keep their masthead and footer — they are ordinary documents.
 
 ### Phase 4 — narrative migration — done, and a collection
 
-The site is no longer one comic but a collection of them. `/[lang]` is issue
-#1227, the introductory one; every `/[lang]/missions/[slug]` is its own issue of
-`JLDEV case files`, with its own cover — number, cover story, accent — and six
-pages built from the case content: the challenge, the engineering snapshot and
-stack, the approach, the architecture, before/after with the key decisions, and
-the outcome with the way back. Both are read exactly the same way.
+The site is a personal landing connected to a collection of six project comics.
+`/[lang]` introduces Julian, his working principles and each project as its own
+world. Every `/[lang]/missions/[slug]` is an issue of `JLDEV case files`, with
+its own cover and eight pages built from the case content.
 
-The index at `/[lang]/missions` is the shelf rather than an issue, so it stays an
-ordinary document and keeps the masthead and footer the comics do without.
+The index at `/[lang]/missions` is the full shelf. It progressively enhances
+the six canonical links into a modal reader while keeping the masthead and
+footer around the archive.
 
-In the introductory issue a case panel is no longer one big link: the panel is
-drag surface and an explicit control opens that issue, so a gesture crossing a
-case file never opens it by accident.
-
-Origin, powers, missions and contact are all pages of the book; nothing is left
-below the reader. Case-file routes remain independent documents and the case
-panels keep ordinary anchors into them.
-
-Page ids double as the URL hash, so the masthead's `#origin`, `#missions` and
-`#contact` links open the book at the right page instead of scrolling a document
-that is no longer there.
+Case-file routes remain independent documents. The landing portals and archive
+covers both keep ordinary anchors into them.
 
 Every page in a spread shares one height, so a page holding less than its
 neighbour grows its panels rather than trailing blank paper: `.stack` on a

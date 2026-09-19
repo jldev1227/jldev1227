@@ -60,8 +60,8 @@
 	} from '$i18n';
 
 	/**
-	 * One page of a case file. The canonical mission route and the archive on
-	 * the home page print the same eight pages from the same copy; this is the
+	 * One page of a case file. The canonical mission route and the `/missions`
+	 * archive print the same eight pages from the same copy; this is the
 	 * one place they are laid out, so the two can never drift apart.
 	 *
 	 * Every panel here lives inside a reader page — half a spread on a wide
@@ -76,7 +76,7 @@
 		/**
 		 * Where the page is being read. On the canonical route the closing page
 		 * carries the site's own navigation and the indicia; inside the archive
-		 * the issue is already open on the home page, so it offers the canonical
+		 * the issue is already open in the archive, so it offers the canonical
 		 * route instead.
 		 */
 		context?: 'route' | 'archive';
@@ -422,7 +422,7 @@
 
 				<ul class="actions">
 					{#if context === 'archive'}
-						<!-- The issue is open on the home page already; what it can offer
+						<!-- The issue is open in the archive already; what it can offer
 						     is its own document. -->
 						<li><a href={missionPath(locale, project.slug)}>{t('missions.readFile')}</a></li>
 					{:else}

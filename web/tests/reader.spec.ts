@@ -157,7 +157,7 @@ test.describe('every link goes where it says', () => {
 	});
 
 	test('the closing page of an issue read from the archive', async ({ page }) => {
-		await page.goto('/es');
+		await page.goto('/es/missions');
 		await page.getByRole('link', { name: 'Abre SEGISPRO' }).click();
 		await expect(page.locator('dialog.issue .reader[data-enhanced] .book')).toBeVisible();
 		await page.keyboard.press('End');

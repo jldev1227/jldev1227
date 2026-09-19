@@ -6,21 +6,20 @@ first-person hands, the pickup animation, the Rive milestone, the Three.js
 inspector and the StPageFlip adapter were all removed by product decision:
 the page-turn physics are the site's own `ComicReader`.
 
-The homepage is a comic archive: the collection laid out as a grid of covers
-over one backdrop. The first issue is the only illustrated one and tells who is
-writing — origin, how they work, the stack, and where to reach them. Every
-other issue is a project case file. Selecting a cover opens that issue in a
-modal reader, already on its cover, to be read page by page.
+`/[lang]/missions` is the comic archive: the six project issues laid out as a
+grid of covers over one backdrop. The homepage is the personal landing and
+introduces those projects as distinct worlds. Selecting a cover in the archive
+opens that issue in a modal reader, already on its cover, to be read page by
+page.
 
-This experience changes only `/[lang]`. Existing mission URLs remain canonical,
-prerendered, directly accessible, and are never redirected into the homepage.
+Canonical project URLs remain prerendered, directly accessible, and are never
+redirected into the archive.
 
 ## Asset manifest
 
 `web/static/art/library-experience/` holds one file, `bg-room.jpg`, the blurred
-backdrop the grid sits on. See its `README.md`. The cover illustration of the
-introductory issue is `web/static/art/julian-cover-freelancer-v1.webp`; the
-case-file covers are drawn from their own palettes in `projects.ts`.
+backdrop the grid sits on. See its `README.md`. Project cover art and palettes
+are declared in `projects.ts`.
 
 ## Two application states
 
@@ -64,9 +63,8 @@ documents.
   row by however many columns the grid currently has (measured, not assumed),
   Home and End reach the ends, nothing wraps. Enter is the anchor's own; Space
   is handled, because on a link it would scroll.
-- The introductory cover prints its illustration under a masthead band and a
-  story band, so the lettering has a field to sit on. The case-file covers use
-  the accent-as-wedge rule the panels follow, so every mark clears AA.
+- Every project cover prints its illustration under a masthead band and a
+  story band, using the project palette so the lettering clears AA.
 
 ## The modal reader
 
@@ -109,9 +107,6 @@ and blurred.
 
 ## The issues
 
-- The introductory issue: cover, origin, powers, stack, calendar, contact. The
-  calendar lays every case file on one axis, first commit to last, from the
-  generated project log.
 - Each case file: cover plus the eight pages of its canonical route —
   challenge, log, stack, approach, architecture, modules, before/after,
   outcome — printed by `CaseFilePage.svelte`, which the route uses too, so the
@@ -129,10 +124,10 @@ and blurred.
 
 ## Route policy
 
-- Apply the archive only to `/en` and `/es`.
-- Do not redirect `/[lang]/missions` or `/[lang]/missions/[slug]`.
+- Apply the archive only to `/[lang]/missions`.
+- Do not redirect `/[lang]` or `/[lang]/missions/[slug]`.
 - Do not change their canonical, hreflang, sitemap, or prerender behavior.
-- An issue may open inside the homepage, but its normal route remains an
+- An issue may open inside the archive, but its normal route remains an
   ordinary link and independently usable document.
 - The hash holds only transient reading position: `#issue/pN`. Old `#issue`
   and `#issue/back` links open the cover.

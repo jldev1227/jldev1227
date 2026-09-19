@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 
 /**
- * The home page archive: a grid of covers, and the modal reader an issue opens
+ * The `/missions` archive: a grid of covers, and the modal reader an issue opens
  * in. What matters is that the grid is ordinary links first, one tab stop once
  * enhanced, and that every way out of an issue — the button, Escape, browser
  * Back — lands focus back on the cover it came from.
@@ -40,18 +40,14 @@ const settled = (page: Page) =>
 		.not.toBe('turning');
 
 test.describe('the grid', () => {
-	test('lays the collection out as covers, the introductory issue first', async ({
-		page
-	}, info) => {
-		await page.goto('/es');
+	test('lays every project out as an illustrated cover', async ({ page }, info) => {
+		await page.goto('/es/missions');
 		const covers = page.locator('.volume');
 		await expect(covers).toHaveCount(6);
-		await expect(covers.first()).toHaveAttribute('aria-label', 'Abre JLDEV #1227');
+		await expect(covers.first()).toHaveAttribute('aria-label', 'Abre SEGISPRO');
 
-		// Only the first issue carries an illustration; the case files are drawn
-		// from their own palettes.
-		await expect(page.locator('.volume[data-art] img')).toHaveCount(1);
-		await expect(page.locator('.volume img')).toHaveCount(1);
+		await expect(page.locator('.volume[data-art] img')).toHaveCount(6);
+		await expect(page.locator('.volume img')).toHaveCount(6);
 
 		// Four across on a desk, two on a phone — the count steps down with the
 		// width rather than the covers shrinking.
@@ -61,31 +57,37 @@ test.describe('the grid', () => {
 	});
 
 	test('is a single tab stop walked with the arrows', async ({ page }, info) => {
-		await page.goto('/es');
+		await page.goto('/es/missions');
 		await expect(page.locator('.volume[tabindex="0"]')).toHaveCount(1);
 
-		await page.getByRole('link', { name: 'Abre JLDEV #1227' }).focus();
+		await page.getByRole('link', { name: 'Abre SEGISPRO' }).focus();
 		await page.keyboard.press('ArrowRight');
-		expect(await focusedLabel(page)).toBe('Abre SEGISPRO');
+		expect(await focusedLabel(page)).toBe('Abre FORMARPRO');
 
 		// Down steps a whole row, by however many columns the grid has.
 		await page.keyboard.press('ArrowDown');
 		expect(await focusedLabel(page)).toBe(
-			info.project.name === 'spread' ? 'Abre GYM VANCOUVER' : 'Abre TRANSMERALDA × COTRANSMEQ'
+			info.project.name === 'spread' ? 'Abre MANEJO COMENTADO' : 'Abre DEVELOPER OS'
 		);
 
 		await page.keyboard.press('Home');
-		expect(await focusedLabel(page)).toBe('Abre JLDEV #1227');
+		expect(await focusedLabel(page)).toBe('Abre SEGISPRO');
 		await page.keyboard.press('ArrowLeft');
-		expect(await focusedLabel(page)).toBe('Abre JLDEV #1227');
+		expect(await focusedLabel(page)).toBe('Abre SEGISPRO');
 		await page.keyboard.press('End');
-		expect(await focusedLabel(page)).toBe('Abre GYM VANCOUVER');
+		expect(await focusedLabel(page)).toBe('Abre MANEJO COMENTADO');
 	});
 
 	test('the server-rendered archive keeps canonical links', async ({ request }) => {
-		const html = await (await request.get('/es')).text();
-		expect(html).toContain('href="/es"');
-		for (const slug of ['segispro', 'formarpro', 'transmeralda', 'developer-os', 'gym-vancouver']) {
+		const html = await (await request.get('/es/missions')).text();
+		for (const slug of [
+			'segispro',
+			'formarpro',
+			'transmeralda',
+			'developer-os',
+			'gym-vancouver',
+			'manejo-comentado'
+		]) {
 			expect(html).toContain(`href="/es/missions/${slug}"`);
 		}
 	});
@@ -93,7 +95,7 @@ test.describe('the grid', () => {
 
 test.describe('reading an issue', () => {
 	test('opens the selected comic in a modal reader', async ({ page }) => {
-		await page.goto('/es');
+		await page.goto('/es/missions');
 		await page.getByRole('link', { name: 'Abre SEGISPRO' }).focus();
 		await page.keyboard.press('Space');
 
@@ -120,11 +122,11 @@ test.describe('reading an issue', () => {
 		await page.getByRole('button', { name: 'Cierra el número' }).click();
 		await expect(issue(page)).toHaveCount(0);
 		await expect(page.getByRole('link', { name: 'Abre SEGISPRO' })).toBeFocused();
-		await expect(page).toHaveURL(/\/es$/);
+		await expect(page).toHaveURL(/\/es\/missions$/);
 	});
 
 	test('a case file reads the same eight pages as its canonical route', async ({ page }) => {
-		await page.goto('/es');
+		await page.goto('/es/missions');
 		await page.getByRole('link', { name: 'Abre FORMARPRO' }).click();
 		await expect(book(page)).toBeVisible();
 
@@ -142,7 +144,7 @@ test.describe('reading an issue', () => {
 			'formarpro--outcome'
 		]);
 
-		// The closing page offers the document itself, not the home page it is
+		// The closing page offers the document itself, not the archive it is
 		// already on. On a spread the last view leads with page 7.
 		await page.keyboard.press('End');
 		await settled(page);
@@ -153,7 +155,7 @@ test.describe('reading an issue', () => {
 	});
 
 	test('the project log is read from the repositories, not written', async ({ page }) => {
-		await page.goto('/es#segispro/p2');
+		await page.goto('/es/missions#segispro/p2');
 		await expect(book(page)).toBeVisible();
 
 		// One bar per month between the first and the last commit, and the
@@ -171,41 +173,30 @@ test.describe('reading an issue', () => {
 		expect(await stack.locator('.technology-list:not(.core) li').count()).toBeGreaterThanOrEqual(8);
 	});
 
-	test('the introductory issue lays the case files on one calendar', async ({ page }) => {
-		await page.goto('/en#intro/p4');
-		await expect(book(page)).toBeVisible();
-		await expect(page.locator('#timeline .calendar-rows li')).toHaveCount(5);
-		const widths = await page
-			.locator('#timeline .calendar-bar')
-			.evaluateAll((els) => els.map((el) => el.getBoundingClientRect().width));
-		// Every case file spans at least one month of the axis.
-		expect(Math.min(...widths)).toBeGreaterThan(4);
-	});
-
 	test('Escape closes the issue and restores focus', async ({ page }) => {
-		await page.goto('/en');
+		await page.goto('/en/missions');
 		await page.getByRole('link', { name: 'Open DEVELOPER OS' }).click();
 		await expect(book(page)).toBeVisible();
 
 		await page.keyboard.press('Escape');
 		await expect(issue(page)).toHaveCount(0);
 		await expect(page.getByRole('link', { name: 'Open DEVELOPER OS' })).toBeFocused();
-		await expect(page).toHaveURL(/\/en$/);
+		await expect(page).toHaveURL(/\/en\/missions$/);
 	});
 
 	test('browser Back closes the issue', async ({ page }) => {
-		await page.goto('/es');
+		await page.goto('/es/missions');
 		await page.getByRole('link', { name: 'Abre TRANSMERALDA × COTRANSMEQ' }).click();
 		await expect(book(page)).toBeVisible();
 
 		await page.goBack();
 		await expect(issue(page)).toHaveCount(0);
-		await expect(page).toHaveURL(/\/es$/);
+		await expect(page).toHaveURL(/\/es\/missions$/);
 		await expect(page.getByRole('link', { name: 'Abre TRANSMERALDA × COTRANSMEQ' })).toBeFocused();
 	});
 
 	test('a page deep in an issue is restored from the URL', async ({ page }) => {
-		await page.goto('/es#gym-vancouver/p3');
+		await page.goto('/es/missions#gym-vancouver/p3');
 		await expect(book(page)).toBeVisible();
 		await expect(page).toHaveURL(/#gym-vancouver\/p3$/);
 		await expect(page.locator('dialog.issue .status')).toContainText('3');
@@ -215,7 +206,7 @@ test.describe('reading an issue', () => {
 
 	test('the book is centred closed and open, and fits a short screen', async ({ page }, info) => {
 		test.skip(info.project.name !== 'spread', 'centring is a two-page matter');
-		await page.goto('/es#segispro/p0');
+		await page.goto('/es/missions#segispro/p0');
 		await expect(book(page)).toBeVisible();
 		// The modal measures the room and sizes the stage a frame later.
 		await expect
@@ -257,7 +248,7 @@ test.describe('reading an issue', () => {
 	});
 
 	test('a short, slow drag falls back to the spread it started on', async ({ page }) => {
-		await page.goto('/es#segispro/p1');
+		await page.goto('/es/missions#segispro/p1');
 		await expect(book(page)).toBeVisible();
 		await drag(page, 0.8, -30);
 		await settled(page);
@@ -266,7 +257,7 @@ test.describe('reading an issue', () => {
 
 	test('reduced motion opens the issue without waiting for animation', async ({ page }) => {
 		await page.emulateMedia({ reducedMotion: 'reduce' });
-		await page.goto('/en');
+		await page.goto('/en/missions');
 		await page.getByRole('link', { name: 'Open FORMARPRO' }).click();
 
 		await expect(book(page)).toBeVisible();

@@ -27,7 +27,7 @@
 
 	/**
 	 * Roving tabindex: the grid is one tab stop, and the arrows move within it.
-	 * Six links in a row would otherwise cost six tabs to walk past.
+	 * Seven links in a row would otherwise cost seven tabs to walk past.
 	 *
 	 * Only once enhanced, though — before that every link has to be reachable
 	 * the ordinary way, because arrow keys are not going to work either.
