@@ -17,6 +17,7 @@
 	import { tick, untrack } from 'svelte';
 	import { ComicCover, ComicReader, PAGE_RATIO, SPREAD_MIN } from '$lib/components/comic-reader';
 	import { format, translator, type Locale } from '$i18n';
+	import { ART_SIZES, ROOM_WIDTHS, responsiveArt } from '$lib/images';
 	import ComicGrid from './ComicGrid.svelte';
 	import {
 		BROWSE,
@@ -47,6 +48,9 @@
 
 	let { locale, volumes }: Props = $props();
 	const t = $derived(translator(locale));
+
+	/** The backdrop is the one full-bleed image here, so it rides its own ladder. */
+	const room = responsiveArt('/art/library-experience/bg-room.jpg', ROOM_WIDTHS, 1440);
 	const catalogue = $derived<Catalogue>(
 		volumes.map((volume) => ({ id: volume.id, pageCount: volume.pages.length }))
 	);
@@ -179,16 +183,20 @@
 
 <section class="experience" aria-label={t('library.label')} data-mode={experience.mode}>
 	<div class="scene">
-		<img
-			class="room"
-			src="/art/library-experience/bg-room.jpg"
-			alt=""
-			width="3840"
-			height="2160"
-			aria-hidden="true"
-			draggable="false"
-			fetchpriority="high"
-		/>
+		<picture>
+			<source type="image/avif" srcset={room.avif} sizes={ART_SIZES.room} />
+			<source type="image/webp" srcset={room.webp} sizes={ART_SIZES.room} />
+			<img
+				class="room"
+				src={room.src}
+				alt=""
+				width="3840"
+				height="2160"
+				aria-hidden="true"
+				draggable="false"
+				fetchpriority="high"
+			/>
+		</picture>
 		<div class="atmosphere" aria-hidden="true"></div>
 
 		<ComicGrid

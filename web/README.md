@@ -28,14 +28,15 @@ npm install
 npm run dev
 ```
 
-| Script            |                                        |
-| ----------------- | -------------------------------------- |
-| `npm run dev`     | dev server                             |
-| `npm run build`   | production build (prerenders 14 pages) |
-| `npm run preview` | serve the production build             |
-| `npm run check`   | `svelte-check`                         |
-| `npm run lint`    | Prettier + ESLint                      |
-| `npm run format`  | write Prettier                         |
+| Script                 |                                             |
+| ---------------------- | ------------------------------------------- |
+| `npm run dev`          | dev server                                  |
+| `npm run build`        | production build (prerenders 14 pages)      |
+| `npm run preview`      | serve the production build                  |
+| `npm run check`        | `svelte-check`                              |
+| `npm run lint`         | Prettier + ESLint                           |
+| `npm run format`       | write Prettier                              |
+| `npm run art:variants` | render the AVIF/WebP cuts of `static/art/*` |
 
 ## How it is put together
 

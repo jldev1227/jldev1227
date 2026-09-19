@@ -6,7 +6,27 @@ Drop the commissioned comic artwork here, then pass `src` to `<ArtSlot />`:
 <ArtSlot src="/art/julian-portrait.webp" alt={origin.portraitAlt[locale]} … />
 ```
 
-Suggested exports: WebP or AVIF, 2× the rendered box, under 200 KB each.
+## Masters and renditions
+
+Author one master per plate — covers at 1024 × 1536, backdrops at 3840 × 2160 —
+and let the build make the small ones:
+
+```bash
+npm run art:variants
+```
+
+`scripts/image-variants.mjs` reads every `/art/…` path the source references and
+writes an AVIF and a WebP of each at the widths in `src/lib/images.ts`, beside
+the master and named for their width (`segispro-cover-v2-768.avif`). The markup
+asks for them through `responsiveArt()` and a `<picture>`, so a phone downloads
+about 30 KB where it used to download the 500 KB plate. Commit the renditions
+with the master; the build itself runs no image pipeline.
+
+Two rules keep this honest. **Re-run the script after replacing a master** — the
+renditions are only regenerated when they are older than the file they came
+from. And **never overwrite a plate in place**: `/art/` is served with a
+one-year `immutable` cache in `vercel.json`, so a revision has to arrive under a
+new name, which is what the `-v2` suffix is for.
 
 ## Introductory comic cover
 

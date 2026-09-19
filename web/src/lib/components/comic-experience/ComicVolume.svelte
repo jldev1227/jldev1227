@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { format, translator, type Locale } from '$i18n';
 	import { identity } from '$content/site';
+	import { ART_SIZES, responsiveArt } from '$lib/images';
 	import type { ExperienceVolume } from './ComicExperience.svelte';
 
 	/**
@@ -71,16 +72,21 @@
 >
 	<span class="face" style:view-transition-name={named ? 'issue-cover' : undefined}>
 		{#if art}
-			<img
-				class="art"
-				src={art.src}
-				alt=""
-				width={art.width}
-				height={art.height}
-				loading="lazy"
-				decoding="async"
-				draggable="false"
-			/>
+			{@const sources = responsiveArt(art.src)}
+			<picture>
+				<source type="image/avif" srcset={sources.avif} sizes={ART_SIZES.volume} />
+				<source type="image/webp" srcset={sources.webp} sizes={ART_SIZES.volume} />
+				<img
+					class="art"
+					src={sources.src}
+					alt=""
+					width={art.width}
+					height={art.height}
+					loading="lazy"
+					decoding="async"
+					draggable="false"
+				/>
+			</picture>
 		{/if}
 
 		<span class="masthead" aria-hidden="true">{identity.alias}</span>

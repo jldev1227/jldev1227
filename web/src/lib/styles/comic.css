@@ -83,6 +83,15 @@ body {
 	max-width: 100%;
 }
 
+/* Art is served through `<picture>` so each viewport gets an AVIF or WebP cut
+   of the master rather than the 1024 px plate. The element itself must not
+   join the layout: the slots size their image with `height: 100%`, which would
+   otherwise resolve against an inline wrapper of no height instead of the
+   panel. `display: contents` hands the image straight back to its slot. */
+picture {
+	display: contents;
+}
+
 /* ---------------------------------------------------------------- page ---- */
 
 .jl-page {

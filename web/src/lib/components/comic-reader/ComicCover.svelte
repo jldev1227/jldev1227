@@ -31,6 +31,7 @@
 	import { page as appPage } from '$app/state';
 	import { identity } from '$content/site';
 	import { LOCALE_LABEL, other, swapLocale, translator, type Locale } from '$i18n';
+	import { ART_SIZES, responsiveArt } from '$lib/images';
 
 	interface Props {
 		locale: Locale;
@@ -64,14 +65,19 @@
 			edition controls and calls to action remain live, localised HTML above it.
 		-->
 		{#if issue.art}
-			<img
-				class="art"
-				src={issue.art.src}
-				alt=""
-				width={issue.art.width}
-				height={issue.art.height}
-				aria-hidden="true"
-			/>
+			{@const sources = responsiveArt(issue.art.src)}
+			<picture>
+				<source type="image/avif" srcset={sources.avif} sizes={ART_SIZES.cover} />
+				<source type="image/webp" srcset={sources.webp} sizes={ART_SIZES.cover} />
+				<img
+					class="art"
+					src={sources.src}
+					alt=""
+					width={issue.art.width}
+					height={issue.art.height}
+					aria-hidden="true"
+				/>
+			</picture>
 		{/if}
 
 		<header class="plate">

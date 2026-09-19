@@ -16,12 +16,16 @@
 		years
 	} from '$content/site';
 	import { missionPath, missionsPath, path, translator } from '$i18n';
+	import { ART_SIZES, responsiveArt } from '$lib/images';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 
 	const locale = $derived(data.locale);
 	const t = $derived(translator(locale));
+
+	/** The hero portrait is the page's largest paint; it is preloaded below. */
+	const portrait = responsiveArt('/art/julian-cover-freelancer-v2.webp');
 
 	function worldStyle(project: Project): string {
 		const onBase = project.palette.on === 'paper' ? 'var(--jl-white)' : 'var(--jl-ink)';
@@ -51,6 +55,20 @@
 	]}
 />
 
+<svelte:head>
+	<!-- The portrait is the largest contentful paint on this page. Without this
+	     the browser only discovers it once the hero section lays out, which on a
+	     phone costs more than a second of the paint it is waiting for. -->
+	<link
+		rel="preload"
+		as="image"
+		type="image/avif"
+		fetchpriority="high"
+		imagesrcset={portrait.avif}
+		imagesizes={ART_SIZES.hero}
+	/>
+</svelte:head>
+
 <div class="landing-shell">
 	<Masthead {locale} />
 
@@ -78,13 +96,17 @@
 			</div>
 
 			<div class="hero-art">
-				<img
-					src="/art/julian-cover-freelancer-v2.webp"
-					alt={origin.portraitAlt[locale]}
-					width="1024"
-					height="1536"
-					fetchpriority="high"
-				/>
+				<picture>
+					<source type="image/avif" srcset={portrait.avif} sizes={ART_SIZES.hero} />
+					<source type="image/webp" srcset={portrait.webp} sizes={ART_SIZES.hero} />
+					<img
+						src={portrait.src}
+						alt={origin.portraitAlt[locale]}
+						width="1024"
+						height="1536"
+						fetchpriority="high"
+					/>
+				</picture>
 				<Bubble class="hero-bubble">{hero.bubble[locale]}</Bubble>
 			</div>
 
@@ -144,6 +166,7 @@
 
 			<div class="world-list">
 				{#each projects as project, index (project.slug)}
+					{@const cover = responsiveArt(project.coverArt.src)}
 					<article
 						class="world"
 						data-layout={(index % 6) + 1}
@@ -175,13 +198,18 @@
 							aria-hidden="true"
 							tabindex="-1"
 						>
-							<img
-								src={project.coverArt.src}
-								alt=""
-								width={project.coverArt.width}
-								height={project.coverArt.height}
-								loading="lazy"
-							/>
+							<picture>
+								<source type="image/avif" srcset={cover.avif} sizes={ART_SIZES.world} />
+								<source type="image/webp" srcset={cover.webp} sizes={ART_SIZES.world} />
+								<img
+									src={cover.src}
+									alt=""
+									width={project.coverArt.width}
+									height={project.coverArt.height}
+									loading="lazy"
+									decoding="async"
+								/>
+							</picture>
 							<span class="world-number jl-display">{project.number}</span>
 						</a>
 					</article>
