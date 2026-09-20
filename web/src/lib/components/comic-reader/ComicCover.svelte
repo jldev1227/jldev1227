@@ -143,7 +143,7 @@
 		   context of its own they would fall behind the cover's own background. */
 		isolation: isolate;
 		display: grid;
-		grid-template-rows: auto 1fr auto;
+		grid-template-rows: 1fr auto;
 		gap: clamp(10px, 2cqi, 18px);
 		overflow: hidden;
 		padding: clamp(13px, 3cqi, 26px);
@@ -283,10 +283,15 @@
 	/* ----------------------------------------------------------- masthead --- */
 
 	.plate {
+		position: absolute;
+		top: clamp(13px, 3cqi, 26px);
+		left: 0;
+		right: 0;
+		z-index: 4;
 		display: flex;
 		align-items: baseline;
 		gap: 12px;
-		margin-inline: calc(-1 * clamp(13px, 3cqi, 26px));
+		margin-inline: 0;
 		margin-block: 0;
 		padding: 0 clamp(13px, 3cqi, 26px) 10px;
 		background: linear-gradient(
@@ -345,6 +350,7 @@
 		align-items: start;
 		gap: clamp(12px, 3cqi, 22px);
 		min-width: 0;
+		padding-top: clamp(86px, 20cqi, 132px);
 	}
 
 	.blurb {
