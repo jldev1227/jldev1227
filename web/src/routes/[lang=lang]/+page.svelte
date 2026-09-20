@@ -192,12 +192,7 @@
 							</a>
 						</div>
 
-						<a
-							class="world-art"
-							href={missionPath(locale, project.slug)}
-							aria-hidden="true"
-							tabindex="-1"
-						>
+						<div class="world-art" aria-hidden="true">
 							<picture>
 								<source type="image/avif" srcset={cover.avif} sizes={ART_SIZES.world} />
 								<source type="image/webp" srcset={cover.webp} sizes={ART_SIZES.world} />
@@ -211,7 +206,7 @@
 								/>
 							</picture>
 							<span class="world-number jl-display">{project.number}</span>
-						</a>
+						</div>
 					</article>
 				{/each}
 			</div>
@@ -640,6 +635,7 @@
 	.world {
 		position: relative;
 		display: grid;
+		cursor: pointer;
 		grid-column: span 6;
 		grid-template: 1fr / 1fr;
 		aspect-ratio: 1.12;
@@ -703,7 +699,6 @@
 	}
 
 	.world-copy {
-		position: relative;
 		z-index: 3;
 		display: flex;
 		grid-area: 1 / 1;
@@ -777,6 +772,20 @@
 		text-decoration: none;
 	}
 
+	/*
+		The whole card is the target. `.world-copy` is a grid item stacked over
+		the art, so anything below its top edge used to swallow the pointer: the
+		cover behind it was a second anchor to the same URL, and the copy block
+		covered it from mid-card down. One anchor now, stretched over the card
+		from inside the text, so the cursor and the click agree everywhere.
+	*/
+	.world-link::after {
+		position: absolute;
+		z-index: 4;
+		inset: 0;
+		content: '';
+	}
+
 	.world-link span {
 		font-size: 1rem;
 		transition: transform var(--jl-motion-panel) ease;
@@ -786,6 +795,10 @@
 		transform: translate(3px, -3px);
 	}
 
+	/* Decoration, and `aria-hidden` says so: the illustration, its gradient and
+	   the issue number never take the pointer away from the card's one link.
+	   The number sits at `z-index: 3` over the art, which is exactly where a
+	   click used to die. */
 	.world-art {
 		position: relative;
 		display: block;
@@ -793,6 +806,7 @@
 		min-width: 0;
 		overflow: hidden;
 		background: color-mix(in srgb, var(--world-accent) 50%, var(--world-base));
+		pointer-events: none;
 	}
 
 	.world-art::after {
@@ -819,7 +833,7 @@
 			filter 500ms var(--jl-paper-ease);
 	}
 
-	.world-art:hover img {
+	.world:hover .world-art img {
 		filter: saturate(1.12) contrast(1.04);
 		transform: scale(1.035);
 	}
