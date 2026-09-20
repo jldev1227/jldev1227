@@ -10,6 +10,7 @@
 		type CoverIssue,
 		type ReaderPage
 	} from '$lib/components/comic-reader';
+	import { contentLog } from '$content/content-log';
 	import { cover as coverCopy, identity } from '$content/site';
 	import { path, translator } from '$i18n';
 	import type { PageProps } from './$types';
@@ -68,7 +69,9 @@
 			abstract: project.tagline[locale],
 			inLanguage: locale,
 			author: { '@id': `${identity.url}/#person` },
-			keywords: project.stack.join(', ')
+			keywords: project.stack.join(', '),
+			// The same date the sitemap reports for this page, from Git.
+			dateModified: contentLog.caseFile
 		}
 	]}
 />

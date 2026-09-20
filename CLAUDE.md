@@ -1,34 +1,30 @@
-# Claude instructions — experimental comic library
+# Claude instructions — experimental comic reader
 
-This branch turns the JLDEV homepage into a comic archive: the collection laid
-out as a grid of covers, each issue opening in a modal reader whose page-turn
-physics are written in this repository, not taken from a library.
+Each project case file is an issue of a comic, read on its own route, with
+page-turn physics written in this repository rather than taken from a library.
 
 ## Read before editing
 
 Read `AGENTS.md`, `web/docs/comic-reader/README.md`,
-`web/docs/comic-reader/LIBRARY-INTERACTION.md`,
 `web/src/lib/components/comic-reader/README.md`, the approved mockup, and the
 matching project skills before changing the experience.
 
 ## Current product decision
 
-The homepage has exactly two application states:
+The site is a landing page and a set of case files, and nothing wraps the
+reader:
 
-1. `browse` — choose an issue from the grid of covers;
-2. `read` — the selected cover and its live HTML pages are inside
-   `ComicReader`, in a native modal `<dialog>` over the grid.
+1. `/[lang]` is the personal landing — hero, origin, powers, the projects as
+   worlds, method, contact. Each world links to its case file.
+2. `/[lang]/missions/<slug>` is that case file, read in `ComicReader` on the
+   page itself.
 
-The grid is four covers across on a desk, stepping down to two on a phone. The
-first issue is the only illustrated one and is about the author — origin,
-powers, stack, contact. Every other issue is a project case file printing the
-same six pages as its canonical route, through `CaseFilePage.svelte`.
-
-There is no box, no first-person hands, no pickup animation, no `inspect`
-state, no front/back selector and no “read this issue” action. After selecting
-a cover the visitor drags the page corners immediately. The only persistent
-experience button is the localized close. Arrow keys remain as an accessible
-alternative.
+There is no grid archive, no modal `<dialog>`, no `browse` state and no
+`/[lang]/missions` index — they were removed by product decision, together with
+the box, the first-person hands, the pickup animation, the `inspect` state and
+the front/back selector that preceded them. Every outer shell around the reader
+added a second state machine to keep in sync with the URL, and none earned it.
+A case file is a route.
 
 ## Reader boundaries
 
@@ -39,19 +35,12 @@ alternative.
   or any equivalent; improve the reader instead.
 - Svelte owns state, localized content, routes, hashes, focus, and links. The
   reader reports the leading page (`onpagechange`) and is told where to open
-  (`initialPage`); on the home page the experience owns the hash
-  (`manageHash={false}`), on a mission route the reader does.
-- The modal measures the room and gives the reader the width at which the
-  book fits in both dimensions; the reader never scrolls inside the dialog.
-- The modal is the browser's `<dialog>` opened with `showModal()`: do not
-  reimplement the focus trap, the inert background or Escape. Opening and
-  closing are a View Transition: the chosen cover carries the
-  `issue-cover` name on the grid and then on the book, one element at a time.
+  (`initialPage`); on a mission route the reader owns the hash.
 - A case file's log page and the introductory calendar print
   `src/lib/content/project-history.ts`, generated from the local repositories
   by `scripts/project-history.mjs`. Regenerate it; never edit the numbers.
-- The same `ComicReader` serves canonical mission routes; do not redirect
-  mission URLs.
+- `ComicReader` serves the canonical mission routes; do not redirect mission
+  URLs, and do not reintroduce an index above them.
 - Do not introduce Three.js or Rive: neither has a product use any more.
 - Do not add Anime.js unless a measured transition cannot be expressed with CSS
   or Web Animations.
@@ -61,9 +50,8 @@ alternative.
 - Every visible string lives in bilingual content or `src/lib/i18n/ui.ts`.
 - Ordinary project anchors remain in server HTML before enhancement.
 - Drag or swipe anywhere on the book, mobile touch, ArrowLeft/ArrowRight,
-  Home, End, Escape, browser Back, reduced motion, and focus restoration to
-  the cover must work.
-- The URL uses `#issue/pN`; old `#issue` and `#issue/back` links open the cover.
+  Home, End, browser Back and reduced motion must work.
+- The URL uses `#<section>`; a case file opens at the page its hash names.
 - Project links inside live pages remain clickable and must not trigger a turn.
 - Do not deploy unless the user explicitly requests it.
 
@@ -71,5 +59,4 @@ alternative.
 
 From `web/`, run `npm run test:unit`, `npm run test:e2e`, `npm run check`,
 `npm run lint`, and `npm run build`. Inspect `/en` and `/es` in desktop and
-mobile layouts, including an actual drag across a page and focus returning to
-the cover when the issue closes.
+mobile layouts, including an actual drag across a page of a case file.

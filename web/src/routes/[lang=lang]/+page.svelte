@@ -15,7 +15,7 @@
 		seo,
 		years
 	} from '$content/site';
-	import { missionPath, missionsPath, path, translator } from '$i18n';
+	import { missionPath, path, translator } from '$i18n';
 	import { ART_SIZES, responsiveArt } from '$lib/images';
 	import type { PageProps } from './$types';
 
@@ -215,13 +215,6 @@
 					</article>
 				{/each}
 			</div>
-
-			<aside class="archive-signal">
-				<p>{multiverse.archiveBody[locale]}</p>
-				<a class="jl-kicker" href={missionsPath(locale)}>
-					{multiverse.archiveLink[locale]} <span aria-hidden="true">→</span>
-				</a>
-			</aside>
 		</section>
 
 		<section id="method" class="method jl-grid" aria-label={method.title[locale]}>
@@ -841,32 +834,6 @@
 		text-shadow: 4px 4px 0 var(--world-accent);
 	}
 
-	.archive-signal {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 28px;
-		margin: clamp(66px, 8vw, 100px) auto 0;
-		padding: 24px 28px;
-		color: var(--jl-ink);
-		background: var(--jl-yellow);
-		border: 4px solid var(--jl-white);
-		box-shadow: 8px 8px 0 var(--jl-red);
-	}
-
-	.archive-signal p {
-		max-width: 64ch;
-		margin: 0;
-		line-height: 1.55;
-	}
-
-	.archive-signal a {
-		flex: 0 0 auto;
-		font-weight: 700;
-		text-decoration-thickness: 2px;
-		text-underline-offset: 5px;
-	}
-
 	/* ------------------------------------------------------------- method --- */
 
 	.method {
@@ -1160,11 +1127,6 @@
 
 		.world[data-long] h3 {
 			font-size: clamp(2.2rem, 10vw, 3.6rem);
-		}
-
-		.archive-signal {
-			align-items: start;
-			flex-direction: column;
 		}
 
 		:global(.jl-panel.now-panel) {

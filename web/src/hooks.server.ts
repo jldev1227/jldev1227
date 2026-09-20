@@ -28,8 +28,16 @@ export const handle: Handle = async ({ event, resolve }) => {
 			: negotiate(event.request.headers.get('accept-language'));
 	}
 
-	return resolve(event, {
+	const response = await resolve(event, {
 		transformPageChunk: ({ html }) =>
 			html.replace('%jl.lang%', event.locals.locale ?? DEFAULT_LOCALE)
 	});
+
+	// A path that does not name its language is answered from the request:
+	// `Accept-Language`, or the cookie that remembers an explicit choice. Say
+	// so, or a shared cache is free to hand one visitor's negotiated redirect
+	// to the next visitor, who asked for the other language.
+	if (!isLocale(fromPath)) response.headers.set('vary', 'Accept-Language, Cookie');
+
+	return response;
 };

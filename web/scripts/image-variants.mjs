@@ -6,9 +6,9 @@ import sharp from 'sharp';
 /**
  * Responsive AVIF and WebP renditions of the illustrated art.
  *
- * The masters are authored large — covers at 1024 × 1536, the archive backdrop
- * at 3840 × 2160 — and the layout paints them into slots as small as 272 px.
- * This script renders each master down to the widths declared in
+ * The masters are authored large — covers at 1024 × 1536 — and the layout
+ * paints them into slots as small as 384 px. This script renders each master
+ * down to the widths declared in
  * `src/lib/images.ts` in both formats, beside the master, so `<picture>` can
  * hand every viewport the smallest file that still looks sharp.
  *
@@ -30,18 +30,15 @@ const STATIC = join(WEB, 'static');
 const AVIF = { quality: 52, effort: 6 };
 const WEBP = { quality: 74, effort: 6 };
 
-/** Read the width ladders out of `src/lib/images.ts` so the two cannot drift. */
-function widthLadders() {
+/** Read the width ladder out of `src/lib/images.ts` so the two cannot drift. */
+function widthLadder() {
 	const module = readFileSync(join(SRC, 'lib', 'images.ts'), 'utf8');
-	const read = (name) => {
-		const match = module.match(new RegExp(`export const ${name} = \\[([^\\]]+)\\]`));
-		if (!match) throw new Error(`${name} is not declared in src/lib/images.ts`);
-		return match[1]
-			.split(',')
-			.map((width) => Number(width.trim()))
-			.filter((width) => Number.isFinite(width));
-	};
-	return { cover: read('COVER_WIDTHS'), room: read('ROOM_WIDTHS') };
+	const match = module.match(/export const COVER_WIDTHS = \[([^\]]+)\]/);
+	if (!match) throw new Error('COVER_WIDTHS is not declared in src/lib/images.ts');
+	return match[1]
+		.split(',')
+		.map((width) => Number(width.trim()))
+		.filter((width) => Number.isFinite(width));
 }
 
 /** Every `/art/…` file the site's own source points at, once each. */
@@ -66,7 +63,7 @@ function referencedArt() {
 
 const kb = (bytes) => `${Math.round(bytes / 1024)} KB`;
 
-const ladders = widthLadders();
+const ladder = widthLadder();
 const masters = referencedArt();
 let written = 0;
 let masterBytes = 0;
@@ -84,11 +81,8 @@ for (const reference of masters) {
 	}
 
 	const image = sharp(master);
-	const { width, height } = await image.metadata();
+	const { width } = await image.metadata();
 
-	// A backdrop spans the viewport and a cover never does, and that is exactly
-	// what the orientation already says.
-	const ladder = width > height ? ladders.room : ladders.cover;
 	const stem = join(dirname(master), basename(master, extname(master)));
 	const widths = ladder.filter((candidate) => candidate <= width);
 

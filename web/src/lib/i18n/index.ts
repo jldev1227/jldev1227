@@ -11,4 +11,4 @@ export {
 export type { Locale, Localized } from './locales';
 export { translator, format } from './ui';
 export type { UIKey } from './ui';
-export { path, homePath, missionsPath, missionPath, swapLocale, alternates } from './paths';
+export { path, homePath, missionPath, swapLocale, alternates } from './paths';

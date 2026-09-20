@@ -17,10 +17,11 @@ All three must be clean — `svelte-check` warnings included. An unused-selector
 warning almost always means a rule is silently not applying because the element
 lives inside a child component.
 
-`npm run build` prints the prerendered pages. Expect **14 pages** plus
-`sitemap.xml` and `robots.txt`: `/en`, `/es`, `/{en,es}/missions`, and five case
-files per locale. A missing page means a route is lacking its `entries()`
-generator.
+`npm run build` prints the prerendered pages. Expect **one per locale plus one
+per case file** — 14 today — alongside `sitemap.xml` and `robots.txt`: `/en`,
+`/es`, and every project in `projects.ts` under each locale. A missing page
+means a route is lacking its `entries()` generator, and the sitemap should list
+exactly the same set.
 
 ## Look at it
 
@@ -41,7 +42,7 @@ false overflow.
 ## Smoke-test the routes
 
 ```bash
-for u in / /en /es /en/missions /es/missions/segispro /sitemap.xml /robots.txt; do
+for u in / /en /es /es/missions/segispro /sitemap.xml /robots.txt; do
   curl -s -o /dev/null -w "%{http_code} %{redirect_url} $u\n" \
     -H "Accept-Language: es-CO,es;q=0.9" "http://localhost:5173$u"
 done
@@ -60,6 +61,16 @@ Canonical and hreflang must be **absolute** and must not contain `/./`. If they
 do, a `resolve()`-based path builder was used where `path()` belongs — see
 `src/lib/i18n/paths.ts`. Confirm the sitemap's namespaces stay on `http://`;
 they are identifiers, not links.
+
+The `hreflang` set in a page's `<head>` and the `xhtml:link` set the sitemap
+carries for that URL are two statements of the same fact, and a crawler
+compares them: they must match, `x-default` included. From `/en` and `/es`
+that default is the site root, which negotiates; from a deeper page it is the
+default locale's own URL.
+
+`lastmod` comes from `src/lib/content/content-log.ts`, generated from Git by
+`npm run content:log`. **Rerun it when page copy changes** — a `lastmod` that
+moves on every deploy is one a crawler learns to ignore.
 
 ## Deploy
 

@@ -1,9 +1,11 @@
 # Experimental comic reader
 
-Status: phases 0–4 built. The `/[lang]/missions` archive lays the project
-collection out as a grid of covers with this reader in a modal, described in
-[`LIBRARY-INTERACTION.md`](LIBRARY-INTERACTION.md). No page-turn library is
-involved anywhere.
+Status: phases 0–4 built. Each case file is read on its own canonical route,
+`/[lang]/missions/<slug>`, with this reader. No page-turn library is involved
+anywhere.
+
+The grid archive at `/[lang]/missions` and its modal reader were removed by
+product decision, along with `LIBRARY-INTERACTION.md`, which specified them.
 
 Branch: `codex/experimental-comic-reader`
 
@@ -126,9 +128,9 @@ coordination, staggered reveals, and mapping a drag gesture to visual progress.
 Import only the modules used. Svelte owns state and lifecycle; CSS owns layout.
 
 The implementation proved the interaction without a generic flipbook
-dependency, and that is how it stays: a StPageFlip adapter, Rive hands and a
-Three.js inspector were each tried or planned and removed. The current shape is
-in [`LIBRARY-INTERACTION.md`](LIBRARY-INTERACTION.md).
+dependency, and that is how it stays: a StPageFlip adapter, Rive hands, a
+Three.js inspector and the grid archive were each tried or planned and removed.
+What is left is the reader on the canonical routes.
 
 ## Delivery phases
 
@@ -207,14 +209,13 @@ page.
 Replace temporary graphic composition only with approved authored artwork.
 Tune textures, shadows, transitions, performance, and production metadata.
 
-### Phase 6 — library interaction — planned
+### Phase 6 — library interaction — dropped
 
 Historical: this phase proposed a comic-box selector inside a library scene, a
 front/back-only book inspector, first-person Rive hands and a StPageFlip
-adapter. All four were removed; what shipped is the grid and the modal in
-[`LIBRARY-INTERACTION.md`](LIBRARY-INTERACTION.md). It was specified separately
-because it adds an outer experience state machine and three browser runtimes;
-see [`LIBRARY-INTERACTION.md`](LIBRARY-INTERACTION.md).
+adapter. All four were removed, and so was the grid archive that replaced them:
+every outer shell around the reader added a second state machine to keep in
+sync with the URL, and none of them earned it. A case file is a route.
 
 ## Acceptance criteria
 

@@ -135,7 +135,6 @@ test.describe('every link goes where it says', () => {
 
 		const expected: Record<string, string> = {
 			'Volver al número #1227': '/es',
-			'Todas las misiones': '/es/missions',
 			'Verlo en GitHub ↗': 'https://github.com/jldev1227'
 		};
 
@@ -154,24 +153,6 @@ test.describe('every link goes where it says', () => {
 			const relative = [...html.matchAll(/(?:href|src)="(\.{1,2}\/[^"]*)"/g)].map((m) => m[1]);
 			expect(relative, `relative URLs in ${path}`).toEqual([]);
 		}
-	});
-
-	test('the closing page of an issue read from the archive', async ({ page }) => {
-		await page.goto('/es/missions');
-		await page.getByRole('link', { name: 'Abre SEGISPRO' }).click();
-		await expect(page.locator('dialog.issue .reader[data-enhanced] .book')).toBeVisible();
-		await page.keyboard.press('End');
-		await expect
-			.poll(() => page.locator('dialog.issue .reader').getAttribute('data-mode'), { timeout: 4000 })
-			.not.toBe('turning');
-
-		const control = page.locator('#segispro--outcome .actions a', {
-			hasText: 'Leer el expediente'
-		});
-		await expect(control).toBeVisible();
-		await control.click();
-		await page.waitForURL('**/missions/segispro');
-		await expect(page).toHaveTitle(/SEGISPRO/);
 	});
 });
 

@@ -183,18 +183,7 @@ export const stack = [
 	}
 ] satisfies { label: Localized; items: string[] }[];
 
-export const missionIntro = {
-	pageLabel: { en: 'Comic archive', es: 'Archivo de cómics' },
-	pageLabelMore: { en: 'Case files, continued', es: 'Expedientes, continuación' },
-	pageLabelLast: { en: 'Case files, closing', es: 'Expedientes, cierre' },
-	title: { en: 'The complete archive', es: 'El archivo completo' },
-	body: {
-		en: 'Every issue reveals the challenge, decisions, architecture and outcome of a real project without exposing confidential code.',
-		es: 'Cada número muestra el reto, las decisiones, la arquitectura y el resultado de un proyecto real sin exponer código confidencial.'
-	}
-} satisfies Record<string, Localized>;
-
-/** The bridge between the personal story and the six project case files. */
+/** The bridge between the personal story and the project case files. */
 export const multiverse = {
 	eyebrow: { en: 'The project multiverse', es: 'El multiverso de proyectos' },
 	titleLead: { en: 'Six worlds.', es: 'Seis mundos.' },
@@ -203,12 +192,7 @@ export const multiverse = {
 		en: 'Every portal keeps the product’s own visual identity. Step through to read the full comic: challenge, architecture, decisions, evidence and outcome.',
 		es: 'Cada portal conserva la identidad visual de su producto. Entra para leer el cómic completo: reto, arquitectura, decisiones, evidencia y resultado.'
 	},
-	enter: { en: 'Enter this world', es: 'Entrar a este mundo' },
-	archiveBody: {
-		en: 'The portals are the editorial selection. The complete shelf remains available for anyone who wants every issue in one place.',
-		es: 'Los portales son la selección editorial. La estantería completa sigue disponible para quien quiera todos los números en un solo lugar.'
-	},
-	archiveLink: { en: 'Open the comic archive', es: 'Abrir el archivo de cómics' }
+	enter: { en: 'Enter this world', es: 'Entrar a este mundo' }
 } satisfies Record<string, Localized>;
 
 export const method = {

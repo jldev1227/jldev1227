@@ -51,8 +51,8 @@ web/src/
 `src/lib/i18n/ui.ts`. A hard-coded English string in a `.svelte` file is a bug —
 it silently ships untranslated.
 
-**Every path is root-absolute.** `path()`, `homePath`, `missionsPath` and
-`missionPath` all return `/es/missions/segispro`-shaped paths, for `href`
+**Every path is root-absolute.** `path()`, `homePath` and `missionPath` all
+return `/es/missions/segispro`-shaped paths, for `href`
 attributes and metadata alike, and `kit.paths.relative` is `false` so SvelteKit's
 own asset URLs match. The href builders used to wrap `resolve()`, which
 type-checks the route id but returns a path *relative to the page being

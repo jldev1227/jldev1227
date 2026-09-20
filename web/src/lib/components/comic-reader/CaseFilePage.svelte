@@ -1,11 +1,7 @@
 <script module lang="ts">
 	import type { UIKey } from '$lib/i18n/ui';
 
-	/**
-	 * The eight pages of a case file, in reading order. On the canonical route a
-	 * page's id is its section; inside the archive the id carries the issue as
-	 * well, so one snippet can print any case file.
-	 */
+	/** The eight pages of a case file, in reading order. */
 	export const CASE_SECTIONS = [
 		'challenge',
 		'log',
@@ -51,8 +47,6 @@
 		format,
 		homePath,
 		LOCALE_LABEL,
-		missionPath,
-		missionsPath,
 		other,
 		swapLocale,
 		translator,
@@ -60,9 +54,7 @@
 	} from '$i18n';
 
 	/**
-	 * One page of a case file. The canonical mission route and the `/missions`
-	 * archive print the same eight pages from the same copy; this is the
-	 * one place they are laid out, so the two can never drift apart.
+	 * One page of a case file, laid out in the one place a case file is laid out.
 	 *
 	 * Every panel here lives inside a reader page — half a spread on a wide
 	 * screen, a whole page on a narrow one — so it sizes against that page
@@ -73,16 +65,9 @@
 		locale: Locale;
 		project: Project;
 		section: CaseSection;
-		/**
-		 * Where the page is being read. On the canonical route the closing page
-		 * carries the site's own navigation and the indicia; inside the archive
-		 * the issue is already open in the archive, so it offers the canonical
-		 * route instead.
-		 */
-		context?: 'route' | 'archive';
 	}
 
-	let { locale, project, section, context = 'route' }: Props = $props();
+	let { locale, project, section }: Props = $props();
 
 	const t = $derived(translator(locale));
 	const otherLocale = $derived(other(locale));
@@ -421,14 +406,7 @@
 				<p>{project.outcome[locale]}</p>
 
 				<ul class="actions">
-					{#if context === 'archive'}
-						<!-- The issue is open in the archive already; what it can offer
-						     is its own document. -->
-						<li><a href={missionPath(locale, project.slug)}>{t('missions.readFile')}</a></li>
-					{:else}
-						<li><a href={homePath(locale)}>{t('missions.backHome')}</a></li>
-						<li><a href={missionsPath(locale)}>{t('missions.all')}</a></li>
-					{/if}
+					<li><a href={homePath(locale)}>{t('missions.backHome')}</a></li>
 					{#if project.link}
 						<!--
 							Named after where it actually goes. It used to be labelled with the
@@ -439,21 +417,19 @@
 					{/if}
 				</ul>
 
-				{#if context === 'route'}
-					<p class="colophon jl-kicker">
-						<span>© {year} {identity.name} · {identity.domain}</span>
-						<a
-							href={switchHref}
-							hreflang={otherLocale}
-							lang={otherLocale}
-							rel="alternate"
-							aria-label={t('lang.switchAria')}
-							data-sveltekit-reload
-						>
-							{LOCALE_LABEL[otherLocale]}
-						</a>
-					</p>
-				{/if}
+				<p class="colophon jl-kicker">
+					<span>© {year} {identity.name} · {identity.domain}</span>
+					<a
+						href={switchHref}
+						hreflang={otherLocale}
+						lang={otherLocale}
+						rel="alternate"
+						aria-label={t('lang.switchAria')}
+						data-sveltekit-reload
+					>
+						{LOCALE_LABEL[otherLocale]}
+					</a>
+				</p>
 			</div>
 		</Panel>
 	</div>

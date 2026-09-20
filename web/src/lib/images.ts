@@ -1,11 +1,11 @@
 /**
  * Responsive sources for the illustrated art.
  *
- * Every cover is authored once at 1024 × 1536 and the archive backdrop at
- * 3840 × 2160. A 1024 px cover painted into a 272 px slot costs half a
- * megabyte and buys nothing, so `scripts/image-variants.mjs` renders each
- * master down to the widths below in AVIF and WebP, and this module turns a
- * master's path into the `srcset` strings that reference them.
+ * Every cover is authored once at 1024 × 1536. A 1024 px plate painted into a
+ * 384 px slot costs half a megabyte and buys nothing, so
+ * `scripts/image-variants.mjs` renders each master down to the widths below in
+ * AVIF and WebP, and this module turns a master's path into the `srcset`
+ * strings that reference them.
  *
  * The widths live here because the markup is what needs them; the script reads
  * these same arrays back out of this file, so the rendered files and the
@@ -14,9 +14,6 @@
 
 /** Cover art: portrait plates that never exceed a single column. */
 export const COVER_WIDTHS = [384, 576, 768, 1024] as const;
-
-/** Full-bleed backdrops, which do span the viewport. */
-export const ROOM_WIDTHS = [960, 1440, 1920, 2560] as const;
 
 export type ResponsiveArt = {
 	/** `srcset` for the AVIF sources. */
@@ -57,17 +54,13 @@ export function responsiveArt(
 /**
  * `sizes` for each slot the art lands in, measured from the layout rules that
  * place it. A `sizes` value that overstates the slot undoes the whole point of
- * `srcset`, so these track the grids in `ComicGrid.svelte` and the home page.
+ * `srcset`, so these track the home page's grid and the reader's own cover.
  */
 export const ART_SIZES = {
 	/** Home hero: a full-width plate on a phone, half the spread on a desk. */
 	hero: '(max-width: 900px) 100vw, 50vw',
 	/** Home case-file covers: one per row on a phone, six of twelve columns on a desk. */
 	world: '(max-width: 900px) 100vw, 50vw',
-	/** Archive grid: two across, then three, then four inside `min(92%, 1180px)`. */
-	volume: '(max-width: 599px) 45vw, (max-width: 959px) 30vw, (max-width: 1282px) 23vw, 280px',
-	/** The reader's own cover, sized by the modal to fit the room. */
-	cover: '(max-width: 700px) 92vw, 640px',
-	/** The archive backdrop, which is the viewport. */
-	room: '100vw'
+	/** The reader's own cover, sized by the page to fit the room. */
+	cover: '(max-width: 700px) 92vw, 640px'
 } as const;

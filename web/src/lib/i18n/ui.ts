@@ -23,7 +23,6 @@ const UI = {
 
 	'art.placeholder': { en: 'Artwork lands here', es: 'Aquí va la ilustración' },
 
-	'missions.all': { en: 'All missions', es: 'Todas las misiones' },
 	'missions.back': { en: 'Back to the page', es: 'Volver a la página' },
 	'missions.challenge': { en: 'The challenge', es: 'El reto' },
 	'missions.approach': { en: 'The approach', es: 'El enfoque' },
@@ -96,25 +95,7 @@ const UI = {
 		es: 'Arrastra la página, o usa las flechas.'
 	},
 
-	// The comic archive: the collection laid out as a grid of covers, and the
-	// modal reader an issue opens in. See `docs/comic-reader/LIBRARY-INTERACTION.md`.
-	'library.label': { en: 'Comic archive', es: 'Archivo de cómics' },
-	'library.collection': { en: 'The collection', es: 'La colección' },
-	'library.eyebrow': {
-		en: 'JLDEV private archive · file 1227',
-		es: 'Archivo privado JLDEV · expediente 1227'
-	},
-	'library.title': { en: 'Choose your next world', es: 'Elige tu próximo mundo' },
-	'library.hint': {
-		en: 'Every issue is a real project. Choose a cover and enter its world.',
-		es: 'Cada número es un proyecto real. Elige una portada y entra a su mundo.'
-	},
-	'library.pickUp': { en: 'Open {title}', es: 'Abre {title}' },
-	'library.reading': { en: 'Reading {title}', es: 'Leyendo {title}' },
-	'library.close': { en: 'Close the issue', es: 'Cierra el número' },
-
 	'missions.source': { en: 'See it on GitHub', es: 'Verlo en GitHub' },
-	'missions.readFile': { en: 'Read the case file', es: 'Leer el expediente' },
 	'missions.backHome': { en: 'Back to issue #1227', es: 'Volver al número #1227' },
 	'missions.collection': { en: 'JLDEV case files', es: 'Expedientes JLDEV' },
 
