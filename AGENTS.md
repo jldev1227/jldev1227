@@ -10,11 +10,15 @@ Two things share one repo:
 
 1. **The GitHub profile.** `README.md` and `assets/` render on
    <https://github.com/jldev1227>. The comic banners and footer are hand-authored
-   SVG. `.github/workflows/contribution-web.yml` runs
-   `scripts/contribution-web.mjs` once a day to redraw
-   `assets/contribution-web-{dark,light}.svg` from GitHub's contribution
-   calendar — hand-drawn SVG too, in the same ink, so no third-party image
-   service sits in the README.
+   SVG. `.github/workflows/profile-panels.yml` runs the
+   scripts in `scripts/` once a day to redraw the generated panels from
+   GitHub's own data: the contribution calendar, the activity signal and the
+   language mix. They share `scripts/lib/comic-panel.mjs` — the palette, the
+   caption box, the chips and the halftone frame — so a generated panel is in
+   the same ink as the hand-drawn ones and no third-party image service sits
+   in the README. Nothing in a panel is fetched at render time: GitHub draws
+   these inside an `<img>`, where webfonts, scripts and external images are
+   all dead.
 2. **The website.** `web/` holds the SvelteKit site deployed to
    **<https://1227jl.dev>**. Vercel's *Root Directory* is set to `web`.
 

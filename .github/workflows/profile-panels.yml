@@ -1,0 +1,67 @@
+# Redraws the generated panels in `assets/` from GitHub's own data.
+#
+# The README used to embed third-party image services for all of this — they
+# owned the uptime, the theme and the data, and two of the three had started
+# rendering as empty black rectangles. These scripts own all three; the commit
+# below is the only thing the README has to trust.
+#
+#   contribution-web.mjs   the contribution calendar
+#   activity-signal.mjs    the identity plate, the counters and the languages
+#
+# Both read more with GH_PROFILE_TOKEN — a classic PAT with `read:user` for
+# private contributions and `repo` to count private repositories. Without it
+# they fall back to the built-in token and draw the public tree alone.
+name: Profile panels
+
+on:
+  schedule:
+    # 08:10 UTC — a little after 03:00 in Bogotá, so the day is settled.
+    - cron: '10 8 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/**'
+      - '.github/workflows/profile-panels.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: profile-panels
+  cancel-in-progress: true
+
+jobs:
+  draw:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Draw the panels
+        env:
+          GH_PROFILE_TOKEN: ${{ secrets.GH_PROFILE_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          USER: ${{ github.repository_owner }}
+        run: |
+          node scripts/contribution-web.mjs --user "$USER" --out assets
+          node scripts/activity-signal.mjs --user "$USER" --out assets
+
+      - name: Commit them only if the profile moved
+        run: |
+          if [ -z "$(git status --porcelain assets)" ]; then
+            echo "no change"
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets
+          # [skip ci]: the panels are drawings, and nothing downstream — CI or
+          # the Vercel deploy of `web/` — needs to run again because of them.
+          git commit -m 'chore: redraw the profile panels [skip ci]'
+          git push

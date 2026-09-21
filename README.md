@@ -63,14 +63,17 @@ EN  I build digital products that connect APIs, data, automation and AI.
 
 ## 📡 Señal de actividad · Activity signal
 
-<p align="center">
-  <img width="100%" src="https://github-profile-summary-cards.vercel.app/api/cards/profile-details?username=jldev1227&theme=github_dark&title_color=FF2D45&text_color=E6EDF3&bg_color=0D1117&border_color=0D1117&icon_color=FFB000&chart_color=FF2D45&animation=sequence&duration=2" alt="JLDEV profile details">
-</p>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./assets/activity-signal-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="./assets/activity-signal-light.svg">
+  <img width="100%" alt="Activity signal panel: avatar, lifetime commits, owned repositories, private repositories, pull requests and languages in use" src="./assets/activity-signal-dark.svg">
+</picture>
 
-<p align="center">
-  <img width="49%" src="https://github-profile-summary-cards.vercel.app/api/cards/stats?username=jldev1227&theme=github_dark&title_color=FF2D45&text_color=E6EDF3&bg_color=0D1117&border_color=0D1117&icon_color=FFB000&animation=sequence&duration=2" alt="JLDEV GitHub statistics">
-  <img width="49%" src="https://github-profile-summary-cards.vercel.app/api/cards/repos-per-language?username=jldev1227&theme=github_dark&title_color=FF2D45&text_color=E6EDF3&bg_color=0D1117&border_color=0D1117&icon_color=FFB000&chart_color=FF2D45&animation=sequence&duration=2" alt="Most used languages">
-</p>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./assets/languages-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="./assets/languages-light.svg">
+  <img width="100%" alt="Language mix by bytes across every owned repository, as a stacked bar with the top eight languages" src="./assets/languages-dark.svg">
+</picture>
 
 ## 🕸️ Red de contribuciones · Contribution web
 
