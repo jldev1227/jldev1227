@@ -6,6 +6,13 @@
 
 	let { data, children }: LayoutProps & { children: Snippet } = $props();
 
+	/**
+	 * Routes that paint their own full-bleed page. Both of them are landings
+	 * now — the personal cover and every case file — so the stage hands them the
+	 * whole width instead of matting them like a sheet of paper.
+	 */
+	const FLUSH_ROUTES = new Set(['/[lang=lang]', '/[lang=lang]/missions/[slug]']);
+
 	const t = $derived(translator(data.locale));
 
 	/**
@@ -25,7 +32,7 @@
 <div
 	class="page-stage"
 	data-themed={palette ? '' : undefined}
-	data-archive={page.route.id === '/[lang=lang]' ? '' : undefined}
+	data-flush={FLUSH_ROUTES.has(page.route.id ?? '') ? '' : undefined}
 	style={stageStyle}
 >
 	{@render children()}
@@ -41,7 +48,7 @@
 		isolation: isolate;
 	}
 
-	.page-stage[data-archive] {
+	.page-stage[data-flush] {
 		padding-block: 0;
 	}
 

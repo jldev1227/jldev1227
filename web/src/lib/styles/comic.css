@@ -42,10 +42,8 @@
 	--jl-dot-opacity: 0.3;
 	--jl-dot-size: 12px;
 
-	/* Reader motion. Shared with the reader's timers, which read these back off
-	   the element instead of keeping a second copy of the numbers in TypeScript. */
-	--jl-motion-cover: 800ms;
-	--jl-motion-page: 580ms;
+	/* Motion. One duration for a panel reacting to a pointer, and the ease that
+	   makes it feel like paper rather than glass. */
 	--jl-motion-panel: 220ms;
 	--jl-paper-ease: cubic-bezier(0.45, 0, 0.2, 1);
 

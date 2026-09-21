@@ -41,8 +41,15 @@ web/src/
     components/                Panel, Caption, Bubble, ArtSlot, Masthead, Seo…
   routes/
     +page.server.ts            `/` → `/en` or `/es`, the only dynamic route
-    [lang=lang]/               everything else, prerendered
+    [lang=lang]/+page.svelte   the personal landing
+    [lang=lang]/missions/[slug]/+page.svelte
+                               one case file, as its own landing page
 ```
+
+Both landings own their own sections and styles. There is no page-turn reader
+any more: a case file was an issue read in `ComicReader`, and the eight panels
+it sized against a reader page never had room for the narrative. It was removed
+by product decision — see `CLAUDE.md`.
 
 ## Rules that matter
 

@@ -1,46 +1,48 @@
-# Claude instructions — experimental comic reader
+# Claude instructions — comic portfolio
 
-Each project case file is an issue of a comic, read on its own route, with
-page-turn physics written in this repository rather than taken from a library.
+The site is a comic page: two landings in the same ink — the personal cover and
+one case file per project.
 
 ## Read before editing
 
-Read `AGENTS.md`, `web/docs/comic-reader/README.md`,
-`web/src/lib/components/comic-reader/README.md`, the approved mockup, and the
-matching project skills before changing the experience.
+Read `AGENTS.md`, the approved mockup (`mockups/jldev-comic-page-ux.html`), and
+the matching project skills before changing the experience.
 
 ## Current product decision
 
-The site is a landing page and a set of case files, and nothing wraps the
-reader:
+The site is a landing page and a set of case files, and nothing wraps them:
 
 1. `/[lang]` is the personal landing — hero, origin, powers, the projects as
    worlds, method, contact. Each world links to its case file.
-2. `/[lang]/missions/<slug>` is that case file, read in `ComicReader` on the
-   page itself.
+2. `/[lang]/missions/<slug>` is that case file, read as its own landing page:
+   cover plate beside the story, then challenge, approach, architecture,
+   modules, before → after, stack, log, outcome, and the next case file.
 
-There is no grid archive, no modal `<dialog>`, no `browse` state and no
-`/[lang]/missions` index — they were removed by product decision, together with
-the box, the first-person hands, the pickup animation, the `inspect` state and
-the front/back selector that preceded them. Every outer shell around the reader
-added a second state machine to keep in sync with the URL, and none earned it.
-A case file is a route.
+There is no grid archive, no modal `<dialog>` and no `/[lang]/missions` index.
 
-## Reader boundaries
+**The page-turn reader was removed by product decision.** A case file used to
+be an issue read in `ComicReader`, with eight panels sized against a reader page
+— which is exactly why its narrative never had room. Do not reintroduce it, and
+do not add `page-flip`, `react-pageflip`, Turn.js or any equivalent: the case
+file is a document, and the width belongs to the content. `git log` has the
+reader if it is ever wanted back.
 
-- There is no page-turn library. `ComicReader.svelte` and `reader-state.ts`
-  are the physics: sheets as leaves with two faces, a `preserve-3d` turn, a
-  pointer drag with velocity, the paper ease, reduced motion, reflow between
-  spread and single page. Do not add `page-flip`, `react-pageflip`, Turn.js
-  or any equivalent; improve the reader instead.
-- Svelte owns state, localized content, routes, hashes, focus, and links. The
-  reader reports the leading page (`onpagechange`) and is told where to open
-  (`initialPage`); on a mission route the reader owns the hash.
-- A case file's log page and the introductory calendar print
-  `src/lib/content/project-history.ts`, generated from the local repositories
-  by `scripts/project-history.mjs`. Regenerate it; never edit the numbers.
-- `ComicReader` serves the canonical mission routes; do not redirect mission
-  URLs, and do not reintroduce an index above them.
+## Case-file boundaries
+
+- One route owns the layout, the way `/[lang]` owns its own: the sections, the
+  section ids and their styles live in
+  `src/routes/[lang=lang]/missions/[slug]/+page.svelte`.
+- A section id is a public hash. `#challenge`, `#log`, `#before-after` and the
+  rest must keep naming their section even if the order on the page changes.
+- Sections print only what a project can fill — no empty band, and no anchor in
+  the rail that leads nowhere.
+- Each case file is painted in its own product's palette (`--jl-world-*`), and
+  two of the six worlds are painted on cream: never mix `--jl-world-base` into a
+  ground that paper-white type has to sit on.
+- The log section prints `src/lib/content/project-history.ts`, generated from
+  the local repositories by `scripts/project-history.mjs`. Regenerate it; never
+  edit the numbers.
+- Do not redirect mission URLs, and do not reintroduce an index above them.
 - Do not introduce Three.js or Rive: neither has a product use any more.
 - Do not add Anime.js unless a measured transition cannot be expressed with CSS
   or Web Animations.
@@ -48,15 +50,19 @@ A case file is a route.
 ## Non-negotiable behavior
 
 - Every visible string lives in bilingual content or `src/lib/i18n/ui.ts`.
-- Ordinary project anchors remain in server HTML before enhancement.
-- Drag or swipe anywhere on the book, mobile touch, ArrowLeft/ArrowRight,
-  Home, End, browser Back and reduced motion must work.
-- The URL uses `#<section>`; a case file opens at the page its hash names.
-- Project links inside live pages remain clickable and must not trigger a turn.
+- Ordinary project anchors remain in server HTML: both landings must read with
+  JavaScript switched off.
+- The cover plate is portrait. Give it a column of its own or a band of its
+  own — never a letterbox crop under a scrim heavy enough to read type through.
+- Give an overlay hero an explicit grid row: a 1024 × 1536 plate will otherwise
+  size the row itself and carry the headline out through the hero's clip.
+- The URL uses `#<section>`; a case file opens at the section its hash names,
+  below the sticky rail rather than under it.
 - Do not deploy unless the user explicitly requests it.
 
 ## Completion gate
 
 From `web/`, run `npm run test:unit`, `npm run test:e2e`, `npm run check`,
 `npm run lint`, and `npm run build`. Inspect `/en` and `/es` in desktop and
-mobile layouts, including an actual drag across a page of a case file.
+mobile layouts, a case file included — and check a case file painted on cream
+(`formarpro`, `gym-vancouver`) as well as one painted on ink.

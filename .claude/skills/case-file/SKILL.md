@@ -5,13 +5,17 @@ description: Add, rename, remove or write a project case file (one of the five w
 
 # Case file
 
-Projects are **case files** in a comic: `Case file 01 · Platform`. Five of them
-exist, defined once in `web/src/lib/content/projects.ts` and rendered in three
-places — the archive grid on the home page (each case file is its own issue,
-read in a modal), `/[lang]/missions`, and `/[lang]/missions/[slug]`. The eight
-pages of an issue are laid out once, in
-`web/src/lib/components/comic-reader/CaseFilePage.svelte`: challenge, log,
-stack, approach, architecture, modules, before → after, outcome.
+Projects are **case files** in a comic: `Case file 01 · Platform`. Six of them
+exist, defined once in `web/src/lib/content/projects.ts` and rendered in two
+places — the worlds on the home page, and the case file's own landing page at
+`/[lang]/missions/[slug]`, laid out in that route's `+page.svelte`: a
+cover-plate hero, then challenge, approach, architecture, modules,
+before → after, stack, log, outcome, and a link to the next case file.
+
+A section's id is a public hash (`#challenge`, `#log`, `#before-after`…), so it
+keeps naming its section even when the order on the page changes. Sections
+print only what a project can fill: leave a field empty and both the band and
+its anchor in the rail disappear.
 
 ## Adding one
 
@@ -28,6 +32,12 @@ Append to `projects` in `projects.ts`. Every field is required except `link`:
 	libraries: ['Prisma', 'Zod', 'Resend'],    // the wider toolkit, read off the repo's manifest
 	modules: [{ name: { en, es }, detail: { en, es } }],   // one per area of the app
 	accent: 'blue',              // red | blue | yellow | ink
+	palette: {                   // the product's own colours, sampled from its shot
+		base: '#071826',           // every ground on the case page
+		accent: '#d2a53f',
+		on: 'paper',               // what reads on `base`: paper | ink
+		onAccent: 'ink'
+	},
 	challenge: { en: '…', es: '…' },
 	approach: { en: '…', es: '…' },
 	outcome: { en: '…', es: '…' }
@@ -51,6 +61,11 @@ Then two generated files:
 
 The route's `entries()` generator reads `projects`, so the new page
 prerenders, and the sitemap picks it up.
+
+**A cream world needs checking.** `base` decides every ground on the page, and
+two of the six worlds are cream. Anything that mixes `--jl-world-base` into a
+dark ground turns pale there, under paper-white type — check a new light
+palette against the hero, the log band and the outcome band.
 
 **The home page shows the first two large and the rest in a three-up row.** Order
 in the array is the reading order of the comic page; a sixth project makes that
@@ -85,4 +100,6 @@ cd web && npm run check && npm run lint && npm run build
 
 The build lists prerendered pages — confirm `en/missions/<slug>.html` and
 `es/missions/<slug>.html` are both there, then load the case page in both
-languages and check the hero and the three blocks.
+languages and check the hero, the rail and every band. `npm run test:e2e`
+covers the page's own contract: the narrative in the server HTML, every rail
+anchor landing on a real section, and the plate keeping its size.

@@ -1,9 +1,9 @@
 import { defineConfig, devices } from '@playwright/test';
 
 /**
- * These tests exist for the things the in-app browser could not answer: a real
- * pointer dragging a page, a viewport change that actually fires a resize, and a
- * link followed from the document the server sent. They run against the
+ * These tests exist for the things the in-app browser could not answer: a link
+ * followed from the document the server sent, a page read with no JavaScript at
+ * all, and a layout measured at a real viewport. They run against the
  * production build, so what they check is what ships.
  */
 export default defineConfig({
@@ -20,11 +20,11 @@ export default defineConfig({
 
 	projects: [
 		{
-			name: 'spread',
+			name: 'desktop',
 			use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 900 } }
 		},
 		{
-			name: 'single page',
+			name: 'phone',
 			use: { ...devices['Pixel 7'] }
 		}
 	],

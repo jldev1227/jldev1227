@@ -6,13 +6,17 @@ files. English and Spanish are equals.
 
 Deployed at **<https://1227jl.dev>**.
 
-## Experimental direction
+## Shape
 
-The `codex/experimental-comic-reader` branch explores turning the long comic
-page into a progressively enhanced physical comic: closed cover, opening
-gesture, readable spreads, and page navigation. Each case file is read on its
-own route; the grid archive that once wrapped them was removed. The product and
-technical plan lives in [`docs/comic-reader/README.md`](docs/comic-reader/README.md).
+Two landings in the same ink. `/[lang]` is the personal cover — hero, origin,
+powers, the projects as worlds, method, contact. `/[lang]/missions/<slug>` is
+one project read in full: a cover-plate hero, the challenge, the approach and
+its decisions, the architecture, the modules, before → after, the stack, a log
+read from the repositories, and the outcome.
+
+An earlier version read each case file as a physical comic, with a cover to
+open and pages to drag. It was removed: eight panels sized against a reader
+page left no room for the narrative.
 
 ## Stack
 

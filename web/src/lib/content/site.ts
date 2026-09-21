@@ -87,7 +87,7 @@ export const years = {
 	}
 };
 
-/** Page two of the first spread: the toolkit behind the origin story. */
+/** The powers panel on the landing: the toolkit behind the origin story. */
 export const powersPage = {
 	pageLabel: { en: 'Powers', es: 'Poderes' },
 	caption: {

@@ -79,25 +79,12 @@ const UI = {
 		es: 'Código privado — este archivo comparte el razonamiento, no el fuente.'
 	},
 
-	'reader.label': { en: 'Comic reader', es: 'Lector del cómic' },
-	'reader.roledescription': { en: 'comic book', es: 'cómic' },
-	'reader.open': { en: 'Open the issue', es: 'Abre el número' },
-	'reader.next': { en: 'Next page', es: 'Página siguiente' },
-	'reader.previous': { en: 'Previous page', es: 'Página anterior' },
-	'reader.cover': { en: 'Cover', es: 'Portada' },
-	'reader.statusPage': { en: 'Page {page} of {total}', es: 'Página {page} de {total}' },
-	'reader.statusSpread': {
-		en: 'Pages {from}–{to} of {total}',
-		es: 'Páginas {from}–{to} de {total}'
-	},
-	'reader.hint': {
-		en: 'Drag the page, or use the arrow keys.',
-		es: 'Arrastra la página, o usa las flechas.'
-	},
-
 	'missions.source': { en: 'See it on GitHub', es: 'Verlo en GitHub' },
 	'missions.backHome': { en: 'Back to issue #1227', es: 'Volver al número #1227' },
 	'missions.collection': { en: 'JLDEV case files', es: 'Expedientes JLDEV' },
+	'missions.onThisPage': { en: 'On this page', es: 'En esta página' },
+	'missions.previousCase': { en: 'Previous case file', es: 'Expediente anterior' },
+	'missions.nextCase': { en: 'Next case file', es: 'Siguiente expediente' },
 
 	'contact.title': { en: 'Team-up?', es: '¿Hacemos equipo?' },
 	'contact.email': { en: 'Send an email', es: 'Escríbeme un correo' },

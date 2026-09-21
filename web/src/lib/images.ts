@@ -54,13 +54,13 @@ export function responsiveArt(
 /**
  * `sizes` for each slot the art lands in, measured from the layout rules that
  * place it. A `sizes` value that overstates the slot undoes the whole point of
- * `srcset`, so these track the home page's grid and the reader's own cover.
+ * `srcset`, so these track the home page's grid and a case file's own hero.
  */
 export const ART_SIZES = {
 	/** Home hero: a full-width plate on a phone, half the spread on a desk. */
 	hero: '(max-width: 900px) 100vw, 50vw',
 	/** Home case-file covers: one per row on a phone, six of twelve columns on a desk. */
 	world: '(max-width: 900px) 100vw, 50vw',
-	/** The reader's own cover, sized by the page to fit the room. */
-	cover: '(max-width: 700px) 92vw, 640px'
+	/** A case file's hero: the cover plate runs the full width of the page. */
+	caseHero: '100vw'
 } as const;
