@@ -1158,6 +1158,27 @@
 		}
 	}
 
+	/* Below this width the panel stops cropping the portrait: the whole figure
+	   fits, so Julian's head drifts to the middle of the top edge and lands under
+	   the balloon's usual corner. Lay the balloon flat above the hair rather than
+	   narrowing it — one line stays inside the ellipse where a column of short
+	   ones would spill past the curve — and move the tail across so it still
+	   points at him. */
+	@media (max-width: 520px) {
+		:global(.hero-bubble) {
+			top: 12px;
+			right: 14px;
+			max-width: min(400px, calc(100% - 28px));
+			padding: 9px 22px;
+			font-size: clamp(0.6rem, 2.9vw, 0.72rem);
+			transform: rotate(-1.2deg);
+		}
+
+		:global(.hero-bubble)::after {
+			left: 42%;
+		}
+	}
+
 	@media (max-width: 430px) {
 		.hero-copy {
 			min-height: 450px;
