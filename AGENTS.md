@@ -10,8 +10,11 @@ Two things share one repo:
 
 1. **The GitHub profile.** `README.md` and `assets/` render on
    <https://github.com/jldev1227>. The comic banners and footer are hand-authored
-   SVG. `.github/workflows/contribution-snake.yml` regenerates the contribution
-   animation into the `output` branch.
+   SVG. `.github/workflows/contribution-web.yml` runs
+   `scripts/contribution-web.mjs` once a day to redraw
+   `assets/contribution-web-{dark,light}.svg` from GitHub's contribution
+   calendar — hand-drawn SVG too, in the same ink, so no third-party image
+   service sits in the README.
 2. **The website.** `web/` holds the SvelteKit site deployed to
    **<https://1227jl.dev>**. Vercel's *Root Directory* is set to `web`.
 

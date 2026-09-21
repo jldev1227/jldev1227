@@ -74,9 +74,11 @@ EN  I build digital products that connect APIs, data, automation and AI.
 
 ## 🕸️ Red de contribuciones · Contribution web
 
-<p align="center">
-  <img width="100%" src="https://github-readme-activity-graph.vercel.app/graph?username=jldev1227&bg_color=0D1117&color=E6EDF3&title_color=FF2D45&line=FF2D45&point=FFB000&area_color=F0142F&area=true&hide_border=true&radius=12&custom_title=JLDEV%20ACTIVITY%20WEB" alt="Dynamic GitHub activity graph">
-</p>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./assets/contribution-web-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="./assets/contribution-web-light.svg">
+  <img width="100%" alt="Contribution calendar drawn as a comic panel: the year's total, the monthly grid, current streak, best streak and busiest day" src="./assets/contribution-web-dark.svg">
+</picture>
 
 <p align="center">
   <img src="./assets/comic-footer.svg" width="100%" alt="End of transmission">
