@@ -165,7 +165,11 @@ function drawSignal(data, theme) {
 	// what it has is a tree. Order the counters by what the work actually is and
 	// drop any that would print a zero.
 	const chips = [
-		{ label: 'REPOS · REPOS', value: num(data.repos), note: 'PROPIOS · OWNED' },
+		{
+			label: 'REPOS · REPOS',
+			value: num(data.repos),
+			note: data.private ? 'PROPIOS · OWNED' : 'PÚBLICOS · PUBLIC'
+		},
 		{
 			label: 'EN PRIVADO · PRIVATE',
 			value: num(data.private),
@@ -247,7 +251,7 @@ function drawLanguages(data, theme) {
 			});
 
 			return `${captionBox(c, 'LENGUAJES · LANGUAGES')}
-  <text x="${LEFT}" y="118" fill="${c.muted}" font-family="${MONO}" font-size="13">POR BYTES EN ${num(data.repos)} REPOSITORIOS${data.private ? ` (${num(data.private)} PRIVADOS)` : ''}  ·  BY BYTES ACROSS ${num(data.repos)} REPOSITORIES</text>
+  <text x="${LEFT}" y="118" fill="${c.muted}" font-family="${MONO}" font-size="13">POR BYTES EN ${num(data.repos)} REPOSITORIOS ${data.private ? `(${num(data.private)} PRIVADOS)` : 'PÚBLICOS'}  ·  BY BYTES ACROSS ${num(data.repos)} ${data.private ? 'REPOSITORIES' : 'PUBLIC REPOSITORIES'}</text>
 
   <!-- One bar, ink-framed, each language as wide as it is written. -->
   <g>${bar.join('')}</g>
