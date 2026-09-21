@@ -29,7 +29,9 @@ permissions:
 
 concurrency:
   group: profile-panels
-  cancel-in-progress: true
+  # Queue, never cancel: a cancelled run is cancelled somewhere, and the place
+  # this one would be is between `git commit` and `git push`.
+  cancel-in-progress: false
 
 jobs:
   draw:
@@ -64,4 +66,13 @@ jobs:
           # [skip ci]: the panels are drawings, and nothing downstream — CI or
           # the Vercel deploy of `web/` — needs to run again because of them.
           git commit -m 'chore: redraw the profile panels [skip ci]'
+          if git push; then exit 0; fi
+          # The remote moved while we were drawing. There is nothing to merge:
+          # these panels were just generated from the current state of the
+          # world, so replay them on top of whatever landed instead of
+          # rebasing six SVGs into a conflict.
+          echo 'remote moved — replaying the panels on top of it'
+          git fetch origin main
+          git reset --soft origin/main
+          git commit -m 'chore: redraw the profile panels [skip ci]' || echo 'already drawn'
           git push
