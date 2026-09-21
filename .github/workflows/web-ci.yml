@@ -45,17 +45,36 @@ jobs:
 
       - name: Assert every localized page prerendered
         run: |
+          # The slugs are read from the content rather than listed here: this
+          # step went red for four commits because the list still named a
+          # missions index that had been deleted and had never learned about
+          # the sixth case file.
+          slugs=$(node -e "
+            const src = require('node:fs').readFileSync('src/lib/content/projects.ts', 'utf8');
+            const slugs = [...src.matchAll(/slug: '([a-z0-9-]+)'/g)].map((m) => m[1]);
+            if (!slugs.length) { console.error('no slugs found'); process.exit(1); }
+            console.log(slugs.join(' '));
+          ")
+          echo "case files: $slugs"
           missing=0
           for lang in en es; do
-            for page in "$lang.html" "$lang/missions.html"; do
-              [ -f ".svelte-kit/output/prerendered/pages/$page" ] || { echo "missing: $page"; missing=1; }
-            done
-            for slug in segispro formarpro transmeralda developer-os gym-vancouver; do
+            [ -f ".svelte-kit/output/prerendered/pages/$lang.html" ] || { echo "missing: $lang.html"; missing=1; }
+            for slug in $slugs; do
               path="$lang/missions/$slug.html"
               [ -f ".svelte-kit/output/prerendered/pages/$path" ] || { echo "missing: $path"; missing=1; }
             done
           done
           for file in sitemap.xml robots.txt; do
             [ -f ".svelte-kit/output/prerendered/pages/$file" ] || { echo "missing: $file"; missing=1; }
+          done
+          # There is no index above the case files any more; if one comes back
+          # it is a product decision, not a build artefact.
+          for lang in en es; do
+            # `if`, not `&&`: the step runs under `set -e`, where a trailing
+            # AND-list whose test is false exits the job with a status of its own.
+            if [ -f ".svelte-kit/output/prerendered/pages/$lang/missions.html" ]; then
+              echo "unexpected: $lang/missions.html — the archive was removed"
+              missing=1
+            fi
           done
           exit $missing
