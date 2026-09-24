@@ -79,7 +79,7 @@ const UI = {
 		es: 'Código privado — este archivo comparte el razonamiento, no el fuente.'
 	},
 
-	'missions.source': { en: 'See it on GitHub', es: 'Verlo en GitHub' },
+	'missions.source': { en: 'Visit project', es: 'Visitar proyecto' },
 	'missions.backHome': { en: 'Back to issue #1227', es: 'Volver al número #1227' },
 	'missions.collection': { en: 'JLDEV case files', es: 'Expedientes JLDEV' },
 	'missions.onThisPage': { en: 'On this page', es: 'En esta página' },

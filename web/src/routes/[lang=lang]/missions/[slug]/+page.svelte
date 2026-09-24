@@ -587,7 +587,7 @@
 				transparent 48.2%
 			),
 			/* The wedge is tinted with the world's accent rather than its ground:
-			   two of the six worlds are painted on cream, and mixing that into the
+			   two of the seven worlds are painted on cream, and mixing that into the
 			   ink left a pale stain under paper-white cover lines. */
 			linear-gradient(
 					137deg,

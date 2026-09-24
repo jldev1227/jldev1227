@@ -75,7 +75,7 @@ export interface Project {
 	link?: string;
 }
 
-/** The six worlds. Order is the reading order of the comic page. */
+/** The seven worlds. Order is the reading order of the comic page. */
 export const projects: Project[] = [
 	{
 		slug: 'segispro',
@@ -1239,6 +1239,188 @@ export const projects: Project[] = [
 			es: 'La versión actual cubre el recorrido técnico desde la programación y la captura Android hasta la sincronización, la revisión web, la emisión revocable y la verificación pública de autenticidad. La foto del repositorio reúne 103 commits, 28 rutas y handlers web y 30 archivos de prueba entre la app nativa, la API y el portal, mientras el producto avanza en beta interna.'
 		},
 		link: 'https://manejo-comentado.vercel.app'
+	},
+	{
+		slug: 'viziona-cines',
+		number: '07',
+		kicker: { en: 'Case file 07 · Cinema', es: 'Expediente 07 · Cine' },
+		title: 'VIZIONA CINES',
+		tagline: {
+			en: 'A cinema platform that connects discovery, showtimes, seats, concessions and the customer account in one fast journey.',
+			es: 'Una plataforma de cine que conecta descubrimiento, funciones, sillas, confitería y cuenta del cliente en un recorrido ágil.'
+		},
+		stack: ['SvelteKit', 'TypeScript', 'Tailwind CSS', 'Vercel', 'AWS S3', 'REST API'],
+		accent: 'yellow',
+		libraries: [
+			'Zod',
+			'Sharp',
+			'Node Vibrant',
+			'SvelteKit Superforms',
+			'QRCode',
+			'Lucide',
+			'Vercel Analytics',
+			'Vercel Edge Config'
+		],
+		modules: [
+			{
+				name: { en: 'Now showing', es: 'Cartelera' },
+				detail: {
+					en: 'Current showtimes, upcoming releases and movie pages built for quick decisions.',
+					es: 'Funciones vigentes, próximos estrenos y fichas de películas diseñadas para decidir rápido.'
+				}
+			},
+			{
+				name: { en: 'Seats & reservation', es: 'Sillas y reserva' },
+				detail: {
+					en: 'Live seat availability, zone pricing and timed holds tied to the customer session.',
+					es: 'Disponibilidad de sillas, tarifas por zona y reservas temporales ligadas a la sesión.'
+				}
+			},
+			{
+				name: { en: 'Concessions', es: 'Confitería' },
+				detail: {
+					en: 'Products and configurable combos normalized from the point-of-sale catalogue.',
+					es: 'Productos y combos configurables normalizados desde el catálogo del punto de venta.'
+				}
+			},
+			{
+				name: { en: 'Customer account', es: 'Cuenta del cliente' },
+				detail: {
+					en: 'Sign-in, profile, tickets, purchase history and Club Vizionarios benefits.',
+					es: 'Ingreso, perfil, entradas, historial de compras y beneficios del Club Vizionarios.'
+				}
+			},
+			{
+				name: { en: 'Cinema & editorial', es: 'Salas y contenidos' },
+				detail: {
+					en: 'Premium rooms, corporate information and sanitized editorial content from the CMS.',
+					es: 'Salas premium, información corporativa y contenidos editoriales saneados desde el CMS.'
+				}
+			},
+			{
+				name: { en: 'Campaign control', es: 'Control de campañas' },
+				detail: {
+					en: 'An admin surface previews and publishes site-wide visual themes without a deployment.',
+					es: 'Un panel administrativo previsualiza y publica ambientaciones globales sin desplegar.'
+				}
+			}
+		],
+		palette: {
+			base: '#000000',
+			accent: '#ffc720',
+			on: 'paper',
+			onAccent: 'ink'
+		},
+		coverArt: {
+			src: '/art/project-covers/viziona-cines-cover-v2.webp',
+			width: 1024,
+			height: 1536
+		},
+		coverText: 'paper',
+		image: {
+			src: '/projects/viziona-cines.webp',
+			alt: {
+				en: 'Viziona Cines home page with its movie carousel and current showtimes',
+				es: 'Página de inicio de Viziona Cines con su carrusel de películas y cartelera vigente'
+			},
+			caption: {
+				en: 'The product puts the decision first: what is showing, when it starts and how to secure a seat.',
+				es: 'El producto pone la decisión primero: qué está en cartelera, cuándo empieza y cómo asegurar una silla.'
+			}
+		},
+		architecture: [
+			{
+				layer: { en: 'Cinema experience', es: 'Experiencia de cine' },
+				technology: 'SvelteKit · Svelte 5 · Tailwind CSS',
+				detail: {
+					en: 'Accessible, responsive journeys for discovery, seat selection and account activity.',
+					es: 'Recorridos accesibles y adaptables para descubrir, elegir sillas y gestionar la cuenta.'
+				}
+			},
+			{
+				layer: { en: 'Catalogue pipeline', es: 'Pipeline de catálogo' },
+				technology: 'TypeScript · Zod · Static JSON',
+				detail: {
+					en: 'The public API is validated, normalized and baked into prerendered pages before deployment.',
+					es: 'La API pública se valida, normaliza y hornea en páginas prerenderizadas antes del despliegue.'
+				}
+			},
+			{
+				layer: { en: 'Transactional boundary', es: 'Frontera transaccional' },
+				technology: 'SvelteKit server · Viziona API',
+				detail: {
+					en: 'Server routes protect sessions and coordinate live seat holds, cart data and account actions.',
+					es: 'Las rutas de servidor protegen sesiones y coordinan reservas, carrito y acciones de cuenta.'
+				}
+			},
+			{
+				layer: { en: 'Media & operations', es: 'Medios y operación' },
+				technology: 'Sharp · S3 · Vercel Edge Config',
+				detail: {
+					en: 'Responsive media ships through the CDN while global campaign themes update independently.',
+					es: 'Los medios adaptables viajan por CDN y las campañas globales se actualizan de forma independiente.'
+				}
+			}
+		],
+		transformation: [
+			{
+				before: {
+					en: 'A runtime-dependent catalogue vulnerable to upstream latency.',
+					es: 'Un catálogo dependiente del runtime y de la latencia del origen.'
+				},
+				after: {
+					en: 'Validated data baked into fast, searchable pages.',
+					es: 'Datos validados y horneados en páginas rápidas e indexables.'
+				}
+			},
+			{
+				before: {
+					en: 'Showtimes that could remain visible after sales closed.',
+					es: 'Funciones que podían seguir visibles después del cierre de venta.'
+				},
+				after: {
+					en: 'A reactive clock removes expired purchase paths.',
+					es: 'Un reloj reactivo retira los caminos de compra vencidos.'
+				}
+			},
+			{
+				before: {
+					en: 'Large source images delivered without device-aware sizing.',
+					es: 'Imágenes de origen servidas sin tamaños adaptados al dispositivo.'
+				},
+				after: {
+					en: 'Deduplicated AVIF and WebP variants delivered through a CDN.',
+					es: 'Variantes AVIF y WebP sin duplicados, entregadas por CDN.'
+				}
+			}
+		],
+		decisions: [
+			{
+				en: 'Prerender the discovery catalogue from validated snapshots, and reserve runtime calls for actions that must be live.',
+				es: 'Prerenderizar el catálogo desde snapshots validados y reservar el runtime para las acciones que deben estar en vivo.'
+			},
+			{
+				en: 'Treat Viziona as the source of truth for occupancy and refresh it by polling only while the page is visible.',
+				es: 'Mantener a Viziona como fuente de verdad para la ocupación y consultarla solo mientras la página está visible.'
+			},
+			{
+				en: 'Shorten seat holds for the web journey and explicitly release them upstream when the local timer expires.',
+				es: 'Acortar la reserva para el recorrido web y liberarla explícitamente en origen cuando vence el reloj local.'
+			}
+		],
+		challenge: {
+			en: 'Choosing a movie crosses a changing catalogue, exact showtimes, room types, live seat availability, prices, concessions and an existing customer account. The challenge was to make that chain feel immediate while preserving the cinema system as the transactional source of truth.',
+			es: 'Elegir una película cruza un catálogo cambiante, horarios exactos, tipos de sala, disponibilidad de sillas, tarifas, confitería y una cuenta existente. El reto era hacer que esa cadena se sintiera inmediata sin dejar de usar el sistema del cine como fuente de verdad transaccional.'
+		},
+		approach: {
+			en: 'I separated discovery from transactions. A typed build pipeline validates and normalizes the public API into static JSON, prerenders the catalogue and creates responsive media, while SvelteKit server routes handle sessions, seat polling, timed reservations and cart actions that must remain live.',
+			es: 'Separé el descubrimiento de las transacciones. Un pipeline tipado valida y normaliza la API pública en JSON estático, prerenderiza el catálogo y crea medios adaptables, mientras las rutas de servidor de SvelteKit resuelven sesiones, consulta de sillas, reservas temporales y acciones del carrito que deben seguir en vivo.'
+		},
+		outcome: {
+			en: 'The current build joins the public cinema journey from the first poster to the held seat, including concessions, customer tickets and campaign administration. The repository snapshot contains 177 commits, 22 product pages and a build that prerenders 85 routes while keeping transactional paths server-side.',
+			es: 'La versión actual une el recorrido público del cine desde el primer póster hasta la silla reservada, incluyendo confitería, entradas del cliente y administración de campañas. La foto del repositorio reúne 177 commits, 22 páginas de producto y un build que prerenderiza 85 rutas mientras mantiene los flujos transaccionales en el servidor.'
+		},
+		link: 'https://vizionacines-v2.vercel.app'
 	}
 ];
 

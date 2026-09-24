@@ -186,7 +186,7 @@ export const stack = [
 /** The bridge between the personal story and the project case files. */
 export const multiverse = {
 	eyebrow: { en: 'The project multiverse', es: 'El multiverso de proyectos' },
-	titleLead: { en: 'Six worlds.', es: 'Seis mundos.' },
+	titleLead: { en: 'Seven worlds.', es: 'Siete mundos.' },
 	titleAccent: { en: 'One way of building.', es: 'Una forma de construir.' },
 	body: {
 		en: 'Every portal keeps the product’s own visual identity. Step through to read the full comic: challenge, architecture, decisions, evidence and outcome.',

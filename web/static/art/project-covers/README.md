@@ -1,19 +1,22 @@
 # Project comic covers
 
-Five full-bleed 1024×1536 WebP illustrations for the project issues. Cover
+Seven full-bleed 1024×1536 WebP illustrations for the project issues. Cover
 titles, captions, issue numbers and language controls remain live HTML; these
 files deliberately contain no words or logos.
 
-| File                          | Project                   | Camera and body direction                       |
-| ----------------------------- | ------------------------- | ----------------------------------------------- |
-| `segispro-cover-v2.webp`      | SEGISPRO                  | Seated side profile at an operations desk       |
-| `formarpro-cover-v2.webp`     | FORMARPRO                 | Relaxed full-body profile on learning steps     |
-| `transmeralda-cover-v2.webp`  | TRANSMERALDA × COTRANSMEQ | Rear three-quarter walking through the bus yard |
-| `developer-os-cover-v2.webp`  | DEVELOPER OS              | Over-the-shoulder view at mission control       |
-| `gym-vancouver-cover-v2.webp` | GYM VANCOUVER             | Candid lateral conversation in a school         |
+| File                             | Project                   | Camera and body direction                         |
+| -------------------------------- | ------------------------- | ------------------------------------------------- |
+| `segispro-cover-v2.webp`         | SEGISPRO                  | Seated side profile at an operations desk         |
+| `formarpro-cover-v2.webp`        | FORMARPRO                 | Relaxed full-body profile on learning steps       |
+| `transmeralda-cover-v2.webp`     | TRANSMERALDA × COTRANSMEQ | Rear three-quarter walking through the bus yard   |
+| `developer-os-cover-v2.webp`     | DEVELOPER OS              | Over-the-shoulder view at mission control         |
+| `gym-vancouver-cover-v2.webp`    | GYM VANCOUVER             | Candid lateral conversation in a school           |
+| `manejo-comentado-cover-v1.webp` | MANEJO COMENTADO          | Rear three-quarter field review beside a road     |
+| `viziona-cines-cover-v2.webp`    | VIZIONA CINES             | Seated front three-quarter view in the auditorium |
 
-The original `v1` set remains beside these files as a reversible art-direction
-checkpoint. The application uses `v2`.
+Where a `v2` exists, the original `v1` remains beside it as a reversible
+art-direction checkpoint. New covers begin at `v1` and move to a new filename
+instead of being overwritten because production serves art with immutable caching.
 
 ## Generation specification
 
@@ -47,6 +50,13 @@ Project directions:
   desk, with worktrees, agent runs and validation represented in depth.
 - **GYM VANCOUVER:** candid side-profile conversation with a teacher and a
   student in a warm school corridor, using a small explanatory hand gesture.
+- **VIZIONA CINES:** seated front three-quarter view in an empty auditorium,
+  working on a laptop beneath a purple-and-gold projector beam.
+
+Viziona used the approved Julian cover as its identity and comic-language
+reference, plus the local product home page as a domain and palette reference.
+The generated plate contains no words, logos or recognizable movie artwork;
+all case-file furniture remains live HTML.
 
 Generated with the built-in image generation tool and optimized to WebP at
 quality 88 for runtime use.

@@ -36,7 +36,8 @@ const PROJECTS = {
 	],
 	'developer-os': [{ path: 'developer-os', name: 'developer-os', kind: 'native' }],
 	'gym-vancouver': [{ path: 'gimnasio-vancouver-2', name: 'app', kind: 'app' }],
-	'manejo-comentado': [{ path: 'manejo-comentado', name: 'platform', kind: 'app' }]
+	'manejo-comentado': [{ path: 'manejo-comentado', name: 'platform', kind: 'app' }],
+	'viziona-cines': [{ path: 'vizionacines-v2', name: 'storefront', kind: 'app' }]
 };
 
 const git = (repo, args) =>
