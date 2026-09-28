@@ -12,8 +12,9 @@ import { join } from 'node:path';
  * to `src/lib/content/project-history.ts`. Numbers only: no code, no paths,
  * no messages leave the machine.
  *
- * Regenerate with `node scripts/project-history.mjs`. The repositories are
- * looked up under `~/Developer/github` unless `GITHUB_DIR` says otherwise.
+ * Regenerate with `node scripts/project-history.mjs`. Repository paths are
+ * resolved from `~/Developer/github` unless `GITHUB_DIR` says otherwise; a
+ * case file may point at a sibling workspace with `..`.
  */
 
 const ROOT = process.env.GITHUB_DIR ?? join(homedir(), 'Developer', 'github');
@@ -32,12 +33,20 @@ const PROJECTS = {
 		{ path: 'transmeralda/ingreso-svelte', name: 'transmeralda · app', kind: 'app' },
 		{ path: 'transmeralda/backend-nest', name: 'transmeralda · api', kind: 'api' },
 		{ path: 'cotransmeq/cotransmeq-app', name: 'cotransmeq · app', kind: 'app' },
-		{ path: 'cotransmeq/backend-cotransmeq', name: 'cotransmeq · api', kind: 'api' }
+		{ path: 'cotransmeq/backend-cotransmeq', name: 'cotransmeq · api', kind: 'api' },
+		{ path: 'app-mobile-transmeralda', name: 'transmeralda · mobile', kind: 'native' }
 	],
 	'developer-os': [{ path: 'developer-os', name: 'developer-os', kind: 'native' }],
 	'gym-vancouver': [{ path: 'gimnasio-vancouver-2', name: 'app', kind: 'app' }],
 	'manejo-comentado': [{ path: 'manejo-comentado', name: 'platform', kind: 'app' }],
-	'viziona-cines': [{ path: 'vizionacines-v2', name: 'storefront', kind: 'app' }]
+	'viziona-cines': [{ path: 'vizionacines-v2', name: 'storefront', kind: 'app' }],
+	'interest-pulse': [
+		{
+			path: '../Chrome extensions/interest-pulse',
+			name: 'extension monorepo',
+			kind: 'extension'
+		}
+	]
 };
 
 const git = (repo, args) =>
@@ -80,7 +89,10 @@ function measure(entry) {
 			tests: count(
 				(f) => /(?:\.|-)(spec|test)\.(ts|js)$/.test(f) || /(?:Test|Tests)\.(swift|kt)$/.test(f)
 			),
-			native: count((f) => /\.(swift|kt)$/.test(f))
+			native: count(
+				(f) =>
+					/\.(swift|kt)$/.test(f) || (entry.kind === 'native' && /^src\/.*\.(?:ts|tsx)$/.test(f))
+			)
 		}
 	};
 }
@@ -157,8 +169,8 @@ writeFileSync(
 
 export interface RepositoryLog {
 	name: string;
-	/** What the repository is: the product, its API, or a native app. */
-	kind: 'app' | 'api' | 'native';
+	/** What the repository is: product app, API, native app or extension. */
+	kind: 'app' | 'api' | 'native' | 'extension';
 	commits: number;
 	since: string;
 	until: string;
@@ -179,7 +191,7 @@ export interface ProjectHistory {
 	repos: RepositoryLog[];
 	files: number;
 	/** What the tree holds, counted: SvelteKit pages, Nest controllers, Prisma
-	 * models, SQL migrations, test files, Swift and Kotlin sources. */
+	 * models, SQL migrations, test files and native sources. */
 	counts: {
 		pages: number;
 		controllers: number;

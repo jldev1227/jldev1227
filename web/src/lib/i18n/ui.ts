@@ -55,11 +55,12 @@ const UI = {
 	'missions.models': { en: 'data models', es: 'modelos de datos' },
 	'missions.migrations': { en: 'migrations', es: 'migraciones' },
 	'missions.tests': { en: 'test files', es: 'archivos de prueba' },
-	'missions.native': { en: 'Swift & Kotlin files', es: 'archivos Swift y Kotlin' },
+	'missions.native': { en: 'native source files', es: 'archivos fuente nativos' },
 	'missions.files': { en: 'tracked files', es: 'archivos versionados' },
 	'missions.repoApp': { en: 'app', es: 'app' },
 	'missions.repoApi': { en: 'API', es: 'API' },
 	'missions.repoNative': { en: 'native', es: 'nativo' },
+	'missions.repoExtension': { en: 'browser extension', es: 'extensión de navegador' },
 	'missions.modules': { en: 'Modules', es: 'Módulos' },
 	'missions.modulesNote': {
 		en: 'What the product is made of, as its own screens divide it.',
@@ -78,8 +79,13 @@ const UI = {
 		en: 'Private codebase — this file shares the thinking, not the source.',
 		es: 'Código privado — este archivo comparte el razonamiento, no el fuente.'
 	},
+	'missions.publicCodebase': {
+		en: 'Public codebase — product decisions and implementation are open for inspection.',
+		es: 'Código público — las decisiones de producto y la implementación están abiertas a revisión.'
+	},
 
 	'missions.source': { en: 'Visit project', es: 'Visitar proyecto' },
+	'missions.viewSource': { en: 'View source', es: 'Ver código' },
 	'missions.backHome': { en: 'Back to issue #1227', es: 'Volver al número #1227' },
 	'missions.collection': { en: 'JLDEV case files', es: 'Expedientes JLDEV' },
 	'missions.onThisPage': { en: 'On this page', es: 'En esta página' },

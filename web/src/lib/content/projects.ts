@@ -73,9 +73,11 @@ export interface Project {
 	outcome: Localized;
 	/** External link, when the world has a public face. */
 	link?: string;
+	/** This case file may point directly at source that is intentionally public. */
+	publicSource?: boolean;
 }
 
-/** The seven worlds. Order is the reading order of the comic page. */
+/** The eight worlds. Order is the reading order of the comic page. */
 export const projects: Project[] = [
 	{
 		slug: 'segispro',
@@ -482,7 +484,16 @@ export const projects: Project[] = [
 			en: 'One transport platform adapted to two operators without losing operational identity.',
 			es: 'Una plataforma de transporte adaptada a dos operadoras sin perder su identidad operacional.'
 		},
-		stack: ['SvelteKit', 'Fastify', 'Prisma', 'PostgreSQL', 'Socket.IO', 'Univer', 'Mapbox', 'PDF'],
+		stack: [
+			'SvelteKit',
+			'Fastify',
+			'Prisma',
+			'PostgreSQL',
+			'Expo',
+			'React Native',
+			'SQLite',
+			'Mapbox'
+		],
 		accent: 'yellow',
 		libraries: [
 			'Prisma',
@@ -499,7 +510,10 @@ export const projects: Project[] = [
 			'Anthropic',
 			'Azure Blob',
 			'Amazon S3',
-			'Resend'
+			'Resend',
+			'Expo Router',
+			'SecureStore',
+			'Expo Notifications'
 		],
 		modules: [
 			{
@@ -540,8 +554,15 @@ export const projects: Project[] = [
 			{
 				name: { en: 'Forms & attendance', es: 'Formularios y asistencias' },
 				detail: {
-					en: 'Custom forms and token-based attendance, no login needed.',
-					es: 'Formularios propios y asistencia por token, sin iniciar sesión.'
+					en: 'Custom forms, evidence and token-based attendance in office and field.',
+					es: 'Formularios, evidencias y asistencia por token entre oficina y campo.'
+				}
+			},
+			{
+				name: { en: 'Driver mobile app', es: 'App móvil para conductores' },
+				detail: {
+					en: 'Native services, forms, pay slips and worked days with an offline outbox.',
+					es: 'Servicios, formularios, desprendibles y días laborados con outbox offline.'
 				}
 			},
 			{
@@ -559,7 +580,7 @@ export const projects: Project[] = [
 			onAccent: 'ink'
 		},
 		coverArt: {
-			src: '/art/project-covers/transmeralda-cover-v2.webp',
+			src: '/art/project-covers/transmeralda-cover-v3.webp',
 			width: 1024,
 			height: 1536
 		},
@@ -577,10 +598,10 @@ export const projects: Project[] = [
 		architecture: [
 			{
 				layer: { en: 'Field and office', es: 'Campo y oficina' },
-				technology: 'SvelteKit',
+				technology: 'SvelteKit · Expo · React Native',
 				detail: {
-					en: 'Administrative workspace and offline-aware driver portal.',
-					es: 'Espacio administrativo y portal de conductor con soporte offline.'
+					en: 'Administrative workspace plus a native driver app for routes, forms and evidence.',
+					es: 'Espacio administrativo y app nativa para rutas, formularios y evidencias.'
 				}
 			},
 			{
@@ -601,10 +622,10 @@ export const projects: Project[] = [
 			},
 			{
 				layer: { en: 'Operational tools', es: 'Herramientas operativas' },
-				technology: 'Socket.IO · Mapbox · Univer · PDF',
+				technology: 'SQLite · Mapbox · Socket.IO · Univer · PDF',
 				detail: {
-					en: 'Live updates, maps, spreadsheets and regulated documents.',
-					es: 'Actualizaciones en vivo, mapas, hojas de cálculo y documentos regulados.'
+					en: 'Offline outbox, maps, live updates, spreadsheets and regulated documents.',
+					es: 'Outbox offline, mapas, actualizaciones en vivo, hojas de cálculo y documentos regulados.'
 				}
 			}
 		],
@@ -625,8 +646,8 @@ export const projects: Project[] = [
 					es: 'Evidencia de carretera llegando después de la operación.'
 				},
 				after: {
-					en: 'Offline-aware capture and later synchronization.',
-					es: 'Captura con soporte offline y sincronización posterior.'
+					en: 'Native offline capture with a durable synchronization outbox.',
+					es: 'Captura nativa offline con una outbox de sincronización durable.'
 				}
 			},
 			{
@@ -646,8 +667,8 @@ export const projects: Project[] = [
 				es: 'Compartir el núcleo operativo y aislar marca, despliegue y reglas particulares de cada operadora.'
 			},
 			{
-				en: 'Design dynamic forms for intermittent connectivity, traceability and later synchronization.',
-				es: 'Diseñar formularios dinámicos para conectividad intermitente, trazabilidad y sincronización posterior.'
+				en: 'Move the driver journey into an Expo app with SQLite caches and an outbox built for intermittent connectivity.',
+				es: 'Llevar el recorrido del conductor a una app Expo con cachés SQLite y una outbox pensada para conectividad intermitente.'
 			},
 			{
 				en: 'Generate spreadsheets and regulated documents from structured data instead of manual templates.',
@@ -659,12 +680,12 @@ export const projects: Project[] = [
 			es: 'Dos operadoras de transporte compartían los mismos problemas difíciles —flota, conductores, servicios, asistencia, apoyo a nómina y evidencia normativa—, pero cada una tenía su propia marca, usuarios y reglas. Copiar funciones entre productos separados habría creado divergencias rápidamente.'
 		},
 		approach: {
-			en: 'I evolved a shared SvelteKit and Fastify architecture, separating reusable domain workflows from operator configuration and deployment. PostgreSQL and Prisma anchor the data model; sockets, offline-aware forms, maps, spreadsheets and document generation support work that moves between office and road.',
-			es: 'Evolucioné una arquitectura compartida en SvelteKit y Fastify, separando los flujos reutilizables de la configuración y el despliegue de cada operadora. PostgreSQL y Prisma sostienen el modelo; sockets, formularios con soporte offline, mapas, hojas de cálculo y generación documental acompañan el trabajo entre oficina y carretera.'
+			en: 'I evolved a shared SvelteKit and Fastify architecture, separating reusable domain workflows from operator configuration and deployment. PostgreSQL and Prisma anchor the model, while an Expo and React Native driver app uses SQLite caches and a synchronization outbox so services, forms and worked days remain usable on the road.',
+			es: 'Evolucioné una arquitectura compartida en SvelteKit y Fastify, separando los flujos reutilizables de la configuración y el despliegue de cada operadora. PostgreSQL y Prisma sostienen el modelo, mientras una app para conductores en Expo y React Native usa cachés SQLite y una outbox de sincronización para mantener servicios, formularios y días laborados disponibles en carretera.'
 		},
 		outcome: {
-			en: 'The product family now expresses one operational model through two deployments instead of two disconnected inventions. Across four frontend and backend repositories, the local Git history contains 884 commits and a shared surface covering services, fleet, people, safety and compliance.',
-			es: 'La familia de producto expresa un modelo operativo mediante dos despliegues, no dos inventos desconectados. En cuatro repositorios de frontend y backend, el historial local suma 884 commits y una superficie compartida para servicios, flota, personas, seguridad y cumplimiento.'
+			en: 'The product family now expresses one operational model through two web deployments and a native driver experience instead of disconnected inventions. Across five web, API and mobile repositories, the local Git history contains 1,217 commits; the mobile app already covers services, forms, pay slips and worked days with offline storage and synchronization.',
+			es: 'La familia de producto expresa un modelo operativo mediante dos despliegues web y una experiencia nativa para conductores, no inventos desconectados. En cinco repositorios web, API y móvil, el historial local suma 1.217 commits; la app ya cubre servicios, formularios, desprendibles y días laborados con almacenamiento offline y sincronización.'
 		}
 	},
 	{
@@ -1421,6 +1442,186 @@ export const projects: Project[] = [
 			es: 'La versión actual une el recorrido público del cine desde el primer póster hasta la silla reservada, incluyendo confitería, entradas del cliente y administración de campañas. La foto del repositorio reúne 177 commits, 22 páginas de producto y un build que prerenderiza 85 rutas mientras mantiene los flujos transaccionales en el servidor.'
 		},
 		link: 'https://vizionacines-v2.vercel.app'
+	},
+	{
+		slug: 'interest-pulse',
+		number: '08',
+		kicker: { en: 'Case file 08 · Extension', es: 'Expediente 08 · Extensión' },
+		title: 'INTEREST PULSE',
+		tagline: {
+			en: 'A Chrome side panel that turns scattered interests into a timely feed with sources, confidence and context.',
+			es: 'Un panel lateral de Chrome que convierte intereses dispersos en un feed oportuno con fuentes, certeza y contexto.'
+		},
+		stack: ['Svelte 5', 'Chrome MV3', 'NestJS', 'PostgreSQL', 'Redis', 'TypeScript'],
+		accent: 'blue',
+		libraries: ['CRXJS', 'Drizzle ORM', 'pgvector', 'BullMQ', 'Zod', 'Turbo', 'Vitest', 'Vite'],
+		modules: [
+			{
+				name: { en: 'Side-panel feed', es: 'Feed en panel lateral' },
+				detail: {
+					en: 'Current events about followed artists, games and series without leaving the active tab.',
+					es: 'Novedades sobre artistas, juegos y series sin abandonar la pestaña activa.'
+				}
+			},
+			{
+				name: { en: 'Interest profile', es: 'Perfil de intereses' },
+				detail: {
+					en: 'Explicit interests and locally inferred suggestions with visible provenance.',
+					es: 'Intereses explícitos y sugerencias inferidas localmente con procedencia visible.'
+				}
+			},
+			{
+				name: { en: 'Source ingestion', es: 'Ingesta de fuentes' },
+				detail: {
+					en: 'Replaceable connectors normalize news and releases into one event model.',
+					es: 'Conectores reemplazables normalizan noticias y lanzamientos en un modelo de eventos.'
+				}
+			},
+			{
+				name: { en: 'Ranking & explanations', es: 'Ranking y explicaciones' },
+				detail: {
+					en: 'Pure domain rules score recency and affinity, then explain every recommendation.',
+					es: 'Reglas puras puntúan actualidad y afinidad, y explican cada recomendación.'
+				}
+			},
+			{
+				name: { en: 'Signals & learning', es: 'Señales y aprendizaje' },
+				detail: {
+					en: 'Batched reading, saving and dismissal signals refine the profile.',
+					es: 'Señales agrupadas de lectura, guardado y descarte afinan el perfil.'
+				}
+			},
+			{
+				name: { en: 'Privacy controls', es: 'Controles de privacidad' },
+				detail: {
+					en: 'Export, deletion and optional permissions remain explicit and reversible.',
+					es: 'Exportación, borrado y permisos opcionales permanecen explícitos y reversibles.'
+				}
+			},
+			{
+				name: { en: 'Shopping & sponsorship', es: 'Compras y patrocinios' },
+				detail: {
+					en: 'Commercial content stays outside the organic ranking and uses confirmed interests only.',
+					es: 'El contenido comercial queda fuera del ranking orgánico y usa solo intereses confirmados.'
+				}
+			}
+		],
+		palette: {
+			base: '#090a0d',
+			accent: '#91abff',
+			on: 'paper',
+			onAccent: 'ink'
+		},
+		coverArt: {
+			src: '/art/project-covers/interest-pulse-cover-v1.webp',
+			width: 1024,
+			height: 1536
+		},
+		image: {
+			src: '/projects/interest-pulse.webp',
+			alt: {
+				en: 'Interest Pulse Chrome side panel showing a personalized current-events feed',
+				es: 'Panel lateral de Interest Pulse en Chrome con un feed personalizado de actualidad'
+			},
+			caption: {
+				en: 'The extension opens beside any page and keeps source, date, confidence and recommendation context visible.',
+				es: 'La extensión se abre junto a cualquier página y mantiene visibles fuente, fecha, certeza y contexto de recomendación.'
+			}
+		},
+		architecture: [
+			{
+				layer: { en: 'Browser experience', es: 'Experiencia en navegador' },
+				technology: 'Svelte 5 · Chrome MV3 · CRXJS',
+				detail: {
+					en: 'Side panel, options and service worker built around minimum install-time permissions.',
+					es: 'Panel lateral, opciones y service worker con permisos mínimos al instalar.'
+				}
+			},
+			{
+				layer: { en: 'Product API', es: 'API de producto' },
+				technology: 'NestJS · Zod contracts',
+				detail: {
+					en: 'A device-scoped API serves feeds, interests, signals, privacy and shopping.',
+					es: 'Una API por dispositivo sirve feeds, intereses, señales, privacidad y compras.'
+				}
+			},
+			{
+				layer: { en: 'Editorial pipeline', es: 'Pipeline editorial' },
+				technology: 'BullMQ · Redis · source adapters',
+				detail: {
+					en: 'Independent connectors ingest, normalize and rank without coupling the product to one provider.',
+					es: 'Conectores independientes ingieren, normalizan y ordenan sin atar el producto a un proveedor.'
+				}
+			},
+			{
+				layer: { en: 'Data & domain', es: 'Datos y dominio' },
+				technology: 'PostgreSQL · pgvector · Drizzle',
+				detail: {
+					en: 'Events, sources, interests and minimized signals share pure ranking rules and typed contracts.',
+					es: 'Eventos, fuentes, intereses y señales minimizadas comparten reglas puras y contratos tipados.'
+				}
+			}
+		],
+		transformation: [
+			{
+				before: {
+					en: 'Interests scattered across media, stores and communities.',
+					es: 'Intereses dispersos entre medios, tiendas y comunidades.'
+				},
+				after: {
+					en: 'One timely feed beside every browser tab.',
+					es: 'Un feed oportuno junto a cada pestaña del navegador.'
+				}
+			},
+			{
+				before: {
+					en: 'Recommendations with opaque reasons and provenance.',
+					es: 'Recomendaciones con razones y procedencia opacas.'
+				},
+				after: {
+					en: 'Sources, confidence and “why you see this” on every card.',
+					es: 'Fuentes, certeza y “por qué ves esto” en cada tarjeta.'
+				}
+			},
+			{
+				before: {
+					en: 'Personalization that demands broad access up front.',
+					es: 'Personalización que exige acceso amplio desde el inicio.'
+				},
+				after: {
+					en: 'Optional permissions, local analysis and deletable provenance.',
+					es: 'Permisos opcionales, análisis local y procedencia borrable.'
+				}
+			}
+		],
+		decisions: [
+			{
+				en: 'Use a side panel instead of replacing the new-tab page, so the feed remains available without taking over a browser habit.',
+				es: 'Usar un panel lateral en vez de reemplazar la nueva pestaña, para mantener el feed disponible sin apropiarse de un hábito del navegador.'
+			},
+			{
+				en: 'Keep ranking rules and API contracts in shared packages, while every external source stays behind a replaceable adapter.',
+				es: 'Mantener reglas de ranking y contratos de API en paquetes compartidos, con cada fuente externa detrás de un adaptador reemplazable.'
+			},
+			{
+				en: 'Infer browsing interests on-device, require review before saving and keep sponsored content outside the organic score.',
+				es: 'Inferir intereses de navegación en el dispositivo, exigir revisión antes de guardar y mantener los patrocinios fuera del puntaje orgánico.'
+			}
+		],
+		challenge: {
+			en: 'News about the things a person follows is scattered across outlets, stores, communities and product feeds. A useful extension had to find what changed without becoming another opaque recommendation system or asking for invasive browser access at installation.',
+			es: 'Las novedades sobre lo que una persona sigue están dispersas entre medios, tiendas, comunidades y feeds de producto. Una extensión útil debía encontrar qué cambió sin convertirse en otro recomendador opaco ni pedir acceso invasivo al instalarse.'
+		},
+		approach: {
+			en: 'I built Interest Pulse as a TypeScript monorepo with a Svelte 5 Manifest V3 extension, a NestJS API and a connector-based editorial pipeline. Shared contracts and pure ranking rules keep the feed explainable, while optional permissions, local history analysis and device-scoped deletion make privacy part of the architecture.',
+			es: 'Construí Interest Pulse como un monorepo TypeScript con una extensión Manifest V3 en Svelte 5, una API NestJS y un pipeline editorial basado en conectores. Contratos compartidos y reglas puras mantienen el feed explicable, mientras permisos opcionales, análisis local del historial y borrado por dispositivo integran la privacidad en la arquitectura.'
+		},
+		outcome: {
+			en: 'The Phase 1 build runs end to end with real source connectors, a ranked side-panel feed, batched signals, interest controls and a separate shopping surface. Its public repository snapshot contains 22 commits, 10 API controllers, nine migrations and 24 test files, keeping product decisions and privacy boundaries inspectable alongside the implementation.',
+			es: 'La Fase 1 funciona de punta a punta con conectores reales, un feed ordenado en el panel lateral, señales agrupadas, controles de intereses y una superficie separada de compras. La foto del repositorio público reúne 22 commits, 10 controladores de API, nueve migraciones y 24 archivos de prueba, dejando las decisiones de producto y los límites de privacidad inspeccionables junto a la implementación.'
+		},
+		link: 'https://github.com/jldev1227/interest-pulse',
+		publicSource: true
 	}
 ];
 

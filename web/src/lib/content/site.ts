@@ -179,14 +179,14 @@ export const stack = [
 	},
 	{
 		label: { en: 'Mobile', es: 'Móvil' },
-		items: ['Swift', 'SwiftUI', 'Kotlin', 'Jetpack Compose', 'SQLite']
+		items: ['Swift', 'SwiftUI', 'Kotlin', 'Jetpack Compose', 'Expo', 'React Native', 'SQLite']
 	}
 ] satisfies { label: Localized; items: string[] }[];
 
 /** The bridge between the personal story and the project case files. */
 export const multiverse = {
 	eyebrow: { en: 'The project multiverse', es: 'El multiverso de proyectos' },
-	titleLead: { en: 'Seven worlds.', es: 'Siete mundos.' },
+	titleLead: { en: 'Eight worlds.', es: 'Ocho mundos.' },
 	titleAccent: { en: 'One way of building.', es: 'Una forma de construir.' },
 	body: {
 		en: 'Every portal keeps the product’s own visual identity. Step through to read the full comic: challenge, architecture, decisions, evidence and outcome.',

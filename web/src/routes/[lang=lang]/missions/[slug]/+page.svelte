@@ -130,10 +130,11 @@
 		).filter(([value]) => value > 0);
 	});
 
-	const REPO_KIND: Record<'app' | 'api' | 'native', UIKey> = {
+	const REPO_KIND: Record<'app' | 'api' | 'native' | 'extension', UIKey> = {
 		app: 'missions.repoApp',
 		api: 'missions.repoApi',
-		native: 'missions.repoNative'
+		native: 'missions.repoNative',
+		extension: 'missions.repoExtension'
 	};
 
 	/* ------------------------------------------------------- the next world -- */
@@ -231,7 +232,8 @@
 				<div class="case-actions">
 					{#if project.link}
 						<a class="action action-primary jl-kicker" href={project.link} rel="noopener">
-							{t('missions.source')} <span aria-hidden="true">↗</span>
+							{t(project.publicSource ? 'missions.viewSource' : 'missions.source')}
+							<span aria-hidden="true">↗</span>
 						</a>
 					{/if}
 					<a class="action action-secondary jl-kicker" href={`${homePath(locale)}#missions`}>
@@ -508,12 +510,15 @@
 				<div class="outcome-copy">
 					<h2 id="outcome-title" class="jl-display">{t('missions.outcome')}</h2>
 					<p class="lede">{project.outcome[locale]}</p>
-					<p class="confidential jl-kicker">{t('missions.confidential')}</p>
+					<p class="confidential jl-kicker">
+						{t(project.publicSource ? 'missions.publicCodebase' : 'missions.confidential')}
+					</p>
 
 					<div class="case-actions">
 						{#if project.link}
 							<a class="action action-primary jl-kicker" href={project.link} rel="noopener">
-								{t('missions.source')} <span aria-hidden="true">↗</span>
+								{t(project.publicSource ? 'missions.viewSource' : 'missions.source')}
+								<span aria-hidden="true">↗</span>
 							</a>
 						{/if}
 						<a class="action action-secondary jl-kicker" href={`mailto:${identity.email}`}>
@@ -587,7 +592,7 @@
 				transparent 48.2%
 			),
 			/* The wedge is tinted with the world's accent rather than its ground:
-			   two of the seven worlds are painted on cream, and mixing that into the
+			   two of the eight worlds are painted on cream, and mixing that into the
 			   ink left a pale stain under paper-white cover lines. */
 			linear-gradient(
 					137deg,

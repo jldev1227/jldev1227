@@ -1,6 +1,6 @@
 # Project comic covers
 
-Seven full-bleed 1024×1536 WebP illustrations for the project issues. Cover
+Eight full-bleed 1024×1536 WebP illustrations for the project issues. Cover
 titles, captions, issue numbers and language controls remain live HTML; these
 files deliberately contain no words or logos.
 
@@ -8,11 +8,12 @@ files deliberately contain no words or logos.
 | -------------------------------- | ------------------------- | ------------------------------------------------- |
 | `segispro-cover-v2.webp`         | SEGISPRO                  | Seated side profile at an operations desk         |
 | `formarpro-cover-v2.webp`        | FORMARPRO                 | Relaxed full-body profile on learning steps       |
-| `transmeralda-cover-v2.webp`     | TRANSMERALDA × COTRANSMEQ | Rear three-quarter walking through the bus yard   |
+| `transmeralda-cover-v3.webp`     | TRANSMERALDA × COTRANSMEQ | Low field view of the native driver workflow      |
 | `developer-os-cover-v2.webp`     | DEVELOPER OS              | Over-the-shoulder view at mission control         |
 | `gym-vancouver-cover-v2.webp`    | GYM VANCOUVER             | Candid lateral conversation in a school           |
 | `manejo-comentado-cover-v1.webp` | MANEJO COMENTADO          | Rear three-quarter field review beside a road     |
 | `viziona-cines-cover-v2.webp`    | VIZIONA CINES             | Seated front three-quarter view in the auditorium |
+| `interest-pulse-cover-v1.webp`   | INTEREST PULSE            | Side view sorting signals into a browser panel    |
 
 Where a `v2` exists, the original `v1` remains beside it as a reversible
 art-direction checkpoint. New covers begin at `v1` and move to a new filename
@@ -44,18 +45,20 @@ Project directions:
   while comparing a field report with operational dashboards.
 - **FORMARPRO:** relaxed full-body pose seated sideways on a learning path,
   sketching on a tablet and looking thoughtfully off-frame.
-- **TRANSMERALDA × COTRANSMEQ:** rear three-quarter walking pose between two
-  transport streams, tablet held low and face visible only in profile.
+- **TRANSMERALDA × COTRANSMEQ:** low field-level crouch beside a bus, reviewing
+  an offline-first phone workflow with a driver while sync reaches the office.
 - **DEVELOPER OS:** natural back view at a multi-monitor local mission-control
   desk, with worktrees, agent runs and validation represented in depth.
 - **GYM VANCOUVER:** candid side-profile conversation with a teacher and a
   student in a warm school corridor, using a small explanatory hand gesture.
 - **VIZIONA CINES:** seated front three-quarter view in an empty auditorium,
   working on a laptop beneath a purple-and-gold projector beam.
+- **INTEREST PULSE:** standing three-quarter side view, sorting source signals
+  into a tall browser side panel in a dark editorial signal room.
 
-Viziona used the approved Julian cover as its identity and comic-language
-reference, plus the local product home page as a domain and palette reference.
-The generated plate contains no words, logos or recognizable movie artwork;
+Viziona, Transmeralda v3 and Interest Pulse used the approved Julian cover as
+their identity and comic-language reference, plus local product captures as
+domain and palette references. The generated plates contain no words or logos;
 all case-file furniture remains live HTML.
 
 Generated with the built-in image generation tool and optimized to WebP at
