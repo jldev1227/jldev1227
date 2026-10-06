@@ -13,6 +13,7 @@
 		approach: 'missions.approach',
 		architecture: 'missions.architecture',
 		modules: 'missions.modules',
+		'mobile-screenshots': 'missions.mobileScreenshots',
 		'before-after': 'missions.beforeAfter',
 		stack: 'missions.technologies',
 		log: 'missions.log',
@@ -78,6 +79,7 @@
 				['approach', Boolean(project.approach[locale])],
 				['architecture', project.architecture.length > 0],
 				['modules', project.modules.length > 0],
+				['mobile-screenshots', Boolean(project.screenshotGroups?.length)],
 				['before-after', project.transformation.length > 0],
 				['stack', project.stack.length > 0],
 				['log', Boolean(history)],
@@ -236,6 +238,16 @@
 							<span aria-hidden="true">↗</span>
 						</a>
 					{/if}
+					{#each project.links ?? [] as destination (destination.href)}
+						<a
+							class="action action-primary jl-kicker"
+							href={destination.href}
+							target="_blank"
+							rel="noopener noreferrer"
+						>
+							{destination.label[locale]} <span aria-hidden="true">↗</span>
+						</a>
+					{/each}
 					<a class="action action-secondary jl-kicker" href={`${homePath(locale)}#missions`}>
 						{t('nav.missions')}
 					</a>
@@ -272,6 +284,39 @@
 						/>
 					</Panel>
 				</div>
+			</section>
+		{/if}
+
+		{#if project.screenshotGroups?.length}
+			<section
+				id="mobile-screenshots"
+				class="case-section mobile-screenshots"
+				aria-labelledby="mobile-screenshots-title"
+			>
+				<div class="screenshots-heading">
+					<p class="jl-kicker">{project.kicker[locale]}</p>
+					<h2 id="mobile-screenshots-title" class="jl-display">
+						{t('missions.mobileScreenshots')}
+					</h2>
+				</div>
+				{#each project.screenshotGroups as group (group.title.en)}
+					<div class="screenshot-group">
+						<h3 class="jl-display">{group.title[locale]}</h3>
+						<div class="screenshot-grid">
+							{#each group.images as shot (shot.src)}
+								<figure>
+									<img
+										src={shot.src}
+										alt={shot.alt[locale]}
+										width="480"
+										height="853"
+										loading="lazy"
+									/>
+								</figure>
+							{/each}
+						</div>
+					</div>
+				{/each}
 			</section>
 		{/if}
 
@@ -521,6 +566,16 @@
 								<span aria-hidden="true">↗</span>
 							</a>
 						{/if}
+						{#each project.links ?? [] as destination (destination.href)}
+							<a
+								class="action action-primary jl-kicker"
+								href={destination.href}
+								target="_blank"
+								rel="noopener noreferrer"
+							>
+								{destination.label[locale]} <span aria-hidden="true">↗</span>
+							</a>
+						{/each}
 						<a class="action action-secondary jl-kicker" href={`mailto:${identity.email}`}>
 							{t('contact.email')} <span aria-hidden="true">↗</span>
 						</a>
@@ -1271,6 +1326,44 @@
 		margin-top: clamp(26px, 3vw, 38px);
 	}
 
+	.screenshots-heading {
+		margin-bottom: clamp(24px, 4vw, 42px);
+	}
+
+	.screenshots-heading h2 {
+		margin-top: 10px;
+		font-size: clamp(2rem, 5vw, 4rem);
+	}
+
+	.screenshot-group + .screenshot-group {
+		margin-top: clamp(38px, 6vw, 64px);
+	}
+
+	.screenshot-group h3 {
+		margin: 0 0 20px;
+		font-size: clamp(1.3rem, 2.8vw, 2rem);
+	}
+
+	.screenshot-grid {
+		display: grid;
+		grid-template-columns: repeat(6, minmax(0, 1fr));
+		gap: clamp(10px, 1.5vw, 18px);
+	}
+
+	.screenshot-grid figure {
+		margin: 0;
+		overflow: hidden;
+		border: var(--jl-border) solid var(--jl-ink);
+		background: var(--jl-white);
+		box-shadow: 5px 5px 0 var(--jl-ink);
+	}
+
+	.screenshot-grid img {
+		display: block;
+		width: 100%;
+		height: auto;
+	}
+
 	.action {
 		padding: 13px 22px;
 		border: 3px solid var(--jl-ink);
@@ -1396,6 +1489,10 @@
 			justify-self: start;
 			transform: rotate(90deg);
 		}
+
+		.screenshot-grid {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+		}
 	}
 
 	@media (max-width: 760px) {
@@ -1409,6 +1506,10 @@
 
 		.more-link.next {
 			text-align: left;
+		}
+
+		.screenshot-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
 		}
 	}
 </style>

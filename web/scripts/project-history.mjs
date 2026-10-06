@@ -34,7 +34,8 @@ const PROJECTS = {
 		{ path: 'transmeralda/backend-nest', name: 'transmeralda · api', kind: 'api' },
 		{ path: 'cotransmeq/cotransmeq-app', name: 'cotransmeq · app', kind: 'app' },
 		{ path: 'cotransmeq/backend-cotransmeq', name: 'cotransmeq · api', kind: 'api' },
-		{ path: 'app-mobile-transmeralda', name: 'transmeralda · mobile', kind: 'native' }
+		{ path: 'app-mobile-transmeralda', name: 'transmeralda · mobile', kind: 'native' },
+		{ path: 'cotransmeq/app-mobile-cotransmeq', name: 'cotransmeq · mobile', kind: 'native' }
 	],
 	'developer-os': [{ path: 'developer-os', name: 'developer-os', kind: 'native' }],
 	'gym-vancouver': [{ path: 'gimnasio-vancouver-2', name: 'app', kind: 'app' }],

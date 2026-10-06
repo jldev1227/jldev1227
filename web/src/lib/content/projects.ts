@@ -30,6 +30,11 @@ export interface ProjectTransformation {
 	after: Localized;
 }
 
+export interface ProjectScreenshotGroup {
+	title: Localized;
+	images: { src: string; alt: Localized }[];
+}
+
 /** One part of the product, the way its routes and screens divide it. */
 export interface ProjectModule {
 	name: Localized;
@@ -64,6 +69,9 @@ export interface Project {
 		alt: Localized;
 		caption: Localized;
 	};
+	/** Public product destinations and app-store-ready product imagery. */
+	links?: { label: Localized; href: string }[];
+	screenshotGroups?: ProjectScreenshotGroup[];
 	architecture: ProjectArchitectureNode[];
 	transformation: ProjectTransformation[];
 	decisions: Localized[];
@@ -486,6 +494,7 @@ export const projects: Project[] = [
 		},
 		stack: [
 			'SvelteKit',
+			'TypeScript',
 			'Fastify',
 			'Prisma',
 			'PostgreSQL',
@@ -513,7 +522,15 @@ export const projects: Project[] = [
 			'Resend',
 			'Expo Router',
 			'SecureStore',
-			'Expo Notifications'
+			'Expo Notifications',
+			'Expo Location',
+			'Expo Camera',
+			'Expo Image Picker',
+			'Expo File System',
+			'Expo Sharing',
+			'NetInfo',
+			'Reanimated',
+			'Gesture Handler'
 		],
 		modules: [
 			{
@@ -559,10 +576,10 @@ export const projects: Project[] = [
 				}
 			},
 			{
-				name: { en: 'Driver mobile app', es: 'App móvil para conductores' },
+				name: { en: 'Driver mobile apps', es: 'Apps móviles para conductores' },
 				detail: {
-					en: 'Native services, forms, pay slips and worked days with an offline outbox.',
-					es: 'Servicios, formularios, desprendibles y días laborados con outbox offline.'
+					en: 'Two branded Expo apps for services, forms, pay slips and worked days, backed by SQLite and a retryable sync outbox.',
+					es: 'Dos apps Expo con marca propia para servicios, formularios, desprendibles y días laborados, con SQLite y una outbox de sincronización reintentable.'
 				}
 			},
 			{
@@ -595,6 +612,103 @@ export const projects: Project[] = [
 				es: 'Presentación pública renderizada en local; Cotransmeq comparte la arquitectura con identidad propia.'
 			}
 		},
+		links: [
+			{
+				label: { en: 'Visit Transmeralda', es: 'Visitar Transmeralda' },
+				href: 'https://transmeralda.com/'
+			},
+			{
+				label: { en: 'Visit Cotransmeq', es: 'Visitar Cotransmeq' },
+				href: 'https://cotransmeq.com/'
+			}
+		],
+		screenshotGroups: [
+			{
+				title: { en: 'Transmeralda driver app', es: 'App de conductores Transmeralda' },
+				images: [
+					{
+						src: '/projects/mobile/transmeralda/01-formularios.webp',
+						alt: {
+							en: 'Transmeralda app · assigned forms',
+							es: 'App Transmeralda · formularios asignados'
+						}
+					},
+					{
+						src: '/projects/mobile/transmeralda/02-servicios.webp',
+						alt: {
+							en: 'Transmeralda app · assigned services',
+							es: 'App Transmeralda · servicios asignados'
+						}
+					},
+					{
+						src: '/projects/mobile/transmeralda/03-detalle-ruta.webp',
+						alt: {
+							en: 'Transmeralda app · route details',
+							es: 'App Transmeralda · detalle de ruta'
+						}
+					},
+					{
+						src: '/projects/mobile/transmeralda/04-navegacion.webp',
+						alt: {
+							en: 'Transmeralda app · trip navigation',
+							es: 'App Transmeralda · navegación del recorrido'
+						}
+					},
+					{
+						src: '/projects/mobile/transmeralda/05-formulario-etapas.webp',
+						alt: {
+							en: 'Transmeralda app · multi-step form',
+							es: 'App Transmeralda · formulario por etapas'
+						}
+					},
+					{
+						src: '/projects/mobile/transmeralda/06-dias-laborados.webp',
+						alt: { en: 'Transmeralda app · worked days', es: 'App Transmeralda · días laborados' }
+					}
+				]
+			},
+			{
+				title: { en: 'Cotransmeq driver app', es: 'App de conductores Cotransmeq' },
+				images: [
+					{
+						src: '/projects/mobile/cotransmeq/01-formularios.webp',
+						alt: {
+							en: 'Cotransmeq app · assigned forms',
+							es: 'App Cotransmeq · formularios asignados'
+						}
+					},
+					{
+						src: '/projects/mobile/cotransmeq/02-servicios.webp',
+						alt: {
+							en: 'Cotransmeq app · assigned services',
+							es: 'App Cotransmeq · servicios asignados'
+						}
+					},
+					{
+						src: '/projects/mobile/cotransmeq/03-detalle-ruta.webp',
+						alt: { en: 'Cotransmeq app · route details', es: 'App Cotransmeq · detalle de ruta' }
+					},
+					{
+						src: '/projects/mobile/cotransmeq/04-navegacion.webp',
+						alt: {
+							en: 'Cotransmeq app · trip navigation',
+							es: 'App Cotransmeq · navegación del recorrido'
+						}
+					},
+					{
+						src: '/projects/mobile/cotransmeq/05-formulario-etapas.webp',
+						alt: {
+							en: 'Cotransmeq app · multi-step form',
+							es: 'App Cotransmeq · formulario por etapas'
+						}
+					},
+					{
+						src: '/projects/mobile/cotransmeq/06-dias-laborados.webp',
+						alt: { en: 'Cotransmeq app · worked days', es: 'App Cotransmeq · días laborados' }
+					}
+				]
+			}
+		],
 		architecture: [
 			{
 				layer: { en: 'Field and office', es: 'Campo y oficina' },
@@ -684,8 +798,8 @@ export const projects: Project[] = [
 			es: 'Evolucioné una arquitectura compartida en SvelteKit y Fastify, separando los flujos reutilizables de la configuración y el despliegue de cada operadora. PostgreSQL y Prisma sostienen el modelo, mientras una app para conductores en Expo y React Native usa cachés SQLite y una outbox de sincronización para mantener servicios, formularios y días laborados disponibles en carretera.'
 		},
 		outcome: {
-			en: 'The product family now expresses one operational model through two web deployments and a native driver experience instead of disconnected inventions. Across five web, API and mobile repositories, the local Git history contains 1,217 commits; the mobile app already covers services, forms, pay slips and worked days with offline storage and synchronization.',
-			es: 'La familia de producto expresa un modelo operativo mediante dos despliegues web y una experiencia nativa para conductores, no inventos desconectados. En cinco repositorios web, API y móvil, el historial local suma 1.217 commits; la app ya cubre servicios, formularios, desprendibles y días laborados con almacenamiento offline y sincronización.'
+			en: 'The product family expresses one operational model through two web deployments and two branded driver apps. The project log now follows six web, API and mobile codebases; both apps cover services, forms, pay slips and worked days with offline storage and synchronization.',
+			es: 'La familia expresa un modelo operativo mediante dos despliegues web y dos apps de conductores con marca propia. La bitácora sigue seis bases de código web, API y móvil; ambas apps cubren servicios, formularios, desprendibles y días laborados con almacenamiento offline y sincronización.'
 		}
 	},
 	{

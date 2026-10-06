@@ -62,6 +62,7 @@ const UI = {
 	'missions.repoNative': { en: 'native', es: 'nativo' },
 	'missions.repoExtension': { en: 'browser extension', es: 'extensión de navegador' },
 	'missions.modules': { en: 'Modules', es: 'Módulos' },
+	'missions.mobileScreenshots': { en: 'Driver app screens', es: 'Pantallas de las apps' },
 	'missions.modulesNote': {
 		en: 'What the product is made of, as its own screens divide it.',
 		es: 'De qué está hecho el producto, tal como lo dividen sus propias pantallas.'
