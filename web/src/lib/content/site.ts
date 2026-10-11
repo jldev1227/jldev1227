@@ -74,8 +74,8 @@ export const origin = {
 		es: 'Aprender rápido es mi verdadero superpoder.'
 	},
 	portraitAlt: {
-		en: 'Comic-style portrait of Julian Lopez',
-		es: 'Retrato estilo cómic de Julian Lopez'
+		en: 'Frontal 3D animated portrait of Julian Lopez wearing a navy overshirt against a red studio backdrop',
+		es: 'Retrato frontal 3D de Julian Lopez con sobrecamisa azul marino ante un fondo rojo'
 	}
 } satisfies Record<string, Localized>;
 
@@ -189,10 +189,10 @@ export const multiverse = {
 	titleLead: { en: 'Eight worlds.', es: 'Ocho mundos.' },
 	titleAccent: { en: 'One way of building.', es: 'Una forma de construir.' },
 	body: {
-		en: 'Every portal keeps the product’s own visual identity. Step through to read the full comic: challenge, architecture, decisions, evidence and outcome.',
-		es: 'Cada portal conserva la identidad visual de su producto. Entra para leer el cómic completo: reto, arquitectura, decisiones, evidencia y resultado.'
+		en: 'Eight products shaped by different problems. Explore the decisions, architecture and results behind each one.',
+		es: 'Ocho productos nacidos de problemas distintos. Explora las decisiones, la arquitectura y los resultados detrás de cada uno.'
 	},
-	enter: { en: 'Enter this world', es: 'Entrar a este mundo' }
+	enter: { en: 'View project', es: 'Ver proyecto' }
 } satisfies Record<string, Localized>;
 
 export const method = {

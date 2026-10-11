@@ -33,8 +33,8 @@ const WEBP = { quality: 74, effort: 6 };
 /** Read the width ladder out of `src/lib/images.ts` so the two cannot drift. */
 function widthLadder() {
 	const module = readFileSync(join(SRC, 'lib', 'images.ts'), 'utf8');
-	const match = module.match(/export const COVER_WIDTHS = \[([^\]]+)\]/);
-	if (!match) throw new Error('COVER_WIDTHS is not declared in src/lib/images.ts');
+	const match = module.match(/export const ART_WIDTHS = \[([^\]]+)\]/);
+	if (!match) throw new Error('ART_WIDTHS is not declared in src/lib/images.ts');
 	return match[1]
 		.split(',')
 		.map((width) => Number(width.trim()))
