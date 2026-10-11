@@ -1,6 +1,6 @@
 import type { Localized } from '$i18n';
 
-/** Panel accent — maps to a CSS custom property in `comic.css`. */
+/** Visual accent associated with this project's world. */
 export type Accent = 'red' | 'blue' | 'yellow' | 'ink';
 
 /**
@@ -62,6 +62,8 @@ export interface Project {
 	palette: Palette;
 	/** Full-bleed comic illustration; cover typography remains live HTML. */
 	coverArt: { src: string; width: number; height: number };
+	/** Landscape, character-free artwork for the home-page project journey. */
+	bannerArt: { src: string; width: number; height: number };
 	/** Force paper-white cover lettering when the illustration is visually busy. */
 	coverText?: 'paper';
 	image: {
@@ -176,6 +178,7 @@ export const projects: Project[] = [
 			width: 1024,
 			height: 1536
 		},
+		bannerArt: { src: '/art/project-banners/segispro-banner-v1.webp', width: 1536, height: 1024 },
 		image: {
 			src: '/projects/segispro.webp',
 			alt: {
@@ -378,6 +381,7 @@ export const projects: Project[] = [
 			width: 1024,
 			height: 1536
 		},
+		bannerArt: { src: '/art/project-banners/formarpro-banner-v1.webp', width: 1536, height: 1024 },
 		coverText: 'paper',
 		image: {
 			src: '/projects/formarpro.webp',
@@ -600,6 +604,11 @@ export const projects: Project[] = [
 			src: '/art/project-covers/transmeralda-cover-v3.webp',
 			width: 1024,
 			height: 1536
+		},
+		bannerArt: {
+			src: '/art/project-banners/transmeralda-banner-v1.webp',
+			width: 1536,
+			height: 1024
 		},
 		image: {
 			src: '/projects/transmeralda.webp',
@@ -876,6 +885,11 @@ export const projects: Project[] = [
 			width: 1024,
 			height: 1536
 		},
+		bannerArt: {
+			src: '/art/project-banners/developer-os-banner-v1.webp',
+			width: 1536,
+			height: 1024
+		},
 		link: 'https://github.com/jldev1227',
 		image: {
 			src: '/projects/developer-os.webp',
@@ -1066,6 +1080,11 @@ export const projects: Project[] = [
 			src: '/art/project-covers/gym-vancouver-cover-v2.webp',
 			width: 1024,
 			height: 1536
+		},
+		bannerArt: {
+			src: '/art/project-banners/gym-vancouver-banner-v1.webp',
+			width: 1536,
+			height: 1024
 		},
 		coverText: 'paper',
 		image: {
@@ -1269,6 +1288,11 @@ export const projects: Project[] = [
 			width: 1024,
 			height: 1536
 		},
+		bannerArt: {
+			src: '/art/project-banners/manejo-comentado-banner-v1.webp',
+			width: 1536,
+			height: 1024
+		},
 		coverText: 'paper',
 		image: {
 			src: '/projects/manejo-comentado.webp',
@@ -1451,6 +1475,11 @@ export const projects: Project[] = [
 			width: 1024,
 			height: 1536
 		},
+		bannerArt: {
+			src: '/art/project-banners/viziona-cines-banner-v1.webp',
+			width: 1536,
+			height: 1024
+		},
 		coverText: 'paper',
 		image: {
 			src: '/projects/viziona-cines.webp',
@@ -1630,6 +1659,11 @@ export const projects: Project[] = [
 			src: '/art/project-covers/interest-pulse-cover-v1.webp',
 			width: 1024,
 			height: 1536
+		},
+		bannerArt: {
+			src: '/art/project-banners/interest-pulse-banner-v1.webp',
+			width: 1536,
+			height: 1024
 		},
 		image: {
 			src: '/projects/interest-pulse.webp',

@@ -11,9 +11,3 @@
 </script>
 
 <p class="jl-caption {className}">{@render children()}</p>
-
-<style>
-	.jl-caption {
-		margin: 0;
-	}
-</style>

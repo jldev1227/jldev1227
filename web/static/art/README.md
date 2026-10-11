@@ -58,3 +58,16 @@ Generated with the built-in image generation tool and exported as a 1024 × 1536
 WebP at quality 88. All masthead, cover lines, language controls and calls to
 action remain live HTML in `ComicCover.svelte`; do not bake localized text into
 this image.
+
+## Home page 3D portrait
+
+`julian-3d-hero-v3.webp` is the wide desktop hero background. Its red studio
+fills the canvas, with the recognizable developer character in the right third
+and clear space for live copy on the left. `julian-3d-hero-mobile-v2.webp` uses a
+vertical composition with red space above the same frontal portrait. Both keep
+the navy overshirt, white T-shirt, short hair and warm animated 3D finish; neither
+includes handheld objects. The homepage serves responsive AVIF and WebP
+renditions through `responsiveArt()`; localized description text stays in
+`content/site.ts`. `julian-3d-hero-mobile-v1.webp` remains as the earlier mobile
+composition, `julian-3d-hero-v2.webp` as the previous portrait and
+`julian-3d-hero-v1.webp` as the original full-body portrait.

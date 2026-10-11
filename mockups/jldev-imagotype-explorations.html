@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>JLDEV 1227 · exploraciones de imagotipo</title>
+    <style>
+      @font-face {
+        font-family: Anton;
+        src: url("../web/node_modules/@fontsource/anton/files/anton-latin-400-normal.woff2")
+          format("woff2");
+      }
+
+      @font-face {
+        font-family: Inter;
+        src: url("../web/node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2")
+          format("woff2");
+        font-weight: 100 900;
+      }
+
+      :root {
+        font-family: Inter, system-ui, sans-serif;
+        color: #720914;
+        background: #fff1ce;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+      }
+
+      main {
+        max-width: 1600px;
+        margin: auto;
+        padding: 72px 64px 88px;
+      }
+
+      .intro {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 32px;
+        margin-bottom: 40px;
+      }
+      .eyebrow,
+      .number,
+      .label {
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+      }
+      .eyebrow {
+        color: #bd1328;
+      }
+      h1 {
+        max-width: 950px;
+        margin: 16px 0 0;
+        font:
+          400 clamp(48px, 5.2vw, 82px)/0.98 Anton,
+          Impact,
+          sans-serif;
+        text-transform: uppercase;
+      }
+      .intro p {
+        max-width: 320px;
+        margin: 0 0 3px;
+        font-size: 15px;
+        line-height: 1.55;
+      }
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+      }
+      .card {
+        display: flex;
+        min-height: 570px;
+        flex-direction: column;
+        padding: 28px;
+        border: 1px solid #bd132846;
+        border-radius: 8px;
+        background: #fff9e9;
+        box-shadow: 0 22px 46px #72091414;
+      }
+      .card-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .number {
+        color: #bd1328;
+      }
+      .label {
+        padding: 8px 10px;
+        border: 1px solid #bd13284d;
+        border-radius: 2px;
+      }
+      .lockup {
+        display: flex;
+        min-height: 228px;
+        align-items: center;
+        gap: 20px;
+      }
+      .mark {
+        width: 124px;
+        height: 124px;
+        flex: none;
+      }
+      .wordmark {
+        display: flex;
+        flex-direction: column;
+        align-items: start;
+      }
+      .wordmark strong {
+        font:
+          400 clamp(46px, 3.8vw, 64px)/0.95 Anton,
+          Impact,
+          sans-serif;
+        letter-spacing: -0.015em;
+      }
+      .wordmark small {
+        margin-top: 5px;
+        color: #bd1328;
+        font-size: 17px;
+        font-weight: 900;
+        letter-spacing: 0.3em;
+      }
+      .wordmark.horizontal {
+        flex-direction: row;
+        align-items: baseline;
+        gap: 9px;
+      }
+      .wordmark.horizontal small {
+        margin: 0;
+        font-size: 18px;
+        letter-spacing: 0.03em;
+      }
+      .wordmark.compact small {
+        padding: 5px 8px;
+        border: 1px solid #bd1328;
+        border-radius: 2px;
+        font-size: 14px;
+        letter-spacing: 0.08em;
+      }
+      h2 {
+        margin: 0 0 8px;
+        font:
+          400 31px/1 Anton,
+          Impact,
+          sans-serif;
+        text-transform: uppercase;
+      }
+      .description {
+        min-height: 64px;
+        margin: 0;
+        color: #6a3138;
+        font-size: 14px;
+        line-height: 1.55;
+      }
+      .card .bottom {
+        margin-top: auto;
+      }
+      .sample {
+        display: flex;
+        height: 80px;
+        align-items: center;
+        gap: 11px;
+        margin-top: 14px;
+        padding: 12px 14px;
+        border-radius: 4px;
+        background: linear-gradient(110deg, #fff4d7, #ffe9b4);
+      }
+      .sample img {
+        width: 42px;
+        height: 42px;
+      }
+      .sample strong {
+        font-size: 15px;
+        font-weight: 900;
+        letter-spacing: 0.12em;
+      }
+      .sample span {
+        margin-left: auto;
+        color: #bd1328;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+      }
+      .scale {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-top: 18px;
+        padding-top: 17px;
+        border-top: 1px solid #bd13282b;
+      }
+      .scale img {
+        width: 32px;
+        height: 32px;
+      }
+      .scale span {
+        color: #6a3138;
+        font-size: 12px;
+      }
+      .footnote {
+        margin: 32px 0 0;
+        color: #6a3138;
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      @media (max-width: 1050px) {
+        main {
+          padding: 48px 24px;
+        }
+        .intro {
+          align-items: start;
+          flex-direction: column;
+        }
+        .cards {
+          grid-template-columns: 1fr;
+        }
+        .card {
+          min-height: 440px;
+        }
+        .lockup {
+          min-height: 170px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="intro">
+        <div>
+          <span class="eyebrow">JLDEV · Identidad personal</span>
+          <h1>Tres rutas para un símbolo propio.</h1>
+        </div>
+        <p>
+          Una referencia arácnida llevada a geometría de código. Cada símbolo
+          puede vivir solo o junto al nombre y el 1227.
+        </p>
+      </div>
+
+      <div class="cards">
+        <article class="card">
+          <div class="card-head">
+            <span class="number">01 / Monograma</span
+            ><span class="label">JL primero</span>
+          </div>
+          <div class="lockup">
+            <img
+              class="mark"
+              src="../web/static/brand/concept-jl-web.svg"
+              alt="Monograma JL radial"
+            />
+            <div class="wordmark">
+              <strong>JLDEV</strong><small>1227</small>
+            </div>
+          </div>
+          <h2>JL red</h2>
+          <p class="description">
+            La J y la L son el núcleo. Los trazos laterales recuerdan una red y
+            funcionan como conexiones.
+          </p>
+          <div class="bottom">
+            <div class="sample">
+              <img src="../web/static/brand/concept-jl-web.svg" alt="" /><strong
+                >JLDEV</strong
+              ><span>1227</span>
+            </div>
+            <div class="scale">
+              <img src="../web/static/brand/concept-jl-web.svg" alt="" /><span
+                >Vista a tamaño de favicon</span
+              >
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-head">
+            <span class="number">02 / Emblema</span
+            ><span class="label">Código primero</span>
+          </div>
+          <div class="lockup">
+            <img
+              class="mark"
+              src="../web/static/brand/concept-code-spider.svg"
+              alt="Símbolo arácnido de código"
+            />
+            <div class="wordmark compact">
+              <strong>JLDEV</strong><small>1227</small>
+            </div>
+          </div>
+          <h2>Code spider</h2>
+          <p class="description">
+            La forma arácnida encierra los signos de código. El número queda
+            como firma en un sello secundario.
+          </p>
+          <div class="bottom">
+            <div class="sample">
+              <img
+                src="../web/static/brand/concept-code-spider.svg"
+                alt=""
+              /><strong>JLDEV</strong><span>1227</span>
+            </div>
+            <div class="scale">
+              <img
+                src="../web/static/brand/concept-code-spider.svg"
+                alt=""
+              /><span>Vista a tamaño de favicon</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-head">
+            <span class="number">03 / Sello</span
+            ><span class="label">1227 primero</span>
+          </div>
+          <div class="lockup">
+            <img
+              class="mark"
+              src="../web/static/brand/concept-1227-web.svg"
+              alt="Sello 1227 radial"
+            />
+            <div class="wordmark horizontal"><strong>JLDEV</strong></div>
+          </div>
+          <h2>Señal 1227</h2>
+          <p class="description">
+            El número ocupa el centro de una red octagonal. Tiene carácter de
+            insignia y funciona bien como avatar.
+          </p>
+          <div class="bottom">
+            <div class="sample">
+              <img
+                src="../web/static/brand/concept-1227-web.svg"
+                alt=""
+              /><strong>JLDEV</strong>
+            </div>
+            <div class="scale">
+              <img src="../web/static/brand/concept-1227-web.svg" alt="" /><span
+                >Vista a tamaño de favicon</span
+              >
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <p class="footnote">
+        Paleta de la página: rojo vino, rojo señal y crema cálido. Propuestas de
+        exploración; todavía no reemplazan el logo del sitio.
+      </p>
+    </main>
+  </body>
+</html>

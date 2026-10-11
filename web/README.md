@@ -1,18 +1,17 @@
 # 1227jl.dev
 
-The JLDEV portfolio, built as a **comic page**: sequential panels with ink
-borders, halftone dots, caption boxes and speech bubbles. Projects are case
-files. English and Spanish are equals.
+The JLDEV portfolio, with a bilingual personal landing page and project case
+files. This branch keeps the page structure and content while removing the
+site's presentation styles.
 
 Deployed at **<https://1227jl.dev>**.
 
 ## Shape
 
-Two landings in the same ink. `/[lang]` is the personal cover — hero, origin,
-powers, the projects as worlds, method, contact. `/[lang]/missions/<slug>` is
-one project read in full: a cover-plate hero, the challenge, the approach and
-its decisions, the architecture, the modules, before → after, the stack, a log
-read from the repositories, and the outcome.
+`/[lang]` is the personal landing — hero, origin, powers, projects, method, and
+contact. `/[lang]/missions/<slug>` presents a project in full: challenge,
+approach and decisions, architecture, modules, before → after, stack, repository
+log, and outcome.
 
 An earlier version read each case file as a physical comic, with a cover to
 open and pages to drag. It was removed: eight panels sized against a reader
@@ -23,8 +22,8 @@ page left no room for the narrative.
 SvelteKit 2 · Svelte 5 (runes) · TypeScript · `@sveltejs/adapter-vercel`
 · Vercel Analytics and Speed Insights · self-hosted Anton and Inter.
 
-No CSS framework and no i18n runtime — both are a hand-rolled ~200 lines, which
-is smaller than the config either would need.
+The site intentionally has no CSS in this branch. Locale handling is
+implemented in the app without an i18n runtime.
 
 ## Running it
 
@@ -52,7 +51,6 @@ src/
   hooks.server.ts         locale negotiation: cookie → Accept-Language
   params/lang.ts          route matcher — only `en` and `es` match
   lib/
-    styles/comic.css      tokens + the panel/caption/bubble primitives
     i18n/                 locales, UI dictionary, path builders
     content/site.ts       every page string, bilingual
     content/projects.ts   the six case files

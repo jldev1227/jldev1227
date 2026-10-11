@@ -10,9 +10,3 @@
 </script>
 
 <p class="jl-bubble {className}">{@render children()}</p>
-
-<style>
-	.jl-bubble {
-		margin: 0;
-	}
-</style>
