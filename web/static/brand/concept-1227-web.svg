@@ -1,10 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
   <title>Sello de red 1227</title>
   <desc>Sello octagonal con líneas radiales y el número 1227 al centro.</desc>
-  <path d="m64 8 34 14 22 42-22 42-34 14-34-14L8 64l22-42L64 8Z" stroke="#720914" stroke-width="5" stroke-linejoin="round"/>
-  <path d="M64 8v25m34-11L82 42m38 22H96m2 42L82 86m-18 34V96m-34 10 16-20M8 64h24m-2-42 16 20" stroke="#BD1328" stroke-width="4" stroke-linecap="round"/>
-  <circle cx="64" cy="64" r="34" fill="#FFF1CE" stroke="#BD1328" stroke-width="5"/>
-  <path d="M44 64h40" stroke="#BD1328" stroke-width="2"/>
-  <text x="64" y="60" fill="#720914" font-family="Impact,Arial Narrow,sans-serif" font-size="23" text-anchor="middle" letter-spacing="2">12</text>
-  <text x="64" y="84" fill="#720914" font-family="Impact,Arial Narrow,sans-serif" font-size="23" text-anchor="middle" letter-spacing="2">27</text>
+  <path d="m64 8 34 14 22 42-22 42-34 14-34-14L8 64l22-42L64 8Z" stroke="#171C2A" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M64 8v25m34-11L82 42m38 22H96m2 42L82 86m-18 34V96m-34 10 16-20M8 64h24m-2-42 16 20" stroke="#E40712" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="64" cy="64" r="34" fill="#FFF1CE" stroke="#E40712" stroke-width="5"/>
+  <path d="M44 64h40" stroke="#E40712" stroke-width="2"/>
+  <text x="64" y="60" fill="#171C2A" font-family="Impact,Arial Narrow,sans-serif" font-size="23" text-anchor="middle" letter-spacing="2">12</text>
+  <text x="64" y="84" fill="#171C2A" font-family="Impact,Arial Narrow,sans-serif" font-size="23" text-anchor="middle" letter-spacing="2">27</text>
 </svg>

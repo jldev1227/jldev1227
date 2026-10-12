@@ -34,7 +34,7 @@
 	.site-footer {
 		padding: 36px clamp(24px, 7.4vw, 116px) 24px;
 		background: #fff1d0;
-		color: #720914;
+		color: var(--jl-ink);
 	}
 
 	.footer-main,
@@ -72,7 +72,7 @@
 	.footer-brand small {
 		display: block;
 		margin-top: 7px;
-		color: #bd1328;
+		color: var(--jl-red);
 		font:
 			700 0.67rem/1 'Inter',
 			sans-serif;
@@ -86,7 +86,7 @@
 	}
 
 	nav a {
-		color: #720914;
+		color: var(--jl-ink);
 		font:
 			700 0.72rem/1.3 'Inter',
 			sans-serif;
@@ -97,13 +97,13 @@
 	}
 
 	nav a:hover {
-		color: #bd1328;
+		color: var(--jl-red);
 	}
 
 	.footer-bottom {
 		padding-top: 20px;
-		border-top: 1px solid rgb(114 9 20 / 0.18);
-		color: #815058;
+		border-top: 1px solid rgb(var(--jl-ink-rgb) / 0.18);
+		color: var(--jl-muted-ink);
 		font:
 			500 0.72rem/1.5 'Inter',
 			sans-serif;
@@ -111,7 +111,7 @@
 	}
 
 	:global(.site-footer a:focus-visible) {
-		outline: 2px solid #720914;
+		outline: 2px solid var(--jl-ink);
 		outline-offset: 5px;
 	}
 

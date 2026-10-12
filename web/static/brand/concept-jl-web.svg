@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
   <title>JL con extensiones radiales</title>
   <desc>Monograma geométrico JL con seis líneas inspiradas en una red.</desc>
-  <g stroke="#BD1328" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M51 25v53c0 14-9 23-23 23-9 0-16-5-19-12M76 25v71h35" stroke="#720914" stroke-width="10"/>
+  <g stroke="#E40712" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M51 25v53c0 14-9 23-23 23-9 0-16-5-19-12M76 25v71h35" stroke="#171C2A" stroke-width="10"/>
     <path d="M48 44 29 31 15 34M47 59 25 55 10 63M46 76 26 88 15 103M79 44l21-13 14 3M83 59l22-4 13 8M86 77l18 12 11 14" stroke-width="5"/>
   </g>
 </svg>
