@@ -1072,7 +1072,7 @@ export const projects: Project[] = [
 		],
 		palette: {
 			base: '#f8f3e9',
-			accent: '#c42c36',
+			accent: '#e40712',
 			on: 'ink',
 			onAccent: 'paper'
 		},

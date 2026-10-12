@@ -6,6 +6,14 @@
 	padding: 0;
 }
 
+:root {
+	--jl-red: #e40712;
+	--jl-red-rgb: 228 7 18;
+	--jl-ink: #171c2a;
+	--jl-ink-rgb: 23 28 42;
+	--jl-muted-ink: #555663;
+}
+
 html {
 	min-width: 320px;
 	scroll-behavior: smooth;
@@ -24,7 +32,7 @@ body {
 	transform: translateY(calc(-100% - 16px));
 	padding: 10px 14px;
 	background: #ffd390;
-	color: #4a0710;
+	color: var(--jl-ink);
 	font:
 		700 0.8rem/1.2 system-ui,
 		sans-serif;

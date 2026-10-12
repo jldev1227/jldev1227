@@ -53,12 +53,12 @@
 		position: relative;
 		z-index: 4;
 		isolation: isolate;
-		border-bottom: 1px solid rgb(114 9 20 / 0.2);
+		border-bottom: 1px solid rgb(var(--jl-ink-rgb) / 0.2);
 		background:
 			radial-gradient(ellipse at 50% 0%, rgb(255 255 255 / 0.82), transparent 70%),
 			linear-gradient(110deg, #fff4d7 0%, #ffe9b4 52%, #fff1ce 100%);
-		box-shadow: 0 12px 32px rgb(55 0 8 / 0.12);
-		color: #720914;
+		box-shadow: 0 12px 32px rgb(0 0 0 / 0.12);
+		color: var(--jl-ink);
 	}
 
 	.masthead-nav {
@@ -77,7 +77,7 @@
 		align-items: center;
 		gap: 8px;
 		justify-self: start;
-		color: #720914;
+		color: var(--jl-ink);
 		font:
 			800 0.92rem/1 system-ui,
 			sans-serif;
@@ -100,7 +100,7 @@
 
 	.logo-number {
 		margin-left: 0.05em;
-		color: #bd1328;
+		color: var(--jl-red);
 		font-size: 0.68rem;
 		letter-spacing: 0.08em;
 	}
@@ -116,7 +116,7 @@
 	li a {
 		position: relative;
 		padding-block: 8px;
-		color: rgb(114 9 20 / 0.82);
+		color: rgb(var(--jl-ink-rgb) / 0.82);
 		font:
 			700 0.68rem/1 system-ui,
 			sans-serif;
@@ -134,13 +134,13 @@
 		height: 1px;
 		transform: scaleX(0);
 		transform-origin: left;
-		background: #bd1328;
+		background: var(--jl-red);
 		content: '';
 		transition: transform 180ms ease;
 	}
 
 	li a:hover {
-		color: #bd1328;
+		color: var(--jl-red);
 	}
 
 	li a:hover::after {
@@ -151,10 +151,10 @@
 		justify-self: end;
 		min-width: 78px;
 		padding: 10px 13px;
-		border: 1px solid rgb(114 9 20 / 0.38);
+		border: 1px solid rgb(var(--jl-ink-rgb) / 0.38);
 		border-radius: 2px;
-		background: rgb(114 9 20 / 0.04);
-		color: #720914;
+		background: rgb(var(--jl-ink-rgb) / 0.04);
+		color: var(--jl-ink);
 		font:
 			700 0.65rem/1 system-ui,
 			sans-serif;
@@ -169,13 +169,13 @@
 	}
 
 	.lang:hover {
-		border-color: #720914;
-		background: #720914;
+		border-color: var(--jl-red);
+		background: var(--jl-red);
 		color: #fff4ee;
 	}
 
 	:global(.masthead a:focus-visible) {
-		outline: 2px solid #720914;
+		outline: 2px solid var(--jl-ink);
 		outline-offset: 4px;
 	}
 
